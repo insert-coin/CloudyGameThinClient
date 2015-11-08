@@ -71,9 +71,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp" />
+    <ClCompile Include="Deserializer.cpp" />
+    <ClCompile Include="Serializer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Datagrams.h" />
+    <ClInclude Include="Deserializer.h" />
     <ClInclude Include="Net.h" />
+    <ClInclude Include="Serializer.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

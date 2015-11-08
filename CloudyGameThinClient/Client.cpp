@@ -3,6 +3,9 @@
 #include <string>
 
 #include "Net.h"
+#include "Serializer.h"
+#include "Deserializer.h"
+#include "Datagrams.h"
 
 using namespace std;
 using namespace net;
@@ -28,16 +31,6 @@ SDL_Surface* gScreenSurface = NULL;
 SDL_Surface* gHelloWorld = NULL;
 // Declare display mode structure to be filled in.
 SDL_DisplayMode current;
-
-struct PacketKeyboard
-{
-	_int8 version;
-	_int8 type;
-	_int32 sequence;
-	_int8 controllerID;
-	_int16 keycode;
-	_int8 keyEvent;
-};
 
 bool initSDL()
 {
@@ -115,62 +108,6 @@ void closeSDL()
 
     //Quit SDL subsystems
     SDL_Quit();
-}
-
-unsigned char * serialize_int8(unsigned char *buffer, int value)
-{
-	/* Write big-endian int value into buffer; assumes 8-bit int and 8-bit char. */
-	buffer[0] = value;
-	return buffer + 1;
-}
-
-unsigned char * serialize_int16(unsigned char *buffer, int value)
-{
-	/* Write big-endian int value into buffer; assumes 16-bit int and 8-bit char. */
-	buffer[0] = value >> 8;
-	buffer[1] = value;
-	return buffer + 2;
-}
-
-unsigned char * serialize_char(unsigned char *buffer, char value)
-{
-	buffer[0] = value;
-	return buffer + 1;
-}
-
-unsigned char * serialize_PacketKeyboard(unsigned char *buffer, struct PacketKeyboard *value)
-{
-	buffer = serialize_int16(buffer, value->keycode);
-	buffer = serialize_int8(buffer, value->keyEvent);
-
-	return buffer;
-}
-
-int deserialize_int8(unsigned char *buffer)
-{
-	int value = 0;
-
-	value |= buffer[0];
-	return value;
-}
-
-int deserialize_int16(unsigned char *buffer)
-{
-	int value = 0;
-
-	value |= buffer[0] << 8;
-	value |= buffer[1];
-	return value;
-}
-
-PacketKeyboard deserialize_PacketKeyboard(unsigned char *buffer)
-{
-	PacketKeyboard outputPacketKeyboard;
-
-	outputPacketKeyboard.keycode = deserialize_int16(buffer);
-	outputPacketKeyboard.keyEvent = deserialize_int8(buffer+2);
-
-	return outputPacketKeyboard;
 }
 
 int main(int argc, char* args[]) {
