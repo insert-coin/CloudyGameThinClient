@@ -41,7 +41,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <IncludePath>$(SolutionDir)Library\SDL\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)Library\SDL\lib\win32;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(SolutionDir)Library\SDL\lib\x86;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
