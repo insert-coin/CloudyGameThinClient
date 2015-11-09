@@ -9,7 +9,7 @@ The library files should be placed in the following directories:
 - \Library\SDL\include
 - \Library\SDL\lib\x86
 
-Also, SDL.dll is needed to run the application. Put it either your project's working directory, or inside of the system directory (C:\WINDOWS\SYSTEM32).
+Also, SDL.dll is needed to run the application. Put it either your project's working directory (where the .vcxproj file is), or inside of the system directory (C:\WINDOWS\SYSTEM32).
 
 ### Mac
 The tutorial is [here](http://lazyfoo.net/tutorials/SDL/01_hello_SDL/mac/index.php), no idea if it works.
