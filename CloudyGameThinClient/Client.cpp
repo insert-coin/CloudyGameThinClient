@@ -165,7 +165,7 @@ int main(int argc, char* args[]) {
 	//char packetData[PacketSize];
 	//strncpy_s(packetData, data.c_str(), sizeof(packetData));
 	//packetData[sizeof(packetData) - 1] = '\0';
-
+	/*
 	struct PacketKeyboard *s = new PacketKeyboard();
 	s->keycode = 112;
 	s->keyEvent = 6;
@@ -195,34 +195,9 @@ int main(int argc, char* args[]) {
 		printf("Player Controller is: ");
 		PacketKeyboard outputPacketKeyboard = deserialize_PacketKeyboard(receiveBuffer);
 		printf("%d, %d\n", outputPacketKeyboard.keycode, outputPacketKeyboard.keyEvent);
-		/*
-		for (int i = 0; i < sizeof(receiveBuffer); i++)
-		{
-			// terminating character
-			if (receiveBuffer[i] == '\0')
-			{
-				break;
-			}
-			printf("%c", receiveBuffer[i]);
-			if (receiveBuffer[i] == '0')
-			{
-				playerControllerID = "0";
-			}
-			else if (receiveBuffer[i] == '1')
-			{
-				playerControllerID = "1";
-			}
-			else if (receiveBuffer[i] == '2')
-			{
-				playerControllerID = "2";
-			}
-			else if (receiveBuffer[i] == '3')
-			{
-				playerControllerID = "3";
-			}
-		}*/
 		printf("\n");
 	}
+	*/
 
 	// ========================
 	// Main SDL + Event loop 
@@ -232,6 +207,9 @@ int main(int argc, char* args[]) {
 
     // Event handler
     SDL_Event e;
+
+	struct PacketKeyboard keyboardEvent;// = new PacketKeyboard();
+	_int32 sequence = 0;
 
     // While application is running
     while (!quit)
@@ -253,6 +231,18 @@ int main(int argc, char* args[]) {
 				// ACSII Decimal Key Values
 				int KeycodeValue = e.key.keysym.sym;
 						
+				keyboardEvent.version = 0;
+				keyboardEvent.type = 0;
+				keyboardEvent.sequence = sequence;
+				keyboardEvent.controllerID = 0;
+				keyboardEvent.keycode = KeycodeValue;
+				keyboardEvent.keyEvent = 2; // keypress down
+
+				//Sending Side
+				char b[sizeof(keyboardEvent)];
+				memcpy(b, &keyboardEvent, sizeof(keyboardEvent));
+
+				/*
 				// Data for socket
 				string data = "";
 				data.append(to_string(KeycodeValue));
@@ -261,8 +251,9 @@ int main(int argc, char* args[]) {
 				char packetData[PacketSize];
 				strncpy_s(packetData, data.c_str(), sizeof(packetData));
 				packetData[sizeof(packetData) - 1] = '\0';
-
-				socket.Send(TargetEngineAddress, packetData, sizeof(packetData));
+				*/
+				socket.Send(TargetEngineAddress, b, sizeof(b));
+				sequence++;
             }
 			if (e.type == SDL_KEYUP)
 			{
@@ -273,6 +264,17 @@ int main(int argc, char* args[]) {
 				// ACSII Decimal Key Values
 				int KeycodeValue = e.key.keysym.sym;
 
+				keyboardEvent.version = 0;
+				keyboardEvent.type = 0;
+				keyboardEvent.sequence = sequence;
+				keyboardEvent.controllerID = 0;
+				keyboardEvent.keycode = KeycodeValue;
+				keyboardEvent.keyEvent = 3; // keypress up
+
+				//Sending Side
+				char b[sizeof(keyboardEvent)];
+				memcpy(b, &keyboardEvent, sizeof(keyboardEvent));
+				/*
 				// Data for socket
 				string data = "";
 				data.append(to_string(KeycodeValue));
@@ -281,8 +283,9 @@ int main(int argc, char* args[]) {
 				char packetData[PacketSize];
 				strncpy_s(packetData, data.c_str(), sizeof(packetData));
 				packetData[sizeof(packetData) - 1] = '\0';
-
-				//socket.Send(TargetEngineAddress, packetData, sizeof(packetData));
+				*/
+				socket.Send(TargetEngineAddress, b, sizeof(b));
+				sequence++;
 			}
             if (e.type == SDL_MOUSEMOTION)
             {
@@ -329,7 +332,7 @@ int main(int argc, char* args[]) {
 		while (true)
 		{
 			Address sender;
-			unsigned char buffer[PacketSize];
+			unsigned char buffer[sizeof(keyboardEvent)];
 
 			int bytes_read = socket.Receive(sender, buffer, sizeof(buffer));
 			if (!bytes_read)
@@ -344,6 +347,10 @@ int main(int argc, char* args[]) {
 				sender.GetPort(), bytes_read);
 			printf("Player Controller is: ");
 
+			PacketKeyboard temp;
+			memcpy(&temp, buffer, sizeof(temp));
+			printf("%d, %d, %d, %d, %d, %d\n", temp.version, temp.type, temp.sequence, temp.controllerID, temp.keycode, temp.keyEvent);
+			/*
 			for (int i = 0; i < sizeof(buffer); i++){
 				// terminating character
 				if (buffer[i] == '\0')
@@ -351,7 +358,7 @@ int main(int argc, char* args[]) {
 					break;
 				}
 				printf("%c", buffer[i]);
-			}
+			}*/
 			printf("\n");
 		}
 
