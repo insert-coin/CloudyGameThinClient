@@ -220,3 +220,6 @@ _Pvt_Extensions
 
 # Library Folder
 /Library
+
+#.dll files
+*.dll

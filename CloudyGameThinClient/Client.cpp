@@ -10,6 +10,18 @@
 using namespace std;
 using namespace net;
 
+void print_bytes(const void *object, size_t size)
+{
+	size_t i;
+
+	printf("[ ");
+	for (i = 0; i < size; i++)
+	{
+		printf("%02x ", ((const unsigned char *)object)[i] & 0xff);
+	}
+	printf("]\n");
+}
+
 //Starts up SDL and creates window
 bool initSDL();
 
@@ -115,7 +127,7 @@ int main(int argc, char* args[]) {
 	const int PacketSize = 32;
 	string playerControllerID;
 
-	Address TargetEngineAddress = Address(127, 0, 0, 1, 30000); // 127.0.0.1:55555
+	Address TargetEngineAddress = Address(127, 0, 0, 1, 9999); // 127.0.0.1:55555
 	Address TargetCloudyServerAddress = Address(127, 0, 0, 1, 30000); // 127.0.0.1:55555
 
 	// =======================
@@ -242,6 +254,8 @@ int main(int argc, char* args[]) {
 				char b[sizeof(keyboardEvent)];
 				memcpy(b, &keyboardEvent, sizeof(keyboardEvent));
 
+				print_bytes(b, sizeof(keyboardEvent));
+
 				/*
 				// Data for socket
 				string data = "";
@@ -274,6 +288,8 @@ int main(int argc, char* args[]) {
 				//Sending Side
 				char b[sizeof(keyboardEvent)];
 				memcpy(b, &keyboardEvent, sizeof(keyboardEvent));
+
+				print_bytes(b, sizeof(keyboardEvent));
 				/*
 				// Data for socket
 				string data = "";

@@ -1,27 +1,29 @@
+#include <cstdint>
+
 struct PacketKeyboard
 {
-	_int8 version;
-	_int8 type;
-	_int32 sequence;
-	_int8 controllerID;
-	_int16 keycode;
-	_int8 keyEvent;
+	uint8_t version;
+	uint8_t type;
+	uint32_t sequence;
+	uint8_t controllerID;
+	uint16_t keycode;
+	uint8_t keyEvent;
 };
 
 struct PacketMouse
 {
-	_int8 version;
-	_int8 type;
-	_int32 sequence;
-	_int8 controllerID;
-	_int8 button;
-	_int8 mouseEvent;
+	uint8_t version;
+	uint8_t type;
+	uint32_t sequence;
+	uint8_t controllerID;
+	uint8_t button;
+	uint8_t mouseEvent;
 };
 
 struct PacketQuit
 {
-	_int8 version;
-	_int8 type;
-	_int32 sequence;
-	_int8 controllerID;
+	uint8_t version;
+	uint8_t type;
+	uint32_t sequence;
+	uint8_t controllerID;
 };
