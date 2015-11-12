@@ -3,6 +3,68 @@ import struct
 import pygame, time
 from pygame.locals import * 
 
+ASCII_TO_UE_KEYCODE = {8: 12, #Backspace
+                       9: 13, # Tab
+                       13: 14, # Enter
+                       27: 17, # Escape
+                       32: 18, # Space
+                       ord('0'): 29, 
+                       ord('1'): 30,
+                       ord('2'): 31,
+                       ord('3'): 32,
+                       ord('4'): 33,
+                       ord('5'): 34,
+                       ord('6'): 35, 
+                       ord('7'): 36, 
+                       ord('8'): 37, 
+                       ord('9'): 38, 
+                       ord('a'): 39, 
+                       ord('b'): 40,
+                       ord('c'): 41,
+                       ord('d'): 42, 
+                       ord('e'): 43,
+                       ord('f'): 44,
+                       ord('g'): 45, 
+                       ord('h'): 46,
+                       ord('i'): 47,
+                       ord('j'): 48, 
+                       ord('k'): 49,
+                       ord('l'): 50,
+                       ord('m'): 51, 
+                       ord('n'): 52,
+                       ord('o'): 53,
+                       ord('p'): 54, 
+                       ord('q'): 55,
+                       ord('r'): 56,
+                       ord('s'): 57, 
+                       ord('t'): 58,
+                       ord('u'): 59,
+                       ord('v'): 60, 
+                       ord('w'): 61,
+                       ord('x'): 62,
+                       ord('y'): 63, 
+                       ord('z'): 64,
+                       282: 80, # F1
+                       283: 81, # F2
+                       284: 82,
+                       285: 83,
+                       286: 84,
+                       287: 85,
+                       288: 86,
+                       289: 87,
+                       290: 88, #F9
+                       291: 89,
+                       292: 90, #F11
+                       293: 91,
+                       301: 16, # Caps Lock
+                       303: 95, # Right Shift
+                       304: 94, # Left Shift
+                       305: 97, # Right Ctrl
+                       306: 96, # Left Ctrl
+                       307: 99, # Right Alt
+                       308: 98 # Left Alt
+                       }
+
 """
 8bit Version (Currently use 0)
 8bit Type : (Keyboard (0), Mouse (1), Gamepad, etc
@@ -13,7 +75,7 @@ from pygame.locals import *
 """
 
 def main():
-    PACKET_FORMAT = "=BBIBIBB"
+    PACKET_FORMAT = "=BBIBIB"
     UDP_IP = "127.0.0.1"
     UDP_PORT = 55555
     VERSION = 0
@@ -38,9 +100,14 @@ def main():
 
     while isRunning:
         event = pygame.event.wait() # program will sleep if there are no events in the queue
+        #try:
+        #    print event
+       # except:
+       #     pass
         if (event.type == KEYUP or event.type == KEYDOWN):
-            if (event.type == KEYDOWN and len(event.unicode) > 0):
-                data = (VERSION, TYPE, sequence, CONTROLLER_ID, event.key, event.type, ord(event.unicode))
+            if (event.type == KEYDOWN):
+                data = (VERSION, TYPE, sequence, CONTROLLER_ID, ASCII_TO_UE_KEYCODE[event.key], event.type)
+                print(ASCII_TO_UE_KEYCODE[event.key])
                 message = struct.pack(PACKET_FORMAT, *data)
                 print(message)
                 sock.sendto(message, (UDP_IP, UDP_PORT))
