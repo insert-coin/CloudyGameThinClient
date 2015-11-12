@@ -127,8 +127,8 @@ int main(int argc, char* args[]) {
 	const int PacketSize = 32;
 	string playerControllerID;
 
-	Address TargetEngineAddress = Address(127, 0, 0, 1, 9999); // 127.0.0.1:55555
-	Address TargetCloudyServerAddress = Address(127, 0, 0, 1, 30000); // 127.0.0.1:55555
+	Address TargetEngineAddress = Address(127, 0, 0, 1, 55555); // 127.0.0.1:55555
+	//Address TargetCloudyServerAddress = Address(127, 0, 0, 1, 30000); // 127.0.0.1:55555
 
 	// =======================
 	// Initialize sockets

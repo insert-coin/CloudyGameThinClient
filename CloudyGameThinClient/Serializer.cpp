@@ -33,6 +33,10 @@ unsigned char * serialize_char(unsigned char *buffer, char value)
 
 unsigned char * serialize_PacketKeyboard(unsigned char *buffer, struct PacketKeyboard *value)
 {
+	buffer = serialize_int8(buffer, value->version);
+	buffer = serialize_int8(buffer, value->type);
+	buffer = serialize_int32(buffer, value->sequence);
+	buffer = serialize_int8(buffer, value->controllerID);
 	buffer = serialize_int16(buffer, value->keycode);
 	buffer = serialize_int8(buffer, value->keyEvent);
 
