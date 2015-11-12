@@ -1,5 +1,6 @@
 import socket
 import struct
+import string
 import pygame, time
 from pygame.locals import * 
 
@@ -65,6 +66,9 @@ ASCII_TO_UE_KEYCODE = {8: 12, #Backspace
                        308: 98 # Left Alt
                        }
 
+for i in string.ascii_lowercase:
+    ASCII_TO_UE_KEYCODE[ord(i)] = ord(i) - 32
+
 """
 8bit Version (Currently use 0)
 8bit Type : (Keyboard (0), Mouse (1), Gamepad, etc
@@ -105,13 +109,12 @@ def main():
        # except:
        #     pass
         if (event.type == KEYUP or event.type == KEYDOWN):
-            if (event.type == KEYDOWN):
-                data = (VERSION, TYPE, sequence, CONTROLLER_ID, ASCII_TO_UE_KEYCODE[event.key], event.type)
-                print(ASCII_TO_UE_KEYCODE[event.key])
-                message = struct.pack(PACKET_FORMAT, *data)
-                print(message)
-                sock.sendto(message, (UDP_IP, UDP_PORT))
-                sequence += 1
+            data = (VERSION, TYPE, sequence, CONTROLLER_ID, ASCII_TO_UE_KEYCODE[event.key], event.type)
+            print(event.key, '=>', ASCII_TO_UE_KEYCODE[event.key])
+            message = struct.pack(PACKET_FORMAT, *data)
+            print(message)
+            sock.sendto(message, (UDP_IP, UDP_PORT))
+            sequence += 1
         if (event.type == MOUSEMOTION):
             x, y = pygame.mouse.get_rel()
         if (event.type == MOUSEBUTTONDOWN or event.type == MOUSEBUTTONUP):
