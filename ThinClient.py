@@ -107,6 +107,7 @@ def main():
 
     while isRunning:
         event = pygame.event.wait() # program will sleep if there are no events in the queue
+        UEKeyCode = 0
         #try:
         #    print event
         #except:
@@ -114,9 +115,10 @@ def main():
         if (event.type == KEYUP or event.type == KEYDOWN):
             UEKeyCode = ASCII_TO_UE_KEYCODE.get(event.key)
             print('ASCII Key is:', event.key)
+            
             if (UEKeyCode > 0):
-                data = (VERSION, TYPE, sequence, CONTROLLER_ID, ASCII_TO_UE_KEYCODE[event.key], event.type)
-                print(event.key, '=>', ASCII_TO_UE_KEYCODE[event.key])
+                data = (VERSION, TYPE, sequence, CONTROLLER_ID, UEKeyCode, event.type)
+                print(event.key, '=>', UEKeyCode)
                 message = struct.pack(PACKET_FORMAT, *data)
                 print(message)
                 sock.sendto(message, (UDP_IP, UDP_PORT))
@@ -131,6 +133,14 @@ def main():
                 UEKeyCode = 4
             elif (rightMouseButton == 1):
                 UEKeyCode = 2
+                
+            if (UEKeyCode > 0):    
+                data = (VERSION, TYPE, sequence, CONTROLLER_ID, UEKeyCode, event.type)
+                print(pygame.mouse.get_pressed(), '=>', UEKeyCode)
+                message = struct.pack(PACKET_FORMAT, *data)
+                print(message)
+                sock.sendto(message, (UDP_IP, UDP_PORT))
+                sequence += 1
         if (event.type == QUIT):
             isRunning = False
     
