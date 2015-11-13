@@ -12,10 +12,23 @@ ASCII_TO_UE_KEYCODE = {
    27: 27, # Escape
    32: 32, # Space
    44: 44, # Comma
+   46: 46, # Period
    47: 47, # Forward Slash
    59: 59, # Semicolon
    61: 61, # Equals
    93: 93, # Right square bracket
+}
+
+# Maps from ASCII 97-122 to UE KeyCode 65-90
+for i in string.ascii_lowercase:
+    ASCII_TO_UE_KEYCODE[ord(i)] = ord(i) - 32
+    
+# Maps from ASCII 48-57 to UE KeyCode 48-57
+# Keyboard number keys 0-9
+for i in range(48, 58): 
+    ASCII_TO_UE_KEYCODE[chr(i)] = chr(i)
+    
+ASCII_TO_UE_CHARCODE = {
    127: 46, # Delete
    256: 96, # NumPad 0
    257: 97, # NumPad 1
@@ -64,15 +77,6 @@ ASCII_TO_UE_KEYCODE = {
    308: 164 # Left Alt
 }
 
-# Maps from ASCII 97-122 to UE KeyCode 65-90
-for i in string.ascii_lowercase:
-    ASCII_TO_UE_KEYCODE[ord(i)] = ord(i) - 32
-    
-# Maps from ASCII 48-57 to UE KeyCode 48-57
-# Keyboard number keys 0-9
-for i in range(48, 58): 
-    ASCII_TO_UE_KEYCODE[chr(i)] = chr(i)
-
 """
 8bit Version (Currently use 0)
 8bit Type : (Keyboard (0), Mouse (1), Gamepad, etc
@@ -114,8 +118,11 @@ def main():
         #except:
         #    pass
         if (event.type == KEYUP or event.type == KEYDOWN):
-            UEKeyCode = ASCII_TO_UE_KEYCODE.get(event.key)
             print('ASCII Key is:', event.key)
+            if (event.type > 126):
+                UEKeyCode = ASCII_TO_UE_CHARCODE.get(event.key)
+            else:
+                UEKeyCode = ASCII_TO_UE_KEYCODE.get(event.key)
             
             if (UEKeyCode > 0):
                 data = (VERSION, TYPE, sequence, CONTROLLER_ID, UEKeyCode, event.type)
