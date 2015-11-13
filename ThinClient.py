@@ -5,17 +5,16 @@ import pygame, time
 from pygame.locals import * 
 
 ASCII_TO_UE_KEYCODE = {
-   8: 8, # Backspace
-   9: 9, # Tab
-   13: 13, # Enter
-   19: 19, # Pause Break
-   27: 27, # Escape
    32: 32, # Space
+   39: 39, # Quote
    44: 44, # Comma
+   45: 45, # Hyphen
    46: 46, # Period
    47: 47, # Forward Slash
    59: 59, # Semicolon
    61: 61, # Equals
+   91: 91, # Left square bracket
+   92: 92, # Backslash
    93: 93, # Right square bracket
 }
 
@@ -29,6 +28,11 @@ for i in range(48, 58):
     ASCII_TO_UE_KEYCODE[chr(i)] = chr(i)
     
 ASCII_TO_UE_CHARCODE = {
+   8: 8, # Backspace
+   9: 9, # Tab
+   13: 13, # Enter
+   19: 19, # Pause Break
+   27: 27, # Escape
    127: 46, # Delete
    256: 96, # NumPad 0
    257: 97, # NumPad 1
@@ -74,7 +78,8 @@ ASCII_TO_UE_CHARCODE = {
    305: 163, # Right Ctrl
    306: 162, # Left Ctrl
    307: 165, # Right Alt
-   308: 164 # Left Alt
+   308: 164, # Left Alt
+   311: 91 # WinKey/Left Command
 }
 
 """
@@ -95,7 +100,6 @@ def main():
     sequence = 0
     CONTROLLER_ID = 0
 
-
     print("UDP target IP:", UDP_IP)
     print("UDP target port:", UDP_PORT)
 
@@ -113,17 +117,14 @@ def main():
     while isRunning:
         event = pygame.event.wait() # program will sleep if there are no events in the queue
         UEKeyCode = 0
-        #try:
-        #    print event
-        #except:
-        #    pass
+
         if (event.type == KEYUP or event.type == KEYDOWN):
             print('ASCII Key is:', event.key)
-            if (event.type > 126):
-                UEKeyCode = ASCII_TO_UE_CHARCODE.get(event.key)
-            else:
+            if (event.key < 127 and event.key > 31):
                 UEKeyCode = ASCII_TO_UE_KEYCODE.get(event.key)
-            
+            else:
+                UEKeyCode = ASCII_TO_UE_CHARCODE.get(event.key)
+                           
             if (UEKeyCode > 0):
                 data = (VERSION, TYPE, sequence, CONTROLLER_ID, UEKeyCode, event.type)
                 print(event.key, '=>', UEKeyCode)
