@@ -33,6 +33,7 @@ ASCII_TO_UE_CHARCODE = {
    13: 13, # Enter
    19: 19, # Pause Break
    27: 27, # Escape
+   32: 32, # Space
    127: 46, # Delete
    256: 96, # NumPad 0
    257: 97, # NumPad 1
@@ -84,57 +85,71 @@ ASCII_TO_UE_CHARCODE = {
 
 """
 8bit Version (Currently use 0)
-8bit Type : (Keyboard (0), Mouse (1), Gamepad, etc
+8bit Device Type : (Keyboard (0), Mouse (1), Gamepad, etc.)
 32bit Sequence (counter for event)
 8bit ControllerID (start from 0)
-16bit KeyCode (A, B, , Z, 0, ... ,9, F1, ..., F12, etc)
-8bit Event (Key Down, Key Up)
+16bit KeyCode (A, B, , Z, 0, ... ,9, F1, ..., F12, etc.)
+8bit Event (Key Down (2), Key Up (3))
+8bit KeyType Flag (KeyCode (0), CharCode (1))
 """
 
-def main():
-    PACKET_FORMAT = "=BBIBIB"
-    UDP_IP = "127.0.0.1"
-    UDP_PORT = 55555
-    VERSION = 0
-    TYPE = 1
-    sequence = 0
-    CONTROLLER_ID = 0
+PACKET_FORMAT = "=BBIBIBB"
+UDP_IP = "127.0.0.1"
+UDP_PORT = 55555
+VERSION = 0
+CONTROLLER_ID = 0
 
+def packAndSend(deviceType, sequence, UEKeyCode, eventType, keyType, socketName):
+    data = (VERSION, deviceType, sequence, CONTROLLER_ID, UEKeyCode, eventType, keyType)
+    message = struct.pack(PACKET_FORMAT, *data)
+    print(message)
+    socketName.sendto(message, (UDP_IP, UDP_PORT))
+    sequence += 1 
+    return sequence
+    
+def initializePygame():
+    pygame.init()
+    screen = pygame.display.set_mode((640, 480))
+    pygame.display.set_caption('Remote Keyboard')
+    pygame.mouse.set_visible(True)
+    pygame.key.set_repeat(33, 33) # 1 input per frame (assuming 30 FPS)
+
+def main():
+    sequence = 0
     print("UDP target IP:", UDP_IP)
     print("UDP target port:", UDP_PORT)
 
     sock = socket.socket(socket.AF_INET, # Internet
                          socket.SOCK_DGRAM) # UDP
 
-    pygame.init()
-    screen = pygame.display.set_mode((640, 480))
-    pygame.display.set_caption('Remote Keyboard')
-    pygame.mouse.set_visible(True)
-    
+    initializePygame()
     isRunning = True
-    pygame.key.set_repeat(33, 33) # 1 input per frame (assuming 30 FPS)
 
     while isRunning:
         event = pygame.event.wait() # program will sleep if there are no events in the queue
-        UEKeyCode = 0
+        UEKeyCode = -1
+        keyType = -1
+        deviceType = -1
 
         if (event.type == KEYUP or event.type == KEYDOWN):
+            deviceType = 0
             print('ASCII Key is:', event.key)
             if (event.key < 127 and event.key > 31):
                 UEKeyCode = ASCII_TO_UE_KEYCODE.get(event.key)
+                keyType = 0
             else:
                 UEKeyCode = ASCII_TO_UE_CHARCODE.get(event.key)
+                keyType = 1
                            
             if (UEKeyCode > 0):
-                data = (VERSION, TYPE, sequence, CONTROLLER_ID, UEKeyCode, event.type)
+                sequence = packAndSend(deviceType, sequence, UEKeyCode, event.type, keyType, sock)
                 print(event.key, '=>', UEKeyCode)
-                message = struct.pack(PACKET_FORMAT, *data)
-                print(message)
-                sock.sendto(message, (UDP_IP, UDP_PORT))
-                sequence += 1
         if (event.type == MOUSEMOTION):
+            deviceType = 1
             x, y = pygame.mouse.get_rel()
         if (event.type == MOUSEBUTTONDOWN or event.type == MOUSEBUTTONUP):
+            deviceType = 0 # UE4 takes mouse button as key input event
+            keyType = 1
             leftMouseButton, middleMouseButton, rightMouseButton = pygame.mouse.get_pressed()
             if (leftMouseButton == 1):
                 UEKeyCode = 1
@@ -144,12 +159,8 @@ def main():
                 UEKeyCode = 2
                 
             if (UEKeyCode > 0):    
-                data = (VERSION, TYPE, sequence, CONTROLLER_ID, UEKeyCode, event.type)
+                sequence = packAndSend(deviceType, sequence, UEKeyCode, event.type, keyType, sock)
                 print(pygame.mouse.get_pressed(), '=>', UEKeyCode)
-                message = struct.pack(PACKET_FORMAT, *data)
-                print(message)
-                sock.sendto(message, (UDP_IP, UDP_PORT))
-                sequence += 1
         if (event.type == QUIT):
             isRunning = False
     
