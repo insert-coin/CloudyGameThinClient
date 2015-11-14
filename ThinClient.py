@@ -88,19 +88,19 @@ ASCII_TO_UE_CHARCODE = {
 8bit Device Type : (Keyboard (0), Mouse (1), Gamepad, etc.)
 32bit Sequence (counter for event)
 8bit ControllerID (start from 0)
-16bit KeyCode (A, B, , Z, 0, ... ,9, F1, ..., F12, etc.)
+32bit UEKeyCode (A, B, , Z, 0, ... ,9, F1, ..., F12, etc.)
+32bit UECharCode (A, B, , Z, 0, ... ,9, F1, ..., F12, etc.)
 8bit Event (Key Down (2), Key Up (3))
-8bit KeyType Flag (KeyCode (0), CharCode (1))
 """
 
-PACKET_FORMAT = "=BBIBIBB"
+PACKET_FORMAT = "=BBIBIIB"
 UDP_IP = "127.0.0.1"
 UDP_PORT = 55555
 VERSION = 0
 CONTROLLER_ID = 0
 
-def packAndSend(deviceType, sequence, UEKeyCode, eventType, keyType, socketName):
-    data = (VERSION, deviceType, sequence, CONTROLLER_ID, UEKeyCode, eventType, keyType)
+def packAndSend(deviceType, sequence, UEKeyCode, UECharCode, eventType, socketName):
+    data = (VERSION, deviceType, sequence, CONTROLLER_ID, UEKeyCode, UECharCode, eventType)
     message = struct.pack(PACKET_FORMAT, *data)
     print(message)
     socketName.sendto(message, (UDP_IP, UDP_PORT))
@@ -127,43 +127,35 @@ def main():
 
     while isRunning:
         event = pygame.event.wait() # program will sleep if there are no events in the queue
-        UEKeyCode = -1
-        keyType = -1
-        deviceType = -1
 
         if (event.type == KEYUP or event.type == KEYDOWN):
             deviceType = 0
             print('ASCII Key is:', event.key)
-            if (event.key < 127 and event.key > 31):
-                UEKeyCode = ASCII_TO_UE_KEYCODE.get(event.key)
-                keyType = 0
-            else:
-                UEKeyCode = ASCII_TO_UE_CHARCODE.get(event.key)
-                keyType = 1
-                           
-            if (UEKeyCode > 0):
-                sequence = packAndSend(deviceType, sequence, UEKeyCode, event.type, keyType, sock)
-                print(event.key, '=>', UEKeyCode)
+            UEKeyCode = ASCII_TO_UE_KEYCODE.get(event.key, 0)
+            UECharCode = ASCII_TO_UE_CHARCODE.get(event.key, UEKeyCode)
+            UEKeyCode = UECharCode or UEKeyCode
+            print(UEKeyCode, UECharCode)
+            sequence = packAndSend(deviceType, sequence, UEKeyCode, UECharCode, event.type, sock)
+            print(event.key, '=>', UEKeyCode)
+
         if (event.type == MOUSEMOTION):
             deviceType = 1
             x, y = pygame.mouse.get_rel()
         if (event.type == MOUSEBUTTONDOWN or event.type == MOUSEBUTTONUP):
             deviceType = 0 # UE4 takes mouse button as key input event
-            keyType = 1
             leftMouseButton, middleMouseButton, rightMouseButton = pygame.mouse.get_pressed()
             if (leftMouseButton == 1):
-                UEKeyCode = 1
+                UECharCode = 1
             elif (middleMouseButton == 1):
-                UEKeyCode = 4
+                UECharCode = 4
             elif (rightMouseButton == 1):
-                UEKeyCode = 2
-                
-            if (UEKeyCode > 0):    
-                if (event.type == MOUSEBUTTONDOWN):
-                    sequence = packAndSend(deviceType, sequence, UEKeyCode, 2, keyType, sock)
-                elif (event.type == MOUSEBUTTONUP):
-                    sequence = packAndSend(deviceType, sequence, UEKeyCode, 3, keyType, sock)
-                print(pygame.mouse.get_pressed(), '=>', UEKeyCode)
+                UECharCode = 2
+            UEKeyCode = UECharCode
+            if (event.type == MOUSEBUTTONDOWN):
+                sequence = packAndSend(deviceType, sequence, UEKeyCode, UECharCode, 2, sock)
+            elif (event.type == MOUSEBUTTONUP):
+                sequence = packAndSend(deviceType, sequence, UEKeyCode, UECharCode, 3, sock)
+            print(pygame.mouse.get_pressed(), '=>', UEKeyCode)
         if (event.type == QUIT):
             isRunning = False
     
