@@ -159,7 +159,10 @@ def main():
                 UEKeyCode = 2
                 
             if (UEKeyCode > 0):    
-                sequence = packAndSend(deviceType, sequence, UEKeyCode, event.type, keyType, sock)
+                if (event.type == MOUSEBUTTONDOWN):
+                    sequence = packAndSend(deviceType, sequence, UEKeyCode, 2, keyType, sock)
+                elif (event.type == MOUSEBUTTONUP):
+                    sequence = packAndSend(deviceType, sequence, UEKeyCode, 3, keyType, sock)
                 print(pygame.mouse.get_pressed(), '=>', UEKeyCode)
         if (event.type == QUIT):
             isRunning = False
