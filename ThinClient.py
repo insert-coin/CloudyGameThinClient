@@ -25,7 +25,7 @@ for i in string.ascii_lowercase:
 # Maps from ASCII 48-57 to UE KeyCode 48-57
 # Keyboard number keys 0-9
 for i in range(48, 58): 
-    ASCII_TO_UE_KEYCODE[chr(i)] = chr(i)
+    ASCII_TO_UE_KEYCODE[i] = i
     
 ASCII_TO_UE_CHARCODE = {
    8: 8, # Backspace
@@ -50,6 +50,7 @@ ASCII_TO_UE_CHARCODE = {
    268: 106, # NumPad Multiply
    269: 109, # NumPad Subtract
    270: 107, # NumPad Add
+   271: 13, # NumPad Enter
    273: 38, # Arrow Up
    274: 40, # Arrow Down
    275: 39, # Arrow Right
@@ -88,8 +89,8 @@ ASCII_TO_UE_CHARCODE = {
 8bit Device Type : (Keyboard (0), Mouse (1), Gamepad, etc.)
 32bit Sequence (counter for event)
 8bit ControllerID (start from 0)
-32bit UEKeyCode (A, B, , Z, 0, ... ,9, F1, ..., F12, etc.)
-32bit UECharCode (A, B, , Z, 0, ... ,9, F1, ..., F12, etc.)
+32bit UEKeyCode (A, B, , Z, 0, ... ,9, punctuation, etc.)
+32bit UECharCode (F1, ..., F12, Ctrl, Alt, Numpad, etc.)
 8bit Event (Key Down (2), Key Up (3))
 """
 
@@ -128,12 +129,12 @@ def main():
     while isRunning:
         event = pygame.event.wait() # program will sleep if there are no events in the queue
 
-        if (event.type == KEYUP or event.type == KEYDOWN):
+        if (event.type == KEYDOWN or event.type == KEYUP):
             deviceType = 0
             print('ASCII Key is:', event.key)
             UEKeyCode = ASCII_TO_UE_KEYCODE.get(event.key, 0)
             UECharCode = ASCII_TO_UE_CHARCODE.get(event.key, UEKeyCode)
-            UEKeyCode = UECharCode or UEKeyCode
+            UEKeyCode = UECharCode or UEKeyCode # This code is redundant. It changes nothing.
             print(UEKeyCode, UECharCode)
             sequence = packAndSend(deviceType, sequence, UEKeyCode, UECharCode, event.type, sock)
             print(event.key, '=>', UEKeyCode)
