@@ -98,10 +98,9 @@ PACKET_FORMAT = "=BBIBIIB"
 UDP_IP = "127.0.0.1"
 UDP_PORT = 55555
 VERSION = 0
-CONTROLLER_ID = 0
 
-def packAndSend(deviceType, sequence, UEKeyCode, UECharCode, eventType, socketName):
-    data = (VERSION, deviceType, sequence, CONTROLLER_ID, UEKeyCode, UECharCode, eventType)
+def packAndSend(deviceType, sequence, controllerID, UEKeyCode, UECharCode, eventType, socketName):
+    data = (VERSION, deviceType, sequence, controllerID, UEKeyCode, UECharCode, eventType)
     message = struct.pack(PACKET_FORMAT, *data)
     print(message)
     socketName.sendto(message, (UDP_IP, UDP_PORT))
@@ -115,7 +114,7 @@ def initializePygame():
     pygame.mouse.set_visible(True)
     pygame.key.set_repeat(33, 33) # 1 input per frame (assuming 30 FPS)
 
-def main():
+def startClient(playerControllerID):
     sequence = 0
     print("UDP target IP:", UDP_IP)
     print("UDP target port:", UDP_PORT)
@@ -136,7 +135,7 @@ def main():
             UECharCode = ASCII_TO_UE_CHARCODE.get(event.key, UEKeyCode)
             UEKeyCode = UECharCode or UEKeyCode # This code is redundant. It changes nothing.
             print(UEKeyCode, UECharCode)
-            sequence = packAndSend(deviceType, sequence, UEKeyCode, UECharCode, event.type, sock)
+            sequence = packAndSend(deviceType, sequence, playerControllerID, UEKeyCode, UECharCode, event.type, sock)
             print(event.key, '=>', UEKeyCode)
 
         if (event.type == MOUSEMOTION):
@@ -153,14 +152,17 @@ def main():
                 UECharCode = 2
             UEKeyCode = UECharCode
             if (event.type == MOUSEBUTTONDOWN):
-                sequence = packAndSend(deviceType, sequence, UEKeyCode, UECharCode, 2, sock)
+                sequence = packAndSend(deviceType, sequence, playerControllerID, UEKeyCode, UECharCode, 2, sock)
             elif (event.type == MOUSEBUTTONUP):
-                sequence = packAndSend(deviceType, sequence, UEKeyCode, UECharCode, 3, sock)
+                sequence = packAndSend(deviceType, sequence, playerControllerID, UEKeyCode, UECharCode, 3, sock)
             print(pygame.mouse.get_pressed(), '=>', UEKeyCode)
         if (event.type == QUIT):
             isRunning = False
     
     pygame.quit()
 
+def main():
+    startClient(0)
+    
 if __name__ == '__main__':
     main()
