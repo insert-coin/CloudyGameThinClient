@@ -22,14 +22,14 @@ import thin_client
 JOIN = "join"
 QUIT = "quit"
 EXIT = "exit"
-COMMANDS = "Commands: \n" + \
-           "connect and join user -- join <username> \n" + \
-           "connect and quit user -- quit <username> \n" + \
-           "exit cloudy_launcher  -- exit \n"
+COMMANDS = """
+Commands:
+  connect and join user -- join <username>
+  connect and quit user -- quit <username>
+  exit cloudy_launcher  -- exit
+"""
 
-
-if __name__ == "__main__":
-
+def main():
     ## to connect with CloudyPanel
     TCP_IP = "127.0.0.1"
     TCP_PORT = 55550
@@ -45,7 +45,7 @@ if __name__ == "__main__":
         if (playerInput == EXIT):
             break
 
-        elif ((len(playerInput.split()) == 0) | (len(playerInput.split()) != 2)):
+        elif (len(playerInput.split()) != 2):
             print("Invalid command.\n")
             print(COMMANDS)
 
@@ -53,7 +53,7 @@ if __name__ == "__main__":
             
             MESSAGE = playerInput
             MESSAGE_BYTE = MESSAGE.encode("utf-8")
-            print(MESSAGE)
+            print("Message to send: " + MESSAGE)
 
             try:
                 cpsocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -70,7 +70,7 @@ if __name__ == "__main__":
 
                 else:
                     print(response)
-                    print("\n")
+                    print()
             
             except socket.error as error:
                 print(os.strerror(error.errno));
@@ -78,8 +78,7 @@ if __name__ == "__main__":
             finally:
                 cpsocket.close()
 
-
-        elif (playerInput.split(' ')[0] == QUIT):
+        elif (playerInput.split()[0] == QUIT):
 
             MESSAGE = playerInput
             MESSAGE_BYTE = MESSAGE.encode("utf-8")
@@ -103,8 +102,9 @@ if __name__ == "__main__":
             finally:
                 cpsocket.close()
 
-
         else:
-                
             print("Invalid command.\n")
 
+if __name__ == "__main__":
+    main()
+    
