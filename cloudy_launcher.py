@@ -18,6 +18,10 @@ import errno
 import os
 import thin_client
 
+## to connect with CloudyPanel
+TCP_IP = "127.0.0.1"
+TCP_PORT = 55550
+BUFFER_SIZE = 1024
 
 JOIN = "join"
 QUIT = "quit"
@@ -29,11 +33,67 @@ Commands:
   exit cloudy_launcher  -- exit
 """
 
+def joinGame(playerInput):
+    MESSAGE = playerInput
+    MESSAGE_BYTE = MESSAGE.encode("utf-8")
+    print("Message to send: " + MESSAGE)
+
+    try:
+        cpsocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        cpsocket.connect((TCP_IP, TCP_PORT))
+
+        cpsocket.sendall(MESSAGE_BYTE)
+        response = cpsocket.recv(BUFFER_SIZE)
+        response = response.decode("utf-8")
+        print(response)
+
+        if (response.isdigit()):
+            print("open process to launch thin client with controllerid '" + str(response) + "'\n")
+            thin_client.startClient(int(response))
+
+        else:
+            print(response)
+            print()
+    
+    except socket.error as error:
+        print(os.strerror(error.errno));
+
+    finally:
+        cpsocket.close()
+
+def quitGame(playerInput):
+    MESSAGE = playerInput
+    MESSAGE_BYTE = MESSAGE.encode("utf-8")
+
+    try:
+        cpsocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        cpsocket.connect((TCP_IP, TCP_PORT))
+
+        cpsocket.sendall(MESSAGE_BYTE)
+        response = cpsocket.recv(BUFFER_SIZE)
+        response = response.decode("utf-8")
+
+        if (response == "done"):
+            print("quit game successful.\n")
+        else:
+            print("quit game unsuccessful.\n")
+
+    except socket.error as error:
+        print(os.strerror(error.errno));
+
+    finally:
+        cpsocket.close()
+
+def exitLauncher(playerInput):
+    quit()
+
+cmd_mapping = {
+JOIN: joinGame,
+QUIT: quitGame,
+EXIT: exitLauncher
+}
+
 def main():
-    ## to connect with CloudyPanel
-    TCP_IP = "127.0.0.1"
-    TCP_PORT = 55550
-    BUFFER_SIZE = 1024
 
     print(COMMANDS)
     
@@ -41,69 +101,19 @@ def main():
 
         playerInput = input("Enter command: ")
         print(playerInput)
+        inputParams = playerInput.split()
 
-        if (playerInput == EXIT):
-            break
+        try:
+            command = inputParams[0]
+            cmd_mapping[command](playerInput)
 
-        elif (len(playerInput.split()) != 2):
-            print("Invalid command.\n")
+        except IndexError:
+            # nothing entered, continue
+            pass
+        
+        except KeyError:
+            print("Invalid command.")
             print(COMMANDS)
-
-        elif (playerInput.split()[0] == JOIN):
-            
-            MESSAGE = playerInput
-            MESSAGE_BYTE = MESSAGE.encode("utf-8")
-            print("Message to send: " + MESSAGE)
-
-            try:
-                cpsocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                cpsocket.connect((TCP_IP, TCP_PORT))
-
-                cpsocket.sendall(MESSAGE_BYTE)
-                response = cpsocket.recv(BUFFER_SIZE)
-                response = response.decode("utf-8")
-                print(response)
-
-                if (response.isdigit()):
-                    print("open process to launch thin client with controllerid '" + str(response) + "'\n")
-                    thin_client.startClient(int(response))
-
-                else:
-                    print(response)
-                    print()
-            
-            except socket.error as error:
-                print(os.strerror(error.errno));
-
-            finally:
-                cpsocket.close()
-
-        elif (playerInput.split()[0] == QUIT):
-
-            MESSAGE = playerInput
-            MESSAGE_BYTE = MESSAGE.encode("utf-8")
-
-            try:
-                cpsocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                cpsocket.connect((TCP_IP, TCP_PORT))
-
-                cpsocket.sendall(MESSAGE_BYTE)
-                response = cpsocket.recv(BUFFER_SIZE)
-                response = response.decode("utf-8")
-
-                if (response == "done"):
-                    print("quit game successful.\n")
-                else:
-                    print("quit game unsuccessful.\n")
-
-            except socket.error as error:
-                print(os.strerror(error.errno));
-
-            finally:
-                cpsocket.close()
-
-        else:
-            print("Invalid command.\n")
 
 if __name__ == "__main__":
     main()
