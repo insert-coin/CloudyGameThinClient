@@ -1,7 +1,9 @@
 import socket
 import struct
 import string
-import pygame, time
+import pygame
+import cv2
+import numpy
 from pygame.locals import * 
 
 ASCII_TO_UE_KEYCODE = {
@@ -98,6 +100,8 @@ PACKET_FORMAT = "=BBIBIIB"
 UDP_IP = "127.0.0.1"
 UDP_PORT = 55555
 VERSION = 0
+RESO_WIDTH = 640
+RESO_HEIGHT = 480
 
 def packAndSend(deviceType, sequence, controllerID, UEKeyCode, UECharCode, eventType, socketName):
     data = (VERSION, deviceType, sequence, controllerID, UEKeyCode, UECharCode, eventType)
@@ -107,13 +111,64 @@ def packAndSend(deviceType, sequence, controllerID, UEKeyCode, UECharCode, event
     sequence += 1 
     return sequence
     
-def initializePygame():
+def initializePygame(FPS):
     pygame.init()
-    screen = pygame.display.set_mode((640, 480))
+    screen = pygame.display.set_mode((RESO_WIDTH, RESO_HEIGHT))
     pygame.display.set_caption('Remote Keyboard')
     pygame.mouse.set_visible(True)
-    pygame.key.set_repeat(33, 33) # 1 input per frame (assuming 30 FPS)
+    frameInterval = int((1/FPS)*1000)
+    pygame.key.set_repeat(frameInterval, frameInterval) # 1 input per frame (assuming 30 FPS)
+    return screen 
+    
+# Reads the capture object and transforms it into a pygame readable image
+def getStreamFrame(captureObject, scale):
+    retval, frame = captureObject.read()
+    frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+    frame = numpy.flipud(numpy.rot90(frame))
+    frame = cv2.resize(frame, (0, 0), fx=scale, fy=scale)  # Makes the image smaller so you can see everything in imshow
+    frame = pygame.surfarray.make_surface(frame)
+    return frame    
 
+# Scale up or down the received stream to fit the window
+def getScaleFactor(captureObject):
+    frameWidth = int(captureObject.get(3))
+    frameHeight = int(captureObject.get(4))
+    widthScale = RESO_WIDTH / frameWidth
+    heightScale = RESO_HEIGHT / frameHeight
+    if (widthScale < heightScale):
+        scale = widthScale
+        widthIsSmaller = True
+    else:
+        scale = heightScale
+        widthIsSmaller = False 
+        
+    return scale, widthIsSmaller
+
+# Offset to center the image in the window
+def getOffset(scale, widthIsSmaller, frameWidth, frameHeight):
+    if (widthIsSmaller):
+        frameHeight = frameHeight * scale
+        offset = (RESO_HEIGHT - frameHeight) / 2
+    else:
+        frameWidth = frameWidth * scale
+        offset = (RESO_WIDTH - frameWidth) / 2
+    
+    return offset
+
+def initializeStream():
+    # HTTP doesn't work
+    captureObject = cv2.VideoCapture('rtsp://wowzaec2demo.streamlock.net/vod/mp4:BigBuckBunny_115k.mov')
+    frameWidth = int(captureObject.get(3))
+    frameHeight = int(captureObject.get(4))
+    FPS = int(captureObject.get(5))
+    frameCount = int(captureObject.get(7))
+    
+    print("Frame width =", frameWidth)
+    print("Frame height =", frameHeight)
+    print("FPS =", FPS)
+    print("Frame count =", frameCount) 
+    return (captureObject, frameWidth, frameHeight, FPS)
+    
 def startClient(playerControllerID):
     sequence = 0
     print("UDP target IP:", UDP_IP)
@@ -122,11 +177,17 @@ def startClient(playerControllerID):
     sock = socket.socket(socket.AF_INET, # Internet
                          socket.SOCK_DGRAM) # UDP
 
-    initializePygame()
+    stream, frameWidth, frameHeight, FPS = initializeStream()
+    screen = initializePygame(FPS)
+    scale, widthIsSmaller = getScaleFactor(stream)
+    offset = getOffset(scale, widthIsSmaller, frameWidth, frameHeight)
     isRunning = True
 
     while isRunning:
-        event = pygame.event.wait() # program will sleep if there are no events in the queue
+        imgFrame = getStreamFrame(stream, scale)
+
+        #event = pygame.event.wait() # program will sleep if there are no events in the queue
+        event = pygame.event.poll() 
 
         if (event.type == KEYDOWN or event.type == KEYUP):
             deviceType = 0
@@ -158,7 +219,14 @@ def startClient(playerControllerID):
             print(pygame.mouse.get_pressed(), '=>', UEKeyCode)
         if (event.type == QUIT):
             isRunning = False
+        
+        if (widthIsSmaller):
+            screen.blit(imgFrame, (0, offset))
+        else:
+            screen.blit(imgFrame, (offset, 0))
+        pygame.display.flip()
     
+    stream.release()
     pygame.quit()
 
 def main():
