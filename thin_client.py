@@ -156,8 +156,11 @@ def getOffset(scale, widthIsSmaller, frameWidth, frameHeight):
     return offset
 
 def initializeStream():
-    # HTTP doesn't work
-    captureObject = cv2.VideoCapture('rtsp://wowzaec2demo.streamlock.net/vod/mp4:BigBuckBunny_115k.mov')
+    # Tested formats: rtmp, rtsp, http
+    # http://128.104.128.176:8080/udp/239.1.1.78:3078?live786
+    # rtmp://wowza-bnr.cdp.triple-it.nl/bnr/BNRstudio1 
+    # rtsp://wowzaec2demo.streamlock.net/vod/mp4:BigBuckBunny_115k.mov
+    captureObject = cv2.VideoCapture('http://128.104.128.176:8080/udp/239.1.1.78:3078?live786')
     frameWidth = int(captureObject.get(3))
     frameHeight = int(captureObject.get(4))
     FPS = int(captureObject.get(5))
