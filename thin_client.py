@@ -122,6 +122,14 @@ def initializePygame(FPS):
     frameInterval = int((1/FPS)*1000)
     pygame.key.set_repeat(frameInterval, frameInterval) # 1 input per frame
     
+    myFont = pygame.font.Font(None, 30)
+    label = myFont.render("Loading...", True, (255, 255, 255))
+    textRect = label.get_rect()
+    renderPosX = screen.get_rect().centerx - textRect.centerx
+    renderPosY = screen.get_rect().centery - textRect.centery
+    screen.blit(label, (renderPosX, renderPosY))
+    pygame.display.update()
+    
 # Taken from https://gist.github.com/smathot/1521059 with modifications
 def initializeStream():
     # Tested formats: rtmp, rtsp, http
