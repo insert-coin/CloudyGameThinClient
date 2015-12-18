@@ -102,6 +102,8 @@ UDP_PORT = 55555
 VERSION = 0
 RESO_WIDTH = 640
 RESO_HEIGHT = 480
+DEVICE_KEYBOARD = 0
+DEVICE_MOUSE = 1
 
 def packAndSend(deviceType, sequence, controllerID, UEKeyCode, UECharCode, eventType, socketName):
     data = (VERSION, deviceType, sequence, controllerID, UEKeyCode, UECharCode, eventType)
@@ -118,8 +120,7 @@ def initializePygame(FPS):
     pygame.mouse.set_visible(True)
     # pygame.event.set_grab(True) # confines the mouse cursor to the window
     frameInterval = int((1/FPS)*1000)
-    pygame.key.set_repeat(frameInterval, frameInterval) # 1 input per frame (assuming 30 FPS)
-    return screen 
+    pygame.key.set_repeat(frameInterval, frameInterval) # 1 input per frame
     
 # Taken from https://gist.github.com/smathot/1521059 with modifications
 def initializeStream():
@@ -168,7 +169,7 @@ def startClient(playerControllerID):
     sock = socket.socket(socket.AF_INET, # Internet
                          socket.SOCK_DGRAM) # UDP
 
-    initializePygame(30)#FPS)
+    initializePygame(30) #FPS
     initializeStream()
     isRunning = True
 
@@ -176,7 +177,7 @@ def startClient(playerControllerID):
         event = pygame.event.wait() # program will sleep if there are no events in the queue
 
         if (event.type == KEYDOWN or event.type == KEYUP):
-            deviceType = 0
+            deviceType = DEVICE_KEYBOARD
             print('ASCII Key is:', event.key)
             UEKeyCode = ASCII_TO_UE_KEYCODE.get(event.key, 0)
             UECharCode = ASCII_TO_UE_CHARCODE.get(event.key, UEKeyCode)
@@ -186,10 +187,10 @@ def startClient(playerControllerID):
             print(event.key, '=>', UEKeyCode)
 
         if (event.type == pygame.MOUSEMOTION):
-            deviceType = 1
+            deviceType = DEVICE_MOUSE
             x, y = pygame.mouse.get_rel()
         if (event.type == MOUSEBUTTONDOWN or event.type == MOUSEBUTTONUP):
-            deviceType = 0 # UE4 takes mouse button as key input event
+            deviceType = DEVICE_KEYBOARD # UE4 takes mouse button as key input event
             leftMouseButton, middleMouseButton, rightMouseButton = pygame.mouse.get_pressed()
             if (leftMouseButton == 1):
                 UECharCode = 1
@@ -197,6 +198,8 @@ def startClient(playerControllerID):
                 UECharCode = 4
             elif (rightMouseButton == 1):
                 UECharCode = 2
+            else:
+                UECharCode = 0
             UEKeyCode = UECharCode
             if (event.type == MOUSEBUTTONDOWN):
                 sequence = packAndSend(deviceType, sequence, playerControllerID, UEKeyCode, UECharCode, 2, sock)
