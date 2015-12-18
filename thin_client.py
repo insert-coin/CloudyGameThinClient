@@ -2,8 +2,8 @@ import socket
 import struct
 import string
 import pygame
-import cv2
-import numpy
+import vlc
+import sys
 from pygame.locals import * 
 
 ASCII_TO_UE_KEYCODE = {
@@ -116,61 +116,49 @@ def initializePygame(FPS):
     screen = pygame.display.set_mode((RESO_WIDTH, RESO_HEIGHT))
     pygame.display.set_caption('Remote Keyboard')
     pygame.mouse.set_visible(True)
+    # pygame.event.set_grab(True) # confines the mouse cursor to the window
     frameInterval = int((1/FPS)*1000)
     pygame.key.set_repeat(frameInterval, frameInterval) # 1 input per frame (assuming 30 FPS)
     return screen 
     
-# Reads the capture object and transforms it into a pygame readable image
-def getStreamFrame(captureObject, scale):
-    retval, frame = captureObject.read()
-    frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-    frame = numpy.flipud(numpy.rot90(frame))
-    frame = cv2.resize(frame, (0, 0), fx=scale, fy=scale)  # Makes the image smaller so you can see everything in imshow
-    frame = pygame.surfarray.make_surface(frame)
-    return frame    
-
-# Scale up or down the received stream to fit the window
-def getScaleFactor(captureObject):
-    frameWidth = int(captureObject.get(3))
-    frameHeight = int(captureObject.get(4))
-    widthScale = RESO_WIDTH / frameWidth
-    heightScale = RESO_HEIGHT / frameHeight
-    if (widthScale < heightScale):
-        scale = widthScale
-        widthIsSmaller = True
-    else:
-        scale = heightScale
-        widthIsSmaller = False 
-        
-    return scale, widthIsSmaller
-
-# Offset to center the image in the window
-def getOffset(scale, widthIsSmaller, frameWidth, frameHeight):
-    if (widthIsSmaller):
-        frameHeight = frameHeight * scale
-        offset = (RESO_HEIGHT - frameHeight) / 2
-    else:
-        frameWidth = frameWidth * scale
-        offset = (RESO_WIDTH - frameWidth) / 2
-    
-    return offset
-
+# Taken from https://gist.github.com/smathot/1521059 with modifications
 def initializeStream():
     # Tested formats: rtmp, rtsp, http
     # http://128.104.128.176:8080/udp/239.1.1.78:3078?live786
     # rtmp://wowza-bnr.cdp.triple-it.nl/bnr/BNRstudio1 
     # rtsp://wowzaec2demo.streamlock.net/vod/mp4:BigBuckBunny_115k.mov
-    captureObject = cv2.VideoCapture('http://128.104.128.176:8080/udp/239.1.1.78:3078?live786')
-    frameWidth = int(captureObject.get(3))
-    frameHeight = int(captureObject.get(4))
-    FPS = int(captureObject.get(5))
-    frameCount = int(captureObject.get(7))
+
+    movie = 'http://128.104.128.176:8080/udp/239.1.1.78:3078?live786'
     
-    print("Frame width =", frameWidth)
-    print("Frame height =", frameHeight)
-    print("FPS =", FPS)
-    print("Frame count =", frameCount) 
-    return (captureObject, frameWidth, frameHeight, FPS)
+    # Create instane of VLC and create reference to movie.
+    vlcInstance = vlc.Instance()
+    media = vlcInstance.media_new(movie)
+    media.get_mrl()
+    
+    # Create new instance of vlc player
+    player = vlcInstance.media_player_new()
+        
+    # Pass pygame window id to vlc player, so it can render its contents there.
+    win_id = pygame.display.get_wm_info()['window']
+    if sys.platform == "linux2": # for Linux using the X Server
+        player.set_xwindow(win_id)
+    elif sys.platform == "win32": # for Windows
+        player.set_hwnd(win_id)
+    elif sys.platform == "darwin": # for MacOS
+        player.set_agl(win_id)
+    
+    # Load movie into vlc player instance
+    player.set_media(media)
+    
+    # Disable VLC event handling so pygame can handle them
+    player.video_set_mouse_input(False)
+    player.video_set_key_input(False)
+    
+    # Quit pygame mixer to allow vlc full access to audio device (REINIT AFTER MOVIE PLAYBACK IS FINISHED!)
+    pygame.mixer.quit()
+    
+    # Start movie playback
+    player.play()
     
 def startClient(playerControllerID):
     sequence = 0
@@ -180,17 +168,12 @@ def startClient(playerControllerID):
     sock = socket.socket(socket.AF_INET, # Internet
                          socket.SOCK_DGRAM) # UDP
 
-    stream, frameWidth, frameHeight, FPS = initializeStream()
-    screen = initializePygame(FPS)
-    scale, widthIsSmaller = getScaleFactor(stream)
-    offset = getOffset(scale, widthIsSmaller, frameWidth, frameHeight)
+    initializePygame(30)#FPS)
+    initializeStream()
     isRunning = True
 
     while isRunning:
-        imgFrame = getStreamFrame(stream, scale)
-
-        #event = pygame.event.wait() # program will sleep if there are no events in the queue
-        event = pygame.event.poll() 
+        event = pygame.event.wait() # program will sleep if there are no events in the queue
 
         if (event.type == KEYDOWN or event.type == KEYUP):
             deviceType = 0
@@ -202,7 +185,7 @@ def startClient(playerControllerID):
             sequence = packAndSend(deviceType, sequence, playerControllerID, UEKeyCode, UECharCode, event.type, sock)
             print(event.key, '=>', UEKeyCode)
 
-        if (event.type == MOUSEMOTION):
+        if (event.type == pygame.MOUSEMOTION):
             deviceType = 1
             x, y = pygame.mouse.get_rel()
         if (event.type == MOUSEBUTTONDOWN or event.type == MOUSEBUTTONUP):
@@ -222,14 +205,7 @@ def startClient(playerControllerID):
             print(pygame.mouse.get_pressed(), '=>', UEKeyCode)
         if (event.type == QUIT):
             isRunning = False
-        
-        if (widthIsSmaller):
-            screen.blit(imgFrame, (0, offset))
-        else:
-            screen.blit(imgFrame, (offset, 0))
-        pygame.display.flip()
-    
-    stream.release()
+
     pygame.quit()
 
 def main():
