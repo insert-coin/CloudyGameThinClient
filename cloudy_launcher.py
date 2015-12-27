@@ -88,9 +88,9 @@ def exitLauncher(playerInput):
     quit()
 
 cmd_mapping = {
-JOIN: joinGame,
-QUIT: quitGame,
-EXIT: exitLauncher
+    JOIN: joinGame,
+    QUIT: quitGame,
+    EXIT: exitLauncher
 }
 
 def main():
