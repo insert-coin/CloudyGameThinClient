@@ -118,7 +118,7 @@ def initializePygame(FPS):
     screen = pygame.display.set_mode((RESO_WIDTH, RESO_HEIGHT))
     pygame.display.set_caption('Remote Keyboard')
     pygame.mouse.set_visible(True)
-    # pygame.event.set_grab(True) # confines the mouse cursor to the window
+    pygame.event.set_grab(True) # confines the mouse cursor to the window
     frameInterval = int((1/FPS)*1000)
     pygame.key.set_repeat(frameInterval, frameInterval) # 1 input per frame
     
@@ -180,6 +180,7 @@ def startClient(playerControllerID):
     initializePygame(30) #FPS
     initializeStream()
     isRunning = True
+    isMouseGrabbed = True
 
     while isRunning:
         event = pygame.event.wait() # program will sleep if there are no events in the queue
@@ -193,6 +194,15 @@ def startClient(playerControllerID):
             print(UEKeyCode, UECharCode)
             sequence = packAndSend(deviceType, sequence, playerControllerID, UEKeyCode, UECharCode, event.type, sock)
             print(event.key, '=>', UEKeyCode)
+            
+            # To toggle mouse grabbing within the window
+            if (event.type == KEYUP and event.key == K_ESCAPE):
+                if (isMouseGrabbed == True):
+                    isMouseGrabbed = False
+                    pygame.event.set_grab(False)
+                else:
+                    isMouseGrabbed = True
+                    pygame.event.set_grab(True)
 
         if (event.type == pygame.MOUSEMOTION):
             deviceType = DEVICE_MOUSE
@@ -214,6 +224,7 @@ def startClient(playerControllerID):
             elif (event.type == MOUSEBUTTONUP):
                 sequence = packAndSend(deviceType, sequence, playerControllerID, UEKeyCode, UECharCode, 3, sock)
             print(pygame.mouse.get_pressed(), '=>', UEKeyCode)
+            
         if (event.type == QUIT):
             isRunning = False
 

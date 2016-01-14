@@ -1,6 +1,9 @@
 # CloudyGameThinClient
 This is an application that the player uses to play the game. The player will receive an input video stream from the cloud servers, and send their keyboard and mouse inputs to the servers via this application.
 
+## Usage
+Press ESC to unlock the mouse cursor from the window.
+
 ## Prerequisites for using the Python Thin Client 
 You need:
 
