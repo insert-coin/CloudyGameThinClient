@@ -11,7 +11,7 @@ You need:
 2. VLC Media Player Installed
 3. The following dependencies:
     - pygame
-    - vlc (provided in the repository. However, VLC needs to be installed)
+    - vlc
     
 Important Note: If you use the 32-bit version of Python, then you need the 32-bit version of VLC. If you use the 64-bit version of Python, then you need the 64-bit version of VLC. 
 
@@ -23,3 +23,5 @@ Important Note: If you use the 32-bit version of Python, then you need the 32-bi
 
 ### VLC
 1. Install VLC: [https://www.videolan.org/vlc/index.html](https://www.videolan.org/vlc/index.html). Check whether you are using the 32-bit or 64-bit version of Python, and get the same version for VLC. 
+2. Open your terminal at the repository directory. 
+3. Type `pip install -r requirements.txt`.
