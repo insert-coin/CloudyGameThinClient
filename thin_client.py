@@ -1,7 +1,9 @@
 import socket
 import struct
 import string
-import pygame, time
+import pygame
+import vlc
+import sys
 from pygame.locals import * 
 
 ASCII_TO_UE_KEYCODE = {
@@ -98,6 +100,10 @@ PACKET_FORMAT = "=BBIBIIB"
 UDP_IP = "127.0.0.1"
 UDP_PORT = 55555
 VERSION = 0
+RESO_WIDTH = 640
+RESO_HEIGHT = 480
+DEVICE_KEYBOARD = 0
+DEVICE_MOUSE = 1
 
 def packAndSend(deviceType, sequence, controllerID, UEKeyCode, UECharCode, eventType, socketName):
     data = (VERSION, deviceType, sequence, controllerID, UEKeyCode, UECharCode, eventType)
@@ -107,13 +113,62 @@ def packAndSend(deviceType, sequence, controllerID, UEKeyCode, UECharCode, event
     sequence += 1 
     return sequence
     
-def initializePygame():
+def initializePygame(FPS):
     pygame.init()
-    screen = pygame.display.set_mode((640, 480))
+    screen = pygame.display.set_mode((RESO_WIDTH, RESO_HEIGHT))
     pygame.display.set_caption('Remote Keyboard')
     pygame.mouse.set_visible(True)
-    pygame.key.set_repeat(33, 33) # 1 input per frame (assuming 30 FPS)
+    pygame.event.set_grab(True) # confines the mouse cursor to the window
+    frameInterval = int((1/FPS)*1000)
+    pygame.key.set_repeat(frameInterval, frameInterval) # 1 input per frame
+    
+    myFont = pygame.font.Font(None, 30)
+    label = myFont.render("Loading...", True, (255, 255, 255))
+    textRect = label.get_rect()
+    renderPosX = screen.get_rect().centerx - textRect.centerx
+    renderPosY = screen.get_rect().centery - textRect.centery
+    screen.blit(label, (renderPosX, renderPosY))
+    pygame.display.update()
+    
+# Taken from https://gist.github.com/smathot/1521059 with modifications
+def initializeStream():
+    # Tested formats: rtmp, rtsp, http
+    # http://128.104.128.176:8080/udp/239.1.1.78:3078?live786
+    # rtmp://wowza-bnr.cdp.triple-it.nl/bnr/BNRstudio1 
+    # rtsp://wowzaec2demo.streamlock.net/vod/mp4:BigBuckBunny_115k.mov
 
+    movie = 'http://128.104.128.176:8080/udp/239.1.1.78:3078?live786'
+    
+    # Create instane of VLC and create reference to movie.
+    vlcInstance = vlc.Instance()
+    media = vlcInstance.media_new(movie)
+    media.get_mrl()
+    
+    # Create new instance of vlc player
+    player = vlcInstance.media_player_new()
+        
+    # Pass pygame window id to vlc player, so it can render its contents there.
+    win_id = pygame.display.get_wm_info()['window']
+    if sys.platform == "linux2": # for Linux using the X Server
+        player.set_xwindow(win_id)
+    elif sys.platform == "win32": # for Windows
+        player.set_hwnd(win_id)
+    elif sys.platform == "darwin": # for MacOS
+        player.set_agl(win_id)
+    
+    # Load movie into vlc player instance
+    player.set_media(media)
+    
+    # Disable VLC event handling so pygame can handle them
+    player.video_set_mouse_input(False)
+    player.video_set_key_input(False)
+    
+    # Quit pygame mixer to allow vlc full access to audio device (REINIT AFTER MOVIE PLAYBACK IS FINISHED!)
+    pygame.mixer.quit()
+    
+    # Start movie playback
+    player.play()
+    
 def startClient(playerControllerID):
     sequence = 0
     print("UDP target IP:", UDP_IP)
@@ -122,14 +177,16 @@ def startClient(playerControllerID):
     sock = socket.socket(socket.AF_INET, # Internet
                          socket.SOCK_DGRAM) # UDP
 
-    initializePygame()
+    initializePygame(30) #FPS
+    initializeStream()
     isRunning = True
+    isMouseGrabbed = True
 
     while isRunning:
         event = pygame.event.wait() # program will sleep if there are no events in the queue
 
         if (event.type == KEYDOWN or event.type == KEYUP):
-            deviceType = 0
+            deviceType = DEVICE_KEYBOARD
             print('ASCII Key is:', event.key)
             UEKeyCode = ASCII_TO_UE_KEYCODE.get(event.key, 0)
             UECharCode = ASCII_TO_UE_CHARCODE.get(event.key, UEKeyCode)
@@ -137,12 +194,21 @@ def startClient(playerControllerID):
             print(UEKeyCode, UECharCode)
             sequence = packAndSend(deviceType, sequence, playerControllerID, UEKeyCode, UECharCode, event.type, sock)
             print(event.key, '=>', UEKeyCode)
+            
+            # To toggle mouse grabbing within the window
+            if (event.type == KEYUP and event.key == K_ESCAPE):
+                if (isMouseGrabbed == True):
+                    isMouseGrabbed = False
+                    pygame.event.set_grab(False)
+                else:
+                    isMouseGrabbed = True
+                    pygame.event.set_grab(True)
 
-        if (event.type == MOUSEMOTION):
-            deviceType = 1
+        if (event.type == pygame.MOUSEMOTION):
+            deviceType = DEVICE_MOUSE
             x, y = pygame.mouse.get_rel()
         if (event.type == MOUSEBUTTONDOWN or event.type == MOUSEBUTTONUP):
-            deviceType = 0 # UE4 takes mouse button as key input event
+            deviceType = DEVICE_KEYBOARD # UE4 takes mouse button as key input event
             leftMouseButton, middleMouseButton, rightMouseButton = pygame.mouse.get_pressed()
             if (leftMouseButton == 1):
                 UECharCode = 1
@@ -150,15 +216,18 @@ def startClient(playerControllerID):
                 UECharCode = 4
             elif (rightMouseButton == 1):
                 UECharCode = 2
+            else:
+                UECharCode = 0
             UEKeyCode = UECharCode
             if (event.type == MOUSEBUTTONDOWN):
                 sequence = packAndSend(deviceType, sequence, playerControllerID, UEKeyCode, UECharCode, 2, sock)
             elif (event.type == MOUSEBUTTONUP):
                 sequence = packAndSend(deviceType, sequence, playerControllerID, UEKeyCode, UECharCode, 3, sock)
             print(pygame.mouse.get_pressed(), '=>', UEKeyCode)
+            
         if (event.type == QUIT):
             isRunning = False
-    
+
     pygame.quit()
 
 def main():
