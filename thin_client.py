@@ -134,10 +134,12 @@ def initializePygame(FPS):
     
     myFont = pygame.font.Font(None, 30)
     label = myFont.render("Loading...", True, (255, 255, 255))
+    mouseLabel = myFont.render("Press ESC to lock/unlock mouse.", True, (255, 255, 255))
     textRect = label.get_rect()
     renderPosX = screen.get_rect().centerx - textRect.centerx
     renderPosY = screen.get_rect().centery - textRect.centery
     screen.blit(label, (renderPosX, renderPosY))
+    screen.blit(mouseLabel, (renderPosX - 100, renderPosY + 50))
     pygame.display.update()
     
 # Taken from https://gist.github.com/smathot/1521059 with modifications
