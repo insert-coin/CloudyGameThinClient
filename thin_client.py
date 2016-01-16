@@ -94,11 +94,18 @@ ASCII_TO_UE_CHARCODE = {
 32bit UEKeyCode (A, B, , Z, 0, ... ,9, punctuation, etc.)
 32bit UECharCode (F1, ..., F12, Ctrl, Alt, Numpad, etc.)
 8bit Event (Key Down (2), Key Up (3))
-"""
 
-PACKET_FORMAT = "=BBIBIIB"
+Packet formats:
+B = unsigned char (1 byte)
+I = unsigned int (4 bytes)
+i = signed int (4 bytes)
+"""
+PACKET_FORMAT_KEY = "=BBIBIIB"
+PACKET_FORMAT_MOUSE = "=BBIBiiB"
 UDP_IP = "127.0.0.1"
 UDP_PORT = 55555
+TCP_IP = "127.0.0.1"
+TCP_PORT = 55556
 VERSION = 0
 RESO_WIDTH = 640
 RESO_HEIGHT = 480
@@ -107,7 +114,10 @@ DEVICE_MOUSE = 1
 
 def packAndSend(deviceType, sequence, controllerID, UEKeyCode, UECharCode, eventType, socketName):
     data = (VERSION, deviceType, sequence, controllerID, UEKeyCode, UECharCode, eventType)
-    message = struct.pack(PACKET_FORMAT, *data)
+    if (deviceType == DEVICE_KEYBOARD):
+        message = struct.pack(PACKET_FORMAT_KEY, *data)
+    elif (deviceType == DEVICE_MOUSE):
+        message = struct.pack(PACKET_FORMAT_MOUSE, *data)
     print(message)
     socketName.sendto(message, (UDP_IP, UDP_PORT))
     sequence += 1 
@@ -116,8 +126,8 @@ def packAndSend(deviceType, sequence, controllerID, UEKeyCode, UECharCode, event
 def initializePygame(FPS):
     pygame.init()
     screen = pygame.display.set_mode((RESO_WIDTH, RESO_HEIGHT))
-    pygame.display.set_caption('Remote Keyboard')
-    pygame.mouse.set_visible(True)
+    pygame.display.set_caption("Remote Keyboard")
+    pygame.mouse.set_visible(False) # Makes mouse invisible
     pygame.event.set_grab(True) # confines the mouse cursor to the window
     frameInterval = int((1/FPS)*1000)
     pygame.key.set_repeat(frameInterval, frameInterval) # 1 input per frame
@@ -133,11 +143,11 @@ def initializePygame(FPS):
 # Taken from https://gist.github.com/smathot/1521059 with modifications
 def initializeStream():
     # Tested formats: rtmp, rtsp, http
-    # http://128.104.128.176:8080/udp/239.1.1.78:3078?live786
+    # http://futuretv.cdn.mangomolo.com/futuretv/smil:futuretv.smil/gmswf.m3u8
     # rtmp://wowza-bnr.cdp.triple-it.nl/bnr/BNRstudio1 
     # rtsp://wowzaec2demo.streamlock.net/vod/mp4:BigBuckBunny_115k.mov
 
-    movie = 'http://128.104.128.176:8080/udp/239.1.1.78:3078?live786'
+    movie = "http://futuretv.cdn.mangomolo.com/futuretv/smil:futuretv.smil/gmswf.m3u8"
     
     # Create instane of VLC and create reference to movie.
     vlcInstance = vlc.Instance()
@@ -187,26 +197,30 @@ def startClient(playerControllerID):
 
         if (event.type == KEYDOWN or event.type == KEYUP):
             deviceType = DEVICE_KEYBOARD
-            print('ASCII Key is:', event.key)
+            print("ASCII Key is:", event.key)
             UEKeyCode = ASCII_TO_UE_KEYCODE.get(event.key, 0)
             UECharCode = ASCII_TO_UE_CHARCODE.get(event.key, UEKeyCode)
             UEKeyCode = UECharCode or UEKeyCode # This code is redundant. It changes nothing.
             print(UEKeyCode, UECharCode)
             sequence = packAndSend(deviceType, sequence, playerControllerID, UEKeyCode, UECharCode, event.type, sock)
-            print(event.key, '=>', UEKeyCode)
+            print(event.key, "=>", UEKeyCode)
             
             # To toggle mouse grabbing within the window
             if (event.type == KEYUP and event.key == K_ESCAPE):
                 if (isMouseGrabbed == True):
                     isMouseGrabbed = False
                     pygame.event.set_grab(False)
+                    pygame.mouse.set_visible(True)
                 else:
                     isMouseGrabbed = True
                     pygame.event.set_grab(True)
+                    pygame.mouse.set_visible(False)
 
         if (event.type == pygame.MOUSEMOTION):
             deviceType = DEVICE_MOUSE
             x, y = pygame.mouse.get_rel()
+            sequence = packAndSend(deviceType, sequence, playerControllerID, x, y, event.type, sock)
+            print("Mouse:", x,y)
         if (event.type == MOUSEBUTTONDOWN or event.type == MOUSEBUTTONUP):
             deviceType = DEVICE_KEYBOARD # UE4 takes mouse button as key input event
             leftMouseButton, middleMouseButton, rightMouseButton = pygame.mouse.get_pressed()
@@ -223,9 +237,14 @@ def startClient(playerControllerID):
                 sequence = packAndSend(deviceType, sequence, playerControllerID, UEKeyCode, UECharCode, 2, sock)
             elif (event.type == MOUSEBUTTONUP):
                 sequence = packAndSend(deviceType, sequence, playerControllerID, UEKeyCode, UECharCode, 3, sock)
-            print(pygame.mouse.get_pressed(), '=>', UEKeyCode)
+            print(pygame.mouse.get_pressed(), "=>", UEKeyCode)
             
         if (event.type == QUIT):
+            QUIT_MESSAGE = "quit_client"
+            MESSAGE_BYTE = QUIT_MESSAGE.encode("utf-8")
+            #cpsocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            #cpsocket.connect((TCP_IP, TCP_PORT))
+            #cpsocket.sendall(MESSAGE_BYTE)
             isRunning = False
 
     pygame.quit()
