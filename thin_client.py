@@ -156,6 +156,7 @@ def initializePygame(FPS):
 # Taken from https://gist.github.com/smathot/1521059 with modifications
 def initializeStream():
     # Tested formats: rtmp, rtsp, http
+    # Get more test links here: http://www.vlc.eu.pn/
     # http://futuretv.cdn.mangomolo.com/futuretv/smil:futuretv.smil/gmswf.m3u8
     # rtmp://wowza-bnr.cdp.triple-it.nl/bnr/BNRstudio1
     # rtsp://wowzaec2demo.streamlock.net/vod/mp4:BigBuckBunny_115k.mov
