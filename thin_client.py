@@ -3,6 +3,7 @@ import struct
 import string
 import pygame
 import vlc
+import os
 import sys
 from pygame.locals import * 
 
@@ -87,13 +88,22 @@ ASCII_TO_UE_CHARCODE = {
 }
 
 """
+Keyboard:
 8bit Version (Currently use 0)
-8bit Device Type : (Keyboard (0), Mouse (1), Gamepad, etc.)
+8bit Protocol Type : (Keyboard (0), Mouse (1), Gamepad, etc.)
 32bit Sequence (counter for event)
 8bit ControllerID (start from 0)
 32bit UEKeyCode (A, B, , Z, 0, ... ,9, punctuation, etc.)
 32bit UECharCode (F1, ..., F12, Ctrl, Alt, Numpad, etc.)
 8bit Event (Key Down (2), Key Up (3))
+
+Mouse:
+8bit Version (Currently use 0)
+8bit Protocol Type : (Keyboard (0), Mouse (1), Gamepad, etc.)
+32bit Sequence (counter for event)
+8bit ControllerID (start from 0)
+32bit x-axis movement
+32bit y-axis movement
 
 Packet formats:
 B = unsigned char (1 byte)
@@ -101,7 +111,7 @@ I = unsigned int (4 bytes)
 i = signed int (4 bytes)
 """
 PACKET_FORMAT_KEY = "=BBIBIIB"
-PACKET_FORMAT_MOUSE = "=BBIBiiB"
+PACKET_FORMAT_MOUSE = "=BBIBii"
 UDP_IP = "127.0.0.1"
 UDP_PORT = 55555
 TCP_IP = "127.0.0.1"
@@ -113,11 +123,12 @@ DEVICE_KEYBOARD = 0
 DEVICE_MOUSE = 1
 
 def packAndSend(deviceType, sequence, controllerID, UEKeyCode, UECharCode, eventType, socketName):
-    data = (VERSION, deviceType, sequence, controllerID, UEKeyCode, UECharCode, eventType)
+    dataKeyboard = (VERSION, deviceType, sequence, controllerID, UEKeyCode, UECharCode, eventType)
+    dataMouse = (VERSION, deviceType, sequence, controllerID, UEKeyCode, UECharCode)
     if (deviceType == DEVICE_KEYBOARD):
-        message = struct.pack(PACKET_FORMAT_KEY, *data)
+        message = struct.pack(PACKET_FORMAT_KEY, *dataKeyboard)
     elif (deviceType == DEVICE_MOUSE):
-        message = struct.pack(PACKET_FORMAT_MOUSE, *data)
+        message = struct.pack(PACKET_FORMAT_MOUSE, *dataMouse)
     print(message)
     socketName.sendto(message, (UDP_IP, UDP_PORT))
     sequence += 1 
@@ -146,10 +157,10 @@ def initializePygame(FPS):
 def initializeStream():
     # Tested formats: rtmp, rtsp, http
     # http://futuretv.cdn.mangomolo.com/futuretv/smil:futuretv.smil/gmswf.m3u8
-    # rtmp://wowza-bnr.cdp.triple-it.nl/bnr/BNRstudio1 
+    # rtmp://wowza-bnr.cdp.triple-it.nl/bnr/BNRstudio1
     # rtsp://wowzaec2demo.streamlock.net/vod/mp4:BigBuckBunny_115k.mov
 
-    movie = "http://futuretv.cdn.mangomolo.com/futuretv/smil:futuretv.smil/gmswf.m3u8"
+    movie = "rtmp://wowza-bnr.cdp.triple-it.nl/bnr/BNRstudio1"
     
     # Create instane of VLC and create reference to movie.
     vlcInstance = vlc.Instance()
@@ -244,9 +255,14 @@ def startClient(playerControllerID):
         if (event.type == QUIT):
             QUIT_MESSAGE = "quit_client"
             MESSAGE_BYTE = QUIT_MESSAGE.encode("utf-8")
-            #cpsocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            #cpsocket.connect((TCP_IP, TCP_PORT))
-            #cpsocket.sendall(MESSAGE_BYTE)
+            try:
+                cpsocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                cpsocket.connect((TCP_IP, TCP_PORT))
+                cpsocket.sendall(MESSAGE_BYTE)
+            except socket.error as error:
+                print("Thin client:", os.strerror(error.errno));
+            finally:
+                cpsocket.close()
             isRunning = False
 
     pygame.quit()
