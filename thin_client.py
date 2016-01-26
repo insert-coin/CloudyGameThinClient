@@ -161,10 +161,10 @@ def initializeStream():
     # rtmp://wowza-bnr.cdp.triple-it.nl/bnr/BNRstudio1
     # rtsp://wowzaec2demo.streamlock.net/vod/mp4:BigBuckBunny_115k.mov
 
-    movie = "rtmp://wowza-bnr.cdp.triple-it.nl/bnr/BNRstudio1"
+    movie = "sdpFile.sdp"
     
     # Create instane of VLC and create reference to movie.
-    vlcInstance = vlc.Instance()
+    vlcInstance = vlc.Instance("--cr-average=10000 --clock-synchro=1 --clock-jitter==0")
     media = vlcInstance.media_new(movie)
     media.get_mrl()
     
