@@ -119,8 +119,8 @@ TCP_PORT = 55556
 VERSION = 0
 RESO_WIDTH = 640
 RESO_HEIGHT = 480
-DEVICE_KEYBOARD = 0
-DEVICE_MOUSE = 1
+DEVICE_KEYBOARD = 1
+DEVICE_MOUSE = 2
 
 def packAndSend(deviceType, sequence, controllerID, UEKeyCode, UECharCode, eventType, socketName):
     dataKeyboard = (VERSION, deviceType, sequence, controllerID, UEKeyCode, UECharCode, eventType)
