@@ -1,4 +1,11 @@
 
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -10,28 +17,46 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 public class CloudyLauncher extends Application {
     
-    
+    private String baseurl = "http://127.0.0.1:8000";
+    private String token = "";
 
+    private void setToken(String newToken) {
+        token = newToken;
+    }
+    
     private void addLoginTab(TabPane parent) {
         
         GridPane loginInfo = new GridPane();
         loginInfo.setId("login-panel");
 
         Label username = new Label("Username");
-        TextField usernameInput = new TextField();        
+        TextField usernameInput = new TextField();
+        usernameInput.setPromptText("Enter username");
         Label password = new Label("Password");
         PasswordField passwordInput = new PasswordField();
-
+        passwordInput.setPromptText("Enter password");
+        
+        Text feedback = new Text();
+        feedback.setId("login-feedback");
         Button loginButton = new Button("Login");
         loginButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-
                 
+                try {
+                    attemptAuthentication(usernameInput.getText(),
+                                          passwordInput.getText());
+                    feedback.setText("User recognised.");
+                    
+                } catch (IOException e) {
+                    feedback.setText("No such user registered");
+                    
+                }
             }
         });
         
@@ -40,6 +65,7 @@ public class CloudyLauncher extends Application {
         loginInfo.add(password, 0, 2);
         loginInfo.add(passwordInput, 1, 2);
         loginInfo.add(loginButton, 0, 3);
+        loginInfo.add(feedback, 1, 3);
 
         Tab loginTab = new Tab("Login");
         loginTab.setClosable(false);
@@ -80,10 +106,35 @@ public class CloudyLauncher extends Application {
         signupTab.setContent(loginInfo);
 
     }    
+
+           
+    private void attemptAuthentication(String username, String password) throws IOException {
+
+        URL url = new URL(baseurl + "/api-token-auth/");        
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        
+        connection.setRequestMethod("POST");
+        String queryData = String.format("username=%s&password=%s", username, password);
+        
+        // send post request
+        connection.setDoOutput(true);
+        DataOutputStream writer = new DataOutputStream(connection.getOutputStream());
+
+        writer.writeBytes(queryData);
+        writer.flush();
+        writer.close();
+
+        BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));        
+        String response = reader.readLine();
+        setToken(response);
+        reader.close();
+
+    }
+    
     
     @Override
     public void start(Stage primaryStage) throws Exception {
-
+        
         TabPane userRoot = new TabPane();
         
         addLoginTab(userRoot);
