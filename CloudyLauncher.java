@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.regex.Pattern;
 
 import javafx.application.Application;
 import javafx.event.ActionEvent;
@@ -24,9 +25,14 @@ public class CloudyLauncher extends Application {
     
     private String baseurl = "http://127.0.0.1:8000";
     private String token = "";
+    private String feedback = "";
 
     private void setToken(String newToken) {
         token = newToken;
+    }
+    
+    private void setFeedback(String newFeedback) {
+        feedback = newFeedback;
     }
     
     private void addLoginTab(TabPane parent) {
@@ -41,22 +47,17 @@ public class CloudyLauncher extends Application {
         PasswordField passwordInput = new PasswordField();
         passwordInput.setPromptText("Enter password");
         
-        Text feedback = new Text();
-        feedback.setId("login-feedback");
+        Text feedbackMessage = new Text();
+        feedbackMessage.setId("login-feedback");
         Button loginButton = new Button("Login");
         loginButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                
-                try {
+
                     attemptAuthentication(usernameInput.getText(),
                                           passwordInput.getText());
-                    feedback.setText("User recognised.");
-                    
-                } catch (IOException e) {
-                    feedback.setText("No such user registered");
-                    
-                }
+
+                    feedbackMessage.setText(feedback);
             }
         });
         
@@ -65,7 +66,7 @@ public class CloudyLauncher extends Application {
         loginInfo.add(password, 0, 2);
         loginInfo.add(passwordInput, 1, 2);
         loginInfo.add(loginButton, 0, 3);
-        loginInfo.add(feedback, 1, 3);
+        loginInfo.add(feedbackMessage, 1, 3);
 
         Tab loginTab = new Tab("Login");
         loginTab.setClosable(false);
@@ -94,24 +95,20 @@ public class CloudyLauncher extends Application {
         PasswordField passwordInput = new PasswordField();
         passwordInput.setPromptText("Enter password");
 
-        Text feedback = new Text();
-        feedback.setId("signup-feedback");
+        Text feedbackMessage = new Text();
+        feedbackMessage.setId("signup-feedback");
         Button signupButton = new Button("Sign Up");
         signupButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                try {
+
                     attemptUserRegistration(usernameInput.getText(),
                                             passwordInput.getText(),
                                             emailInput.getText(),
                                             firstNameInput.getText(),
                                             lastNameInput.getText());
-                    feedback.setText("User successfully registered.");
                     
-                } catch (IOException e) {
-                    feedback.setText("Registration error ");
-                    
-                }
+                    feedbackMessage.setText(feedback);
             }
         });
         
@@ -126,7 +123,7 @@ public class CloudyLauncher extends Application {
         loginInfo.add(password, 0, 4);
         loginInfo.add(passwordInput, 1, 4);
         loginInfo.add(signupButton, 0, 5);
-        loginInfo.add(feedback, 1, 5);
+        loginInfo.add(feedbackMessage, 1, 5);
 
         Tab signupTab = new Tab("Sign Up");
         signupTab.setClosable(false);
@@ -135,52 +132,83 @@ public class CloudyLauncher extends Application {
 
     }    
            
-    private void attemptAuthentication(String username, String password) throws IOException {
+    private void attemptAuthentication(String username, String password) {
 
-        URL url = new URL(baseurl + "/api-token-auth/");        
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-        
-        connection.setRequestMethod("POST");
-        String queryData = String.format("username=%s&password=%s", username, password);
-        
-        // send post request
-        DataOutputStream writer = new DataOutputStream(connection.getOutputStream());
-
-        writer.writeBytes(queryData);
-        writer.flush();
-        writer.close();
-
-        BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));        
-        String response = reader.readLine();
-        setToken(response);
-        reader.close();
-
-    }
+        try {
+            URL url = new URL(baseurl + "/api-token-auth/");        
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            
+            connection.setRequestMethod("POST");
+            String queryData = String.format("username=%s&password=%s", username, password);
+            
+            DataOutputStream writer = new DataOutputStream(connection.getOutputStream());
     
- private void attemptUserRegistration(String username, String password, String email, String firstName, String lastName) throws IOException {
+            writer.writeBytes(queryData);
+            writer.flush();
+            writer.close();
+    
+            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));        
+            String response = reader.readLine();
+            setToken(response);
+            reader.close();
+            
+            setFeedback("User recognised.");
+            
+        } catch (IOException e) {
+            setFeedback("Incorrect login details");
+        }
+    }
 
-     URL url = new URL(baseurl + "/users/");        
-     HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-     
-     connection.setRequestMethod("POST");
-     String queryData = String.format("username=%s&password=%s&email=%s&first_name=%s&last_name=%s", username, password, email, firstName, lastName);
-     
-     // send post request
-     connection.setDoOutput(true);
-     DataOutputStream writer = new DataOutputStream(connection.getOutputStream());
+    private String getValidationResponse(String username, String password, String email, String firstName, String lastName) {
+        
+        Pattern emailPattern = Pattern.compile("[a-zA-Z0-9][a-zA-Z0-9._-]*@[a-zA-Z][a-zA-Z-.]*[.][a-zA-Z]+");
+        Pattern namePattern = Pattern.compile("[a-zA-Z][a-zA-Z.,-]*");
+        
+        if (username.isEmpty()) {
+            return "Username cannot be empty.";
+        } else if (password.isEmpty()) {
+            return "Password cannot be empty.";
+        } else if (!email.isEmpty() && !emailPattern.matcher(email).matches()) {
+            return "Email format: example@com.sg.";
+        } else if (!firstName.isEmpty() && !namePattern.matcher(firstName).matches()) {
+            return "First name must be alphabets";
+        } else if (!lastName.isEmpty() && !namePattern.matcher(lastName).matches()) {
+            return "Last name must be alphabets";
+        } else {
+            return "";
+        }
+    }
 
-     writer.writeBytes(queryData);
-     writer.flush();
-     writer.close();
+    private void attemptUserRegistration(String username, String password, String email, String firstName, String lastName) {
 
-     BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));        
+        String validationResult = getValidationResponse(username, password, email, firstName, lastName);
+        
+        if (validationResult.isEmpty()) {
+            try {
+                URL url = new URL(baseurl + "/users/");        
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
-     String response;
-     while ((response = reader.readLine()) != null) {
-         System.out.println(response);
-     }
-     reader.close();
- }
+                connection.setRequestMethod("POST");
+                String queryData = String.format("username=%s&password=%s&email=%s&first_name=%s&last_name=%s", username, password, email, firstName, lastName);
+
+                // send post request
+                connection.setDoOutput(true);
+                DataOutputStream writer = new DataOutputStream(connection.getOutputStream());
+
+                writer.writeBytes(queryData);
+                writer.flush();
+                writer.close();
+                
+                setFeedback("User successfully registered.");
+
+            } catch (IOException e) {
+                setFeedback("Username is already taken.");
+            }
+            
+        } else {
+            setFeedback(validationResult);
+        }
+    }
  
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -190,16 +218,14 @@ public class CloudyLauncher extends Application {
         addLoginTab(userRoot);
         addSignupTab(userRoot);
         
-        Scene loginScene = new Scene(userRoot);
+        Scene loginScene = new Scene(userRoot, 300, 400);
         primaryStage.setScene(loginScene);
         primaryStage.setTitle("CloudyLauncher");
         primaryStage.show();
-
+        
     }
 
     public static void main(String[] args) {
         launch(args);
-
     }
-
 }
