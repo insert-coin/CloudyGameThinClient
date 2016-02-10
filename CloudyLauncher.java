@@ -5,11 +5,14 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Pattern;
 
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -17,7 +20,13 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextField;
+import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.TilePane;
+import javafx.scene.layout.VBox;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
@@ -26,6 +35,9 @@ public class CloudyLauncher extends Application {
     private String baseurl = "http://127.0.0.1:8000";
     private String token = "";
     private String feedback = "";
+    private List<Game> listOfGames;
+    private BorderPane rootBorder = new BorderPane();
+
 
     private void setToken(String newToken) {
         token = newToken;
@@ -141,21 +153,33 @@ public class CloudyLauncher extends Application {
             connection.setRequestMethod("POST");
             String queryData = String.format("username=%s&password=%s", username, password);
             
+            connection.setDoOutput(true);
             DataOutputStream writer = new DataOutputStream(connection.getOutputStream());
     
             writer.writeBytes(queryData);
             writer.flush();
             writer.close();
-    
-            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));        
-            String response = reader.readLine();
-            setToken(response);
-            reader.close();
-            
-            setFeedback("User recognised.");
+
+            if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
+
+                BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));        
+                String response = reader.readLine();
+                reader.close();
+
+                String responseToken = response.substring(10, response.length() - 2);
+                setToken(responseToken);
+
+                setFeedback("User recognised.");
+
+                initialiseGamePanel();
+                
+            } else {
+                setFeedback("Incorrect login details");
+            }
             
         } catch (IOException e) {
-            setFeedback("Incorrect login details");
+            setFeedback("IO error occurred in attemptAuthentication function");
+
         }
     }
 
@@ -191,7 +215,6 @@ public class CloudyLauncher extends Application {
                 connection.setRequestMethod("POST");
                 String queryData = String.format("username=%s&password=%s&email=%s&first_name=%s&last_name=%s", username, password, email, firstName, lastName);
 
-                // send post request
                 connection.setDoOutput(true);
                 DataOutputStream writer = new DataOutputStream(connection.getOutputStream());
 
@@ -210,19 +233,135 @@ public class CloudyLauncher extends Application {
         }
     }
  
-    @Override
-    public void start(Stage primaryStage) throws Exception {
+    /**
+     * Returns the Game object containing the given information. format:
+     * "name":"xx","publisher":"xx","max_limit":xx,"address":"xx","users":["xx","xx"]
+     * 
+     * @param gameString string containing game information
+     * @return           Game object with information 
+     */
+    private Game getGameFromString(String gameString) {
+
+        String[] gameInformation = gameString.split(",");
+        String nameStr = gameInformation[0];
+        String gName = nameStr.substring(8, nameStr.length()-1);
         
+        String publisherStr = gameInformation[1];
+        String gPublisher = publisherStr.substring(13, publisherStr.length()-1);
+        
+        String limitStr = gameInformation[2];
+        String gLimit = limitStr.substring(12);
+        
+        String addressStr = gameInformation[3];
+        String gAddress = addressStr.substring(11, addressStr.length()-1);
+        
+        String usersStr = gameInformation[4];
+        String gUsers = usersStr.substring(9, usersStr.length()-1);
+        
+        Game newGame = new Game(gName, gPublisher, Integer.parseInt(gLimit), gAddress, gUsers);
+
+        return newGame;
+    }
+    
+    private void initialiseGameList() {
+        try {
+            URL url = new URL(baseurl + "/games/");        
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+
+            String auth = "Token " + token;
+            
+            connection.setRequestMethod("GET");
+            connection.setRequestProperty("Authorization", auth);
+            connection.setRequestProperty("Accept", "application/json");
+            
+            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));        
+            String response = reader.readLine();
+            reader.close();
+            
+            setFeedback("token recognised.");
+            
+            List<Game> gameList = new ArrayList<Game>();
+
+            String[] gameStrings = response.substring(2, response.length() - 2)
+                                           .split("\\},\\{");
+
+            for (String gameStr : gameStrings) {
+                gameList.add(getGameFromString(gameStr));
+            }
+                        
+            listOfGames = gameList; 
+
+        } catch (IOException e) {
+            setFeedback("IO error occurred in initialiseGameList function.");
+        }
+    }
+
+    private void initialiseGamePanel() {
+
+        initialiseGameList();
+
+        TilePane gameRoot = new TilePane();
+
+        for (Game game : listOfGames) {
+            //ImageView gameIcon = new ImageView("MeikyuuButterfly.jpg");
+            //gameIcon.setFitHeight(100);
+            //gameIcon.setFitWidth(100);
+            
+            Rectangle gameIcon = new Rectangle(100, 100);
+            gameIcon.setUserData(game);
+            
+            gameIcon.setOnMouseClicked(new EventHandler<MouseEvent>() {
+
+                @Override
+                public void handle(MouseEvent event) {
+
+                    //ImageView selectedTile = (ImageView) event.getTarget();
+                    Rectangle selectedTile = (Rectangle) event.getTarget();
+                    Game selectedGame = (Game) selectedTile.getUserData();
+
+                    VBox infoPanel = new VBox();
+
+                    String baseGameInfo = "Name: %s\nPublisher: %s\nMaximum number of players: %s\nAvailability: %s";
+                    Text gameInfo = new Text(
+                            String.format(baseGameInfo, selectedGame.getName(), selectedGame.getPublisher(), selectedGame.getLimit(), "N.A."));
+                    Button joinGameBtn = new Button("Join Game");
+                    infoPanel.getChildren().add(gameInfo);
+                    infoPanel.getChildren().add(joinGameBtn);
+
+                    rootBorder.setBottom(infoPanel);
+                }
+            });
+            gameRoot.getChildren().add(gameIcon);
+        }
+
+        gameRoot.setHgap(10);
+        gameRoot.setVgap(10);
+        gameRoot.setAlignment(Pos.CENTER);
+        gameRoot.setPrefColumns(6);
+
+        rootBorder.setCenter(gameRoot);
+        rootBorder.setLeft(null);
+    }
+
+    private void initialiseLoginPanel() {
         TabPane userRoot = new TabPane();
-        
+
         addLoginTab(userRoot);
         addSignupTab(userRoot);
         
-        Scene loginScene = new Scene(userRoot, 300, 400);
-        primaryStage.setScene(loginScene);
+        rootBorder.setLeft(userRoot);        
+    }
+    
+    @Override
+    public void start(Stage primaryStage) throws Exception {
+       
+        initialiseLoginPanel();
+        
+//      launcherScene.getStylesheets().add(CloudyLauncher.class.getResource("style.css").toExternalForm());        
+        Scene launcherScene = new Scene(rootBorder, 500, 500);
+        primaryStage.setScene(launcherScene);
         primaryStage.setTitle("CloudyLauncher");
         primaryStage.show();
-        
     }
 
     public static void main(String[] args) {
