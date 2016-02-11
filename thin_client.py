@@ -154,18 +154,25 @@ def initializePygame(FPS):
     pygame.display.update()
     
 # Taken from https://gist.github.com/smathot/1521059 with modifications
-def initializeStream():
+def initializeStream(playerControllerID):
     # Tested formats: rtmp, rtsp, http
     # Get more test links here: http://www.vlc.eu.pn/
     # http://futuretv.cdn.mangomolo.com/futuretv/smil:futuretv.smil/gmswf.m3u8
     # rtmp://wowza-bnr.cdp.triple-it.nl/bnr/BNRstudio1
     # rtsp://wowzaec2demo.streamlock.net/vod/mp4:BigBuckBunny_115k.mov
 
-    movie = "rtmp://wowza-bnr.cdp.triple-it.nl/bnr/BNRstudio1"
-    
-    # Create instane of VLC and create reference to movie.
+    if (playerControllerID == 0):
+        movieAddress = "http://localhost:30000"
+    elif (playerControllerID == 1):
+        movieAddress = "http://localhost:30001"
+    elif (playerControllerID == 2):
+        movieAddress = "http://localhost:30002"
+    elif (playerControllerID == 3):
+        movieAddress = "http://localhost:30003"
+
+    # Create instane of VLC and create reference to movieAddress.
     vlcInstance = vlc.Instance()
-    media = vlcInstance.media_new(movie)
+    media = vlcInstance.media_new(movieAddress)
     media.get_mrl()
     
     # Create new instance of vlc player
@@ -180,7 +187,7 @@ def initializeStream():
     elif sys.platform == "darwin": # for MacOS
         player.set_agl(win_id)
     
-    # Load movie into vlc player instance
+    # Load movieAddress into vlc player instance
     player.set_media(media)
     
     # Disable VLC event handling so pygame can handle them
@@ -190,7 +197,7 @@ def initializeStream():
     # Quit pygame mixer to allow vlc full access to audio device (REINIT AFTER MOVIE PLAYBACK IS FINISHED!)
     pygame.mixer.quit()
     
-    # Start movie playback
+    # Start movieAddress playback
     player.play()
     
 def startClient(playerControllerID):
@@ -202,7 +209,7 @@ def startClient(playerControllerID):
                          socket.SOCK_DGRAM) # UDP
 
     initializePygame(30) #FPS
-    initializeStream()
+    initializeStream(playerControllerID)
     isRunning = True
     isMouseGrabbed = True
 
