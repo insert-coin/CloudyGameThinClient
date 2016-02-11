@@ -1,5 +1,6 @@
 public class Game {
     
+    private String id;
     private String name;
     private String publisher;
     private Integer maxLimit;
@@ -9,6 +10,7 @@ public class Game {
     /** 
      * Constructor for a Game object.
      * 
+     * @param gId         the id of the game
      * @param gName       the name of the game
      * @param gPublisher  the publisher of the game
      * @param gLimit      the maximum number of players
@@ -16,13 +18,22 @@ public class Game {
      * @param gUsers      the users with access to the game
      *                    given format: "user1","user2","user3",...
      */
-    public Game(String gName, String gPublisher, Integer gLimit, String gAddress, String gUsers) {
-        
+    public Game(String gId, String gName, String gPublisher, Integer gLimit, String gAddress, String gUsers) {
+        id = gId;
         name = gName;
         publisher = gPublisher;
         maxLimit = gLimit;
         address = gAddress;
         users = gUsers.substring(1, gUsers.length()-1).split("\",\"");
+    }
+    
+    /**
+     * Get method for the game id
+     * 
+     * @return  the id of the game
+     */
+    public String getId() {
+        return id;
     }
     
     /**

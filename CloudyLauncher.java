@@ -235,30 +235,34 @@ public class CloudyLauncher extends Application {
  
     /**
      * Returns the Game object containing the given information. format:
-     * "name":"xx","publisher":"xx","max_limit":xx,"address":"xx","users":["xx","xx"]
+     * "id":xx,"name":"xx","publisher":"xx","max_limit":xx,"address":"xx","users":["xx","xx"]
      * 
      * @param gameString string containing game information
      * @return           Game object with information 
      */
     private Game getGameFromString(String gameString) {
+        
 
         String[] gameInformation = gameString.split(",");
-        String nameStr = gameInformation[0];
+        String idStr = gameInformation[0];
+        String gId = idStr.substring(5);
+        
+        String nameStr = gameInformation[1];
         String gName = nameStr.substring(8, nameStr.length()-1);
         
-        String publisherStr = gameInformation[1];
+        String publisherStr = gameInformation[2];
         String gPublisher = publisherStr.substring(13, publisherStr.length()-1);
         
-        String limitStr = gameInformation[2];
+        String limitStr = gameInformation[3];
         String gLimit = limitStr.substring(12);
         
-        String addressStr = gameInformation[3];
+        String addressStr = gameInformation[4];
         String gAddress = addressStr.substring(11, addressStr.length()-1);
         
-        String usersStr = gameInformation[4];
+        String usersStr = gameInformation[5];
         String gUsers = usersStr.substring(9, usersStr.length()-1);
         
-        Game newGame = new Game(gName, gPublisher, Integer.parseInt(gLimit), gAddress, gUsers);
+        Game newGame = new Game(gId, gName, gPublisher, Integer.parseInt(gLimit), gAddress, gUsers);
 
         return newGame;
     }
