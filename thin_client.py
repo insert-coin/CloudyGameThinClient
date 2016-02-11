@@ -162,13 +162,13 @@ def initializeStream(playerControllerID):
     # rtsp://wowzaec2demo.streamlock.net/vod/mp4:BigBuckBunny_115k.mov
 
     if (playerControllerID == 0):
-        movieAddress = "http://localhost:8080"
+        movieAddress = "http://localhost:30000"
     elif (playerControllerID == 1):
-        movieAddress = "http://localhost:8081"
+        movieAddress = "http://localhost:30001"
     elif (playerControllerID == 2):
-        movieAddress = "http://localhost:8082"
+        movieAddress = "http://localhost:30002"
     elif (playerControllerID == 3):
-        movieAddress = "http://localhost:8083"
+        movieAddress = "http://localhost:30003"
 
     # Create instane of VLC and create reference to movieAddress.
     vlcInstance = vlc.Instance()
