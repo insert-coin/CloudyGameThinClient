@@ -162,17 +162,17 @@ def initializeStream(playerControllerID):
     # rtsp://wowzaec2demo.streamlock.net/vod/mp4:BigBuckBunny_115k.mov
 
     if (playerControllerID == 0):
-        movie = "http://localhost:8080"
+        movieAddress = "http://localhost:8080"
     elif (playerControllerID == 1):
-        movie = "http://localhost:8081"
+        movieAddress = "http://localhost:8081"
     elif (playerControllerID == 2):
-        movie = "http://localhost:8082"
+        movieAddress = "http://localhost:8082"
     elif (playerControllerID == 3):
-        movie = "http://localhost:8083"
+        movieAddress = "http://localhost:8083"
 
-    # Create instane of VLC and create reference to movie.
+    # Create instane of VLC and create reference to movieAddress.
     vlcInstance = vlc.Instance()
-    media = vlcInstance.media_new(movie)
+    media = vlcInstance.media_new(movieAddress)
     media.get_mrl()
     
     # Create new instance of vlc player
@@ -187,7 +187,7 @@ def initializeStream(playerControllerID):
     elif sys.platform == "darwin": # for MacOS
         player.set_agl(win_id)
     
-    # Load movie into vlc player instance
+    # Load movieAddress into vlc player instance
     player.set_media(media)
     
     # Disable VLC event handling so pygame can handle them
@@ -197,7 +197,7 @@ def initializeStream(playerControllerID):
     # Quit pygame mixer to allow vlc full access to audio device (REINIT AFTER MOVIE PLAYBACK IS FINISHED!)
     pygame.mixer.quit()
     
-    # Start movie playback
+    # Start movieAddress playback
     player.play()
     
 def startClient(playerControllerID):
