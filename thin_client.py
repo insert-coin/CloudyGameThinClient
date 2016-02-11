@@ -154,17 +154,24 @@ def initializePygame(FPS):
     pygame.display.update()
     
 # Taken from https://gist.github.com/smathot/1521059 with modifications
-def initializeStream():
+def initializeStream(playerControllerID):
     # Tested formats: rtmp, rtsp, http
     # Get more test links here: http://www.vlc.eu.pn/
     # http://futuretv.cdn.mangomolo.com/futuretv/smil:futuretv.smil/gmswf.m3u8
     # rtmp://wowza-bnr.cdp.triple-it.nl/bnr/BNRstudio1
     # rtsp://wowzaec2demo.streamlock.net/vod/mp4:BigBuckBunny_115k.mov
 
-    movie = "sdpFile.sdp"
-    
+    if (playerControllerID == 0):
+        movie = "http://localhost:8080"
+    elif (playerControllerID == 1):
+        movie = "http://localhost:8081"
+    elif (playerControllerID == 2):
+        movie = "http://localhost:8082"
+    elif (playerControllerID == 3):
+        movie = "http://localhost:8083"
+
     # Create instane of VLC and create reference to movie.
-    vlcInstance = vlc.Instance("--cr-average=10000 --clock-synchro=1 --clock-jitter==0")
+    vlcInstance = vlc.Instance()
     media = vlcInstance.media_new(movie)
     media.get_mrl()
     
@@ -202,7 +209,7 @@ def startClient(playerControllerID):
                          socket.SOCK_DGRAM) # UDP
 
     initializePygame(30) #FPS
-    initializeStream()
+    initializeStream(playerControllerID)
     isRunning = True
     isMouseGrabbed = True
 
