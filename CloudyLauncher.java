@@ -182,6 +182,7 @@ public class CloudyLauncher extends Application {
                 }
 
                 setFeedback(errorMessage);
+                errorReader.close();
 
             } else {
 
@@ -248,6 +249,7 @@ public class CloudyLauncher extends Application {
                 }
 
                 setFeedback(errorMessage);
+                errorReader.close();
 
             } else {
 
@@ -312,6 +314,7 @@ public class CloudyLauncher extends Application {
                 }
 
                 setFeedback(errorMessage);
+                errorReader.close();
 
             } else {
                 setFeedback("token recognised.");
@@ -372,6 +375,7 @@ public class CloudyLauncher extends Application {
                 }
 
                 setFeedback(errorMessage);
+                errorReader.close();
 
             } else {
 
