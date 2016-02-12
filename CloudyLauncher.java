@@ -260,7 +260,7 @@ public class CloudyLauncher extends Application {
         String gAddress = addressStr.substring(11, addressStr.length()-1);
         
         String usersStr = gameInformation[5];
-        String gUsers = usersStr.substring(9, usersStr.length()-1);
+        String gUsers = new ArrayList<String>();
         
         Game newGame = new Game(gId, gName, gPublisher, Integer.parseInt(gLimit), gAddress, gUsers);
 
