@@ -36,6 +36,8 @@ You need:
 1. JavaFX 2.0 or newer
 2. Java SE 6.0 or newer 
 3. JSON dependency
+    - can be obtained from [here](http://mvnrepository.com/artifact/org.json/json)
+    - version used in development: 20151123
 
 ### To compile on the command line
 Include the json jar in the classpath:
