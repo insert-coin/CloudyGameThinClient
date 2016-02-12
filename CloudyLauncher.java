@@ -38,7 +38,6 @@ public class CloudyLauncher extends Application {
     private List<Game> listOfGames;
     private BorderPane rootBorder = new BorderPane();
 
-
     private void setToken(String newToken) {
         token = newToken;
     }
@@ -66,10 +65,10 @@ public class CloudyLauncher extends Application {
             @Override
             public void handle(ActionEvent event) {
 
-                    attemptAuthentication(usernameInput.getText(),
-                                          passwordInput.getText());
+                attemptAuthentication(usernameInput.getText(),
+                        passwordInput.getText());
 
-                    feedbackMessage.setText(feedback);
+                feedbackMessage.setText(feedback);
             }
         });
         
@@ -114,13 +113,13 @@ public class CloudyLauncher extends Application {
             @Override
             public void handle(ActionEvent event) {
 
-                    attemptUserRegistration(usernameInput.getText(),
-                                            passwordInput.getText(),
-                                            emailInput.getText(),
-                                            firstNameInput.getText(),
-                                            lastNameInput.getText());
+                attemptUserRegistration(usernameInput.getText(),
+                        passwordInput.getText(),
+                        emailInput.getText(),
+                        firstNameInput.getText(),
+                        lastNameInput.getText());
                     
-                    feedbackMessage.setText(feedback);
+                feedbackMessage.setText(feedback);
             }
         });
         
