@@ -300,7 +300,7 @@ public class CloudyLauncher extends Application {
             reader.close();
 
             if (connection.getResponseCode() == HttpURLConnection.HTTP_FORBIDDEN) {
-                // if login is successful, should never reach here.
+                // if login (and token retrieval) is successful, should never reach here.
 
                 String errorMessage = "";
 
@@ -332,6 +332,84 @@ public class CloudyLauncher extends Application {
         }
     }
 
+    private String getControllerId(Game gameToJoin) {
+        try {
+
+            URL url = new URL(baseurl + "/game-session/");        
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+
+            String auth = "Token " + token;
+
+            connection.setRequestMethod("POST");
+            connection.setRequestProperty("Authorization", auth);
+            connection.setRequestProperty("Accept", "application/json");
+            String queryData = String.format("game=%s", gameToJoin.getId());            
+
+            connection.setDoOutput(true);
+            DataOutputStream writer = new DataOutputStream(connection.getOutputStream());
+
+            writer.writeBytes(queryData);
+            writer.flush();
+            writer.close();
+
+            if (connection.getResponseCode() == HttpURLConnection.HTTP_BAD_REQUEST) {
+                // if system is working properly, should not reach here   
+                String errorMessage = "";
+
+                BufferedReader errorReader = new BufferedReader(new InputStreamReader(connection.getErrorStream()));
+                JSONObject errorResponse = new JSONObject(errorReader.readLine());
+
+                if (errorResponse.has("game")) {
+                    errorMessage = errorMessage + "\nGame: " + errorResponse.getJSONArray("game").getString(0);
+                }
+
+                if (errorResponse.has("controller")) {
+                    errorMessage = errorMessage + "\nController: " + errorResponse.getJSONArray("controller").getString(0); 
+                }
+
+                if (errorResponse.has("player")) {
+                    errorMessage = errorMessage + "\nPlayer: " + errorResponse.getJSONArray("player").getString(0); 
+                }
+
+                setFeedback(errorMessage);
+
+            } else {
+
+                BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));        
+                String response = reader.readLine();
+                reader.close();
+
+                JSONObject gameSession = new JSONObject(response);
+                String controllerId = gameSession.getString("controller");
+
+                return controllerId;
+            }
+
+        } catch (IOException e) {
+            setFeedback("Check server.");
+        }
+
+        return null;
+    }
+
+    private void joinGame(Game selectedGame) {
+
+        // controllerId is to be sent from the api,  
+        // used to launch the thin_client
+        // to be changed: api is not yet updated, value not correct 
+        String controllerId = getControllerId(selectedGame);
+
+        try {
+            // launch the thin_client. 
+            // to be changed: thin_client should receive the controllerId as input. 
+            // default action: thin client assumes controllerId = 0
+            Runtime.getRuntime().exec("python ../../CloudyGameThinClient/thin_client.py");
+
+        } catch (IOException e) {
+            setFeedback("Error joining game");
+        }
+    }
+
     private void initialiseGamePanel() {
 
         initialiseGameList();
@@ -360,8 +438,21 @@ public class CloudyLauncher extends Application {
                     String baseGameInfo = "Name: %s\nPublisher: %s\nMaximum number of players: %s\nAvailability: %s";
                     Text gameInfo = new Text(
                             String.format(baseGameInfo, selectedGame.getName(), selectedGame.getPublisher(), selectedGame.getLimit(), "N.A."));
+                    Text feedbackMessage = new Text("");
+                    feedbackMessage.setId("join-feedback");
                     Button joinGameBtn = new Button("Join Game");
+                    joinGameBtn.setOnAction(new EventHandler<ActionEvent>() {
+
+                        @Override
+                        public void handle(ActionEvent event) {
+                            joinGame(selectedGame);   
+
+                            feedbackMessage.setText(feedback);
+                        }
+                    });
+
                     infoPanel.getChildren().add(gameInfo);
+                    infoPanel.getChildren().add(feedbackMessage);
                     infoPanel.getChildren().add(joinGameBtn);
 
                     rootBorder.setBottom(infoPanel);
