@@ -35,3 +35,18 @@ You need:
 
 1. JavaFX 2.0 or newer
 2. Java SE 6.0 or newer 
+3. JSON dependency
+
+### To compile on the command line
+Include the json jar in the classpath:
+```bash
+javac -cp path/to/json/jar/file CloudyLauncher.java Game.java
+```
+
+### To run on the command line
+Include the json jar in the classpath:
+```bash
+java -cp .:path/to/json/jar/file CloudyLauncher
+```
+
+Note: The above is for linux, use ; instead of : for windows.
