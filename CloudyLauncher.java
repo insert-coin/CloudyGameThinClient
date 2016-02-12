@@ -7,7 +7,9 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Pattern;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import javafx.application.Application;
 import javafx.event.ActionEvent;
@@ -31,7 +33,7 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 public class CloudyLauncher extends Application {
-    
+
     private String baseurl = "http://127.0.0.1:8000";
     private String token = "";
     private String feedback = "";
@@ -41,13 +43,13 @@ public class CloudyLauncher extends Application {
     private void setToken(String newToken) {
         token = newToken;
     }
-    
+
     private void setFeedback(String newFeedback) {
         feedback = newFeedback;
     }
-    
+
     private void addLoginTab(TabPane parent) {
-        
+
         GridPane loginInfo = new GridPane();
         loginInfo.setId("login-panel");
 
@@ -57,7 +59,7 @@ public class CloudyLauncher extends Application {
         Label password = new Label("Password");
         PasswordField passwordInput = new PasswordField();
         passwordInput.setPromptText("Enter password");
-        
+
         Text feedbackMessage = new Text();
         feedbackMessage.setId("login-feedback");
         Button loginButton = new Button("Login");
@@ -71,7 +73,7 @@ public class CloudyLauncher extends Application {
                 feedbackMessage.setText(feedback);
             }
         });
-        
+
         loginInfo.add(username, 0, 1);
         loginInfo.add(usernameInput, 1, 1);
         loginInfo.add(password, 0, 2);
@@ -84,9 +86,9 @@ public class CloudyLauncher extends Application {
         parent.getTabs().add(loginTab);
         loginTab.setContent(loginInfo);
     }
-    
+
     private void addSignupTab(TabPane parent) {
-        
+
         GridPane loginInfo = new GridPane();
         loginInfo.setId("signup-panel");
 
@@ -118,11 +120,11 @@ public class CloudyLauncher extends Application {
                         emailInput.getText(),
                         firstNameInput.getText(),
                         lastNameInput.getText());
-                    
+
                 feedbackMessage.setText(feedback);
             }
         });
-        
+
         loginInfo.add(firstName, 0, 0);
         loginInfo.add(firstNameInput, 1, 0);
         loginInfo.add(lastName, 0, 1);
@@ -142,160 +144,191 @@ public class CloudyLauncher extends Application {
         signupTab.setContent(loginInfo);
 
     }    
-           
+
     private void attemptAuthentication(String username, String password) {
 
         try {
             URL url = new URL(baseurl + "/api-token-auth/");        
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            
+
             connection.setRequestMethod("POST");
+            connection.setRequestProperty("Accept", "application/json");
             String queryData = String.format("username=%s&password=%s", username, password);
-            
+
             connection.setDoOutput(true);
             DataOutputStream writer = new DataOutputStream(connection.getOutputStream());
-    
+
             writer.writeBytes(queryData);
             writer.flush();
             writer.close();
 
-            if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
+            if (connection.getResponseCode() == HttpURLConnection.HTTP_BAD_REQUEST) {
+
+                String errorMessage = "";
+
+                BufferedReader errorReader = new BufferedReader(new InputStreamReader(connection.getErrorStream()));
+                JSONObject errorResponse = new JSONObject(errorReader.readLine());
+
+                if (errorResponse.has("username")) {
+                    errorMessage = errorMessage + "\nUsername: " + errorResponse.getJSONArray("username").getString(0);
+                }
+
+                if (errorResponse.has("password")) {
+                    errorMessage = errorMessage + "\nPassword: " + errorResponse.getJSONArray("password").getString(0);
+                }
+
+                if (errorResponse.has("non_field_errors")) {
+                    errorMessage = errorMessage + "\n" + errorResponse.getJSONArray("non_field_errors").getString(0);
+                }
+
+                setFeedback(errorMessage);
+
+            } else {
 
                 BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));        
                 String response = reader.readLine();
                 reader.close();
 
-                String responseToken = response.substring(10, response.length() - 2);
+                JSONObject tokenObj = new JSONObject(response);
+                String responseToken = tokenObj.getString("token");                
                 setToken(responseToken);
 
                 setFeedback("User recognised.");
 
                 initialiseGamePanel();
-                
-            } else {
-                setFeedback("Incorrect login details");
-            }
-            
+            }   
+
         } catch (IOException e) {
-            setFeedback("IO error occurred in attemptAuthentication function");
+            setFeedback("Check server.");
 
-        }
-    }
-
-    private String getValidationResponse(String username, String password, String email, String firstName, String lastName) {
-        
-        Pattern emailPattern = Pattern.compile("[a-zA-Z0-9][a-zA-Z0-9._-]*@[a-zA-Z][a-zA-Z-.]*[.][a-zA-Z]+");
-        Pattern namePattern = Pattern.compile("[a-zA-Z][a-zA-Z.,-]*");
-        
-        if (username.isEmpty()) {
-            return "Username cannot be empty.";
-        } else if (password.isEmpty()) {
-            return "Password cannot be empty.";
-        } else if (!email.isEmpty() && !emailPattern.matcher(email).matches()) {
-            return "Email format: example@com.sg.";
-        } else if (!firstName.isEmpty() && !namePattern.matcher(firstName).matches()) {
-            return "First name must be alphabets";
-        } else if (!lastName.isEmpty() && !namePattern.matcher(lastName).matches()) {
-            return "Last name must be alphabets";
-        } else {
-            return "";
         }
     }
 
     private void attemptUserRegistration(String username, String password, String email, String firstName, String lastName) {
 
-        String validationResult = getValidationResponse(username, password, email, firstName, lastName);
-        
-        if (validationResult.isEmpty()) {
-            try {
-                URL url = new URL(baseurl + "/users/");        
-                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        try {
+            URL url = new URL(baseurl + "/users/");        
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
-                connection.setRequestMethod("POST");
-                String queryData = String.format("username=%s&password=%s&email=%s&first_name=%s&last_name=%s", username, password, email, firstName, lastName);
+            connection.setRequestMethod("POST");
+            connection.setRequestProperty("Accept", "application/json");
+            String queryData = String.format("username=%s&password=%s&email=%s&first_name=%s&last_name=%s", username, password, email, firstName, lastName);
 
-                connection.setDoOutput(true);
-                DataOutputStream writer = new DataOutputStream(connection.getOutputStream());
+            connection.setDoOutput(true);
+            DataOutputStream writer = new DataOutputStream(connection.getOutputStream());
 
-                writer.writeBytes(queryData);
-                writer.flush();
-                writer.close();
-                
+            writer.writeBytes(queryData);
+            writer.flush();
+            writer.close();
+
+            if (connection.getResponseCode() == HttpURLConnection.HTTP_BAD_REQUEST) {   
+                String errorMessage = "";
+
+                BufferedReader errorReader = new BufferedReader(new InputStreamReader(connection.getErrorStream()));
+                JSONObject errorResponse = new JSONObject(errorReader.readLine());
+
+                if (errorResponse.has("username")) {
+                    errorMessage = errorMessage + "\nUsername: " + errorResponse.getJSONArray("username").getString(0);
+                }
+
+                if (errorResponse.has("password")) {
+                    errorMessage = errorMessage + "\nPassword: " + errorResponse.getJSONArray("password").getString(0); 
+                }
+
+                if (errorResponse.has("email")) {
+                    errorMessage = errorMessage + "\nEmail: " + errorResponse.getJSONArray("email").getString(0); 
+                } 
+
+                if (errorResponse.has("first_name")) {
+                    errorMessage = errorMessage + "\nFirst Name: " + errorResponse.getJSONArray("first_name").getString(0); 
+                }
+
+                if (errorResponse.has("last_name")) {
+                    errorMessage = errorMessage + "\nLast Name: " + errorResponse.getJSONArray("last_name").getString(0); 
+                }
+
+                setFeedback(errorMessage);
+
+            } else {
+
                 setFeedback("User successfully registered.");
+            }                
 
-            } catch (IOException e) {
-                setFeedback("Username is already taken.");
-            }
-            
-        } else {
-            setFeedback(validationResult);
+        } catch (IOException e) {
+            setFeedback("Check server.");
         }
     }
- 
+
     /**
-     * Returns the Game object containing the given information. format:
-     * "id":xx,"name":"xx","publisher":"xx","max_limit":xx,"address":"xx","users":["xx","xx"]
+     * Returns the Game object containing the given information.
      * 
-     * @param gameString string containing game information
-     * @return           Game object with information 
-     */
-    private Game getGameFromString(String gameString) {
-        
+     * @param gameObj  JSONObject containing game information
+     * @return         Game object with information 
+     */    
+    private Game getGameFromJson(JSONObject gameObj) {
 
-        String[] gameInformation = gameString.split(",");
-        String idStr = gameInformation[0];
-        String gId = idStr.substring(5);
-        
-        String nameStr = gameInformation[1];
-        String gName = nameStr.substring(8, nameStr.length()-1);
-        
-        String publisherStr = gameInformation[2];
-        String gPublisher = publisherStr.substring(13, publisherStr.length()-1);
-        
-        String limitStr = gameInformation[3];
-        String gLimit = limitStr.substring(12);
-        
-        String addressStr = gameInformation[4];
-        String gAddress = addressStr.substring(11, addressStr.length()-1);
-        
-        String usersStr = gameInformation[5];
-        String gUsers = new ArrayList<String>();
-        
+        String gId = Integer.toString(gameObj.getInt("id"));
+        String gName = gameObj.getString("name");
+        String gPublisher = gameObj.getString("publisher");
+        String gLimit = Integer.toString(gameObj.getInt("max_limit"));
+        String gAddress = gameObj.getString("address");
+
+        JSONArray users = gameObj.getJSONArray("users");
+        List<String> gUsers = new ArrayList<String>();
+        for (int i = 0; i < users.length(); i++) {            
+            String uUsername = users.getJSONObject(i).getString("username");
+            gUsers.add(uUsername);
+        }
+
         Game newGame = new Game(gId, gName, gPublisher, Integer.parseInt(gLimit), gAddress, gUsers);
-
         return newGame;
     }
-    
+
     private void initialiseGameList() {
         try {
             URL url = new URL(baseurl + "/games/");        
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
             String auth = "Token " + token;
-            
+
             connection.setRequestMethod("GET");
             connection.setRequestProperty("Authorization", auth);
             connection.setRequestProperty("Accept", "application/json");
-            
+
             BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));        
             String response = reader.readLine();
             reader.close();
-            
-            setFeedback("token recognised.");
-            
-            List<Game> gameList = new ArrayList<Game>();
 
-            String[] gameStrings = response.substring(2, response.length() - 2)
-                                           .split("\\},\\{");
+            if (connection.getResponseCode() == HttpURLConnection.HTTP_FORBIDDEN) {
+                // if login is successful, should never reach here.
 
-            for (String gameStr : gameStrings) {
-                gameList.add(getGameFromString(gameStr));
+                String errorMessage = "";
+
+                BufferedReader errorReader = new BufferedReader(new InputStreamReader(connection.getErrorStream()));
+                JSONObject errorResponse = new JSONObject(errorReader.readLine());
+
+                if (errorResponse.has("detail")) {
+                    errorMessage = errorResponse.getJSONArray("username").getString(0);
+                }
+
+                setFeedback(errorMessage);
+
+            } else {
+                setFeedback("token recognised.");
+
+                JSONArray gameListString = new JSONArray(response);            
+                List<Game> gameList = new ArrayList<Game>();
+
+                for (int i = 0; i < gameListString.length(); i++) {
+                    JSONObject game = gameListString.getJSONObject(i);
+                    gameList.add(getGameFromJson(game));
+                }
+
+                listOfGames = gameList; 
             }
-                        
-            listOfGames = gameList; 
 
         } catch (IOException e) {
-            setFeedback("IO error occurred in initialiseGameList function.");
+            setFeedback("Check server.");
         }
     }
 
@@ -309,10 +342,10 @@ public class CloudyLauncher extends Application {
             //ImageView gameIcon = new ImageView("MeikyuuButterfly.jpg");
             //gameIcon.setFitHeight(100);
             //gameIcon.setFitWidth(100);
-            
+
             Rectangle gameIcon = new Rectangle(100, 100);
             gameIcon.setUserData(game);
-            
+
             gameIcon.setOnMouseClicked(new EventHandler<MouseEvent>() {
 
                 @Override
@@ -351,15 +384,15 @@ public class CloudyLauncher extends Application {
 
         addLoginTab(userRoot);
         addSignupTab(userRoot);
-        
+
         rootBorder.setLeft(userRoot);        
     }
-    
+
     @Override
     public void start(Stage primaryStage) throws Exception {
-       
+
         initialiseLoginPanel();
-        
+
 //      launcherScene.getStylesheets().add(CloudyLauncher.class.getResource("style.css").toExternalForm());        
         Scene launcherScene = new Scene(rootBorder, 500, 500);
         primaryStage.setScene(launcherScene);
