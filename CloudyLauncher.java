@@ -294,8 +294,8 @@ public class CloudyLauncher extends Application {
 
         JSONArray users = gameObj.getJSONArray("users");
         List<String> gUsers = new ArrayList<String>();
-        for (int i = 0; i < users.length(); i++) {            
-            String uUsername = users.getJSONObject(i).getString("username");
+        for (int i = 0; i < users.length(); i++) {
+            String uUsername = Integer.toString(users.getInt(i));
             gUsers.add(uUsername);
         }
 
