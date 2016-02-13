@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import javafx.application.Application;
@@ -164,25 +165,7 @@ public class CloudyLauncher extends Application {
 
             if (connection.getResponseCode() == HttpURLConnection.HTTP_BAD_REQUEST) {
 
-                String errorMessage = "";
-
-                BufferedReader errorReader = new BufferedReader(new InputStreamReader(connection.getErrorStream()));
-                JSONObject errorResponse = new JSONObject(errorReader.readLine());
-
-                if (errorResponse.has("username")) {
-                    errorMessage = errorMessage + "\nUsername: " + errorResponse.getJSONArray("username").getString(0);
-                }
-
-                if (errorResponse.has("password")) {
-                    errorMessage = errorMessage + "\nPassword: " + errorResponse.getJSONArray("password").getString(0);
-                }
-
-                if (errorResponse.has("non_field_errors")) {
-                    errorMessage = errorMessage + "\n" + errorResponse.getJSONArray("non_field_errors").getString(0);
-                }
-
-                setFeedback(errorMessage);
-                errorReader.close();
+                setErrorMessageFromConnection(connection);
 
             } else {
 
@@ -205,6 +188,65 @@ public class CloudyLauncher extends Application {
         }
     }
 
+    private void setErrorMessageFromConnection(HttpURLConnection connection) {
+        String errorMessage = "";
+
+        BufferedReader errorReader = new BufferedReader(new InputStreamReader(connection.getErrorStream()));
+        JSONObject errorResponse;
+        try {
+            errorResponse = new JSONObject(errorReader.readLine());
+
+            if (errorResponse.has("username")) {
+                errorMessage = errorMessage + "\nUsername: " + errorResponse.getJSONArray("username").getString(0);
+            }
+
+            if (errorResponse.has("password")) {
+                errorMessage = errorMessage + "\nPassword: " + errorResponse.getJSONArray("password").getString(0);
+            }
+
+            if (errorResponse.has("non_field_errors")) {
+                errorMessage = errorMessage + "\n" + errorResponse.getJSONArray("non_field_errors").getString(0);
+            }
+
+            if (errorResponse.has("email")) {
+                errorMessage = errorMessage + "\nEmail: " + errorResponse.getJSONArray("email").getString(0); 
+            } 
+
+            if (errorResponse.has("first_name")) {
+                errorMessage = errorMessage + "\nFirst Name: " + errorResponse.getJSONArray("first_name").getString(0); 
+            }
+
+            if (errorResponse.has("last_name")) {
+                errorMessage = errorMessage + "\nLast Name: " + errorResponse.getJSONArray("last_name").getString(0); 
+            }
+
+            if (errorResponse.has("detail")) {
+                errorMessage = errorResponse.getJSONArray("username").getString(0);
+            }
+
+            if (errorResponse.has("game")) {
+                errorMessage = errorMessage + "\nGame: " + errorResponse.getJSONArray("game").getString(0);
+            }
+
+            if (errorResponse.has("controller")) {
+                errorMessage = errorMessage + "\nController: " + errorResponse.getJSONArray("controller").getString(0); 
+            }
+
+            if (errorResponse.has("player")) {
+                errorMessage = errorMessage + "\nPlayer: " + errorResponse.getJSONArray("player").getString(0); 
+            }
+
+            setFeedback(errorMessage);
+            errorReader.close();
+
+        } catch (JSONException e) {
+            setFeedback("Error parsing the response from server");
+
+        } catch (IOException e) {
+            setFeedback("Error accessing the error stream");
+        }
+    }
+
     private void attemptUserRegistration(String username, String password, String email, String firstName, String lastName) {
 
         try {
@@ -222,34 +264,9 @@ public class CloudyLauncher extends Application {
             writer.flush();
             writer.close();
 
-            if (connection.getResponseCode() == HttpURLConnection.HTTP_BAD_REQUEST) {   
-                String errorMessage = "";
+            if (connection.getResponseCode() == HttpURLConnection.HTTP_BAD_REQUEST) {
 
-                BufferedReader errorReader = new BufferedReader(new InputStreamReader(connection.getErrorStream()));
-                JSONObject errorResponse = new JSONObject(errorReader.readLine());
-
-                if (errorResponse.has("username")) {
-                    errorMessage = errorMessage + "\nUsername: " + errorResponse.getJSONArray("username").getString(0);
-                }
-
-                if (errorResponse.has("password")) {
-                    errorMessage = errorMessage + "\nPassword: " + errorResponse.getJSONArray("password").getString(0); 
-                }
-
-                if (errorResponse.has("email")) {
-                    errorMessage = errorMessage + "\nEmail: " + errorResponse.getJSONArray("email").getString(0); 
-                } 
-
-                if (errorResponse.has("first_name")) {
-                    errorMessage = errorMessage + "\nFirst Name: " + errorResponse.getJSONArray("first_name").getString(0); 
-                }
-
-                if (errorResponse.has("last_name")) {
-                    errorMessage = errorMessage + "\nLast Name: " + errorResponse.getJSONArray("last_name").getString(0); 
-                }
-
-                setFeedback(errorMessage);
-                errorReader.close();
+                setErrorMessageFromConnection(connection);
 
             } else {
 
@@ -304,17 +321,7 @@ public class CloudyLauncher extends Application {
             if (connection.getResponseCode() == HttpURLConnection.HTTP_FORBIDDEN) {
                 // if login (and token retrieval) is successful, should never reach here.
 
-                String errorMessage = "";
-
-                BufferedReader errorReader = new BufferedReader(new InputStreamReader(connection.getErrorStream()));
-                JSONObject errorResponse = new JSONObject(errorReader.readLine());
-
-                if (errorResponse.has("detail")) {
-                    errorMessage = errorResponse.getJSONArray("username").getString(0);
-                }
-
-                setFeedback(errorMessage);
-                errorReader.close();
+                setErrorMessageFromConnection(connection);
 
             } else {
                 setFeedback("token recognised.");
@@ -357,25 +364,8 @@ public class CloudyLauncher extends Application {
 
             if (connection.getResponseCode() == HttpURLConnection.HTTP_BAD_REQUEST) {
                 // if system is working properly, should not reach here   
-                String errorMessage = "";
 
-                BufferedReader errorReader = new BufferedReader(new InputStreamReader(connection.getErrorStream()));
-                JSONObject errorResponse = new JSONObject(errorReader.readLine());
-
-                if (errorResponse.has("game")) {
-                    errorMessage = errorMessage + "\nGame: " + errorResponse.getJSONArray("game").getString(0);
-                }
-
-                if (errorResponse.has("controller")) {
-                    errorMessage = errorMessage + "\nController: " + errorResponse.getJSONArray("controller").getString(0); 
-                }
-
-                if (errorResponse.has("player")) {
-                    errorMessage = errorMessage + "\nPlayer: " + errorResponse.getJSONArray("player").getString(0); 
-                }
-
-                setFeedback(errorMessage);
-                errorReader.close();
+                setErrorMessageFromConnection(connection);
 
             } else {
 
