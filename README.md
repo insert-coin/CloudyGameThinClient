@@ -25,3 +25,30 @@ Important Note: If you use the 32-bit version of Python, then you need the 32-bi
 1. Install VLC: [https://www.videolan.org/vlc/index.html](https://www.videolan.org/vlc/index.html). Check whether you are using the 32-bit or 64-bit version of Python, and get the same version for VLC. 
 2. Open your terminal at the repository directory. 
 3. Type `pip install -r requirements.txt`.
+
+
+# CloudyLauncher
+This is an application that allows users to access and manage games available to them.
+
+## Prerequisites for compiling
+You need:
+
+1. JavaFX 2.0 or newer
+2. Java SE 6.0 or newer 
+3. JSON dependency
+    - can be obtained from [here](http://mvnrepository.com/artifact/org.json/json)
+    - version used in development: 20151123
+
+### To compile on the command line
+Include the json jar in the classpath:
+```bash
+javac -cp path/to/json/jar/file CloudyLauncher.java Game.java
+```
+
+### To run on the command line
+Include the json jar in the classpath:
+```bash
+java -cp .:path/to/json/jar/file CloudyLauncher
+```
+
+Note: The above is for linux, use ; instead of : for windows.
