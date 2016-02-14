@@ -397,7 +397,7 @@ public class CloudyLauncher extends Application {
             // launch the thin_client. 
             // to be changed: thin_client should receive the controllerId as input. 
             // default action: thin client assumes controllerId = 0
-            Runtime.getRuntime().exec("python ../../CloudyGameThinClient/thin_client.py");
+            Runtime.getRuntimer().exec("python thin_client.py");
 
         } catch (IOException e) {
             setFeedback("Error joining game");
