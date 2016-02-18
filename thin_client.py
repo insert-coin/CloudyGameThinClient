@@ -275,8 +275,13 @@ def startClient(playerControllerID):
 
     pygame.quit()
 
-def main():
-    startClient(0)
+def main(playerControllerID):
+    startClient(playerControllerID)
     
 if __name__ == '__main__':
-    main()
+    # If an argument is passed with the script
+    if len(sys.argv) > 1:
+        main(sys.argv[1])
+    # If no argument, launch with playerControllerID as 0
+    else:
+        main(0)
