@@ -477,14 +477,19 @@ public class CloudyLauncher extends Application {
         addSignupTab(userRoot);
 
         rootBorder.setLeft(userRoot);
-        rootBorder.setTop(null);
     }
 
     private void initialiseLauncher() {
-        initialiseLoginPanel();
+        rootBorder.setTop(null);
+        rootBorder.setBottom(null);
+        rootBorder.setLeft(null);
+        rootBorder.setRight(null);
+        rootBorder.setCenter(null);
+
         setFeedback("");
         setToken("");
         listOfGames.clear();
+        initialiseLoginPanel();
     }
 
     @Override
