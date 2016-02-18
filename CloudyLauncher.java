@@ -38,7 +38,7 @@ public class CloudyLauncher extends Application {
     private String baseurl = "http://127.0.0.1:8000";
     private String token = "";
     private String feedback = "";
-    private List<Game> listOfGames;
+    private List<Game> listOfGames = new ArrayList<Game>();
     private BorderPane rootBorder = new BorderPane();
 
     private void setToken(String newToken) {
@@ -326,15 +326,12 @@ public class CloudyLauncher extends Application {
             } else {
                 setFeedback("token recognised.");
 
-                JSONArray gameListString = new JSONArray(response);            
-                List<Game> gameList = new ArrayList<Game>();
+                JSONArray gameListString = new JSONArray(response);
 
                 for (int i = 0; i < gameListString.length(); i++) {
                     JSONObject game = gameListString.getJSONObject(i);
-                    gameList.add(getGameFromJson(game));
+                    listOfGames.add(getGameFromJson(game));
                 }
-
-                listOfGames = gameList; 
             }
 
         } catch (IOException e) {
@@ -397,7 +394,7 @@ public class CloudyLauncher extends Application {
             // launch the thin_client. 
             // to be changed: thin_client should receive the controllerId as input. 
             // default action: thin client assumes controllerId = 0
-            Runtime.getRuntimer().exec("python thin_client.py");
+            Runtime.getRuntime().exec("python thin_client.py");
 
         } catch (IOException e) {
             setFeedback("Error joining game");
@@ -460,6 +457,15 @@ public class CloudyLauncher extends Application {
         gameRoot.setAlignment(Pos.CENTER);
         gameRoot.setPrefColumns(6);
 
+        Button logoutButton = new Button("Log out");
+        logoutButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                initialiseLauncher();
+            }
+        });
+
+        rootBorder.setTop(logoutButton);
         rootBorder.setCenter(gameRoot);
         rootBorder.setLeft(null);
     }
@@ -470,13 +476,26 @@ public class CloudyLauncher extends Application {
         addLoginTab(userRoot);
         addSignupTab(userRoot);
 
-        rootBorder.setLeft(userRoot);        
+        rootBorder.setLeft(userRoot);
+    }
+
+    private void initialiseLauncher() {
+        rootBorder.setTop(null);
+        rootBorder.setBottom(null);
+        rootBorder.setLeft(null);
+        rootBorder.setRight(null);
+        rootBorder.setCenter(null);
+
+        setFeedback("");
+        setToken("");
+        listOfGames.clear();
+        initialiseLoginPanel();
     }
 
     @Override
     public void start(Stage primaryStage) throws Exception {
 
-        initialiseLoginPanel();
+        initialiseLauncher();
 
 //      launcherScene.getStylesheets().add(CloudyLauncher.class.getResource("style.css").toExternalForm());        
         Scene launcherScene = new Scene(rootBorder, 500, 500);
