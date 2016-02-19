@@ -22,15 +22,6 @@ class thin_client_test(unittest.TestCase):
     def test_initializePygame_30FPS(self):
         assertTrue(thin_client.initializePygame(30), "initializePygame at 30 FPS fail")
         assertTrue(thin_client.initializePygame(60), "initializePygame at 60 FPS fail")       
-        
-    # Check if vlc is initialized successfully
-    # Assumes initializePygame has no errors
-    def test_initializeStream(self):
-        thin_client.initializePygame(30)
-        assertTrue(thin_client.initializeStream(0), "initializeStream with playerControllerID 0 fail")
-        assertTrue(thin_client.initializeStream(1), "initializeStream with playerControllerID 1 fail")
-        assertTrue(thin_client.initializeStream(2), "initializeStream with playerControllerID 2 fail") 
-        assertTrue(thin_client.initializeStream(3), "initializeStream with playerControllerID 0 fail")    
 
 if __name__ == '__main__':
     unittest.main()

@@ -202,8 +202,6 @@ def initializeStream(playerControllerID):
     # Start movieAddress playback
     player.play()
     
-    return True
-    
 def startClient(playerControllerID):
     sequence = 0
     print("UDP target IP:", UDP_IP)
