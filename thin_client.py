@@ -90,7 +90,7 @@ ASCII_TO_UE_CHARCODE = {
 """
 Keyboard:
 8bit Version (Currently use 0)
-8bit Protocol Type : (Keyboard (0), Mouse (1), Gamepad, etc.)
+8bit Protocol Type : (Keyboard (1), Mouse (2), Gamepad, etc.)
 32bit Sequence (counter for event)
 8bit ControllerID (start from 0)
 32bit UEKeyCode (A, B, , Z, 0, ... ,9, punctuation, etc.)
@@ -99,7 +99,7 @@ Keyboard:
 
 Mouse:
 8bit Version (Currently use 0)
-8bit Protocol Type : (Keyboard (0), Mouse (1), Gamepad, etc.)
+8bit Protocol Type : (Keyboard (1), Mouse (2), Gamepad, etc.)
 32bit Sequence (counter for event)
 8bit ControllerID (start from 0)
 32bit x-axis movement
@@ -152,6 +152,8 @@ def initializePygame(FPS):
     screen.blit(label, (renderPosX, renderPosY))
     screen.blit(mouseLabel, (renderPosX - 100, renderPosY + 50))
     pygame.display.update()
+    
+    return True
     
 # Taken from https://gist.github.com/smathot/1521059 with modifications
 def initializeStream(playerControllerID):
