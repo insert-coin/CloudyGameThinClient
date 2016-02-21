@@ -6,16 +6,23 @@ from wheel.signatures import assertTrue
 class thin_client_test(unittest.TestCase):
     # Check if packAndSend increments the sequence number correctly       
     def test_packAndSend_sequence(self):
-        sequence = 0
         socketName = socket.socket(socket.AF_INET, # Internet
                                    socket.SOCK_DGRAM) # UDP
+        
+        sequence = 0
         finalSequence = thin_client.packAndSend(1, sequence, 0, 0, 0, 0, socketName)
         self.assertEqual(finalSequence, 1, "packAndSend sequence from 0 to 1 fail")
-        finalSequence = thin_client.packAndSend(1, finalSequence, 0, 0, 0, 0, socketName)
+        
+        sequence = 1
+        finalSequence = thin_client.packAndSend(1, sequence, 0, 0, 0, 0, socketName)
         self.assertEqual(finalSequence, 2, "packAndSend sequence from 1 to 2 fail")
-        finalSequence = thin_client.packAndSend(1, finalSequence, 0, 0, 0, 0, socketName)
+        
+        sequence = 2
+        finalSequence = thin_client.packAndSend(1, sequence, 0, 0, 0, 0, socketName)
         self.assertEqual(finalSequence, 3, "packAndSend sequence from 2 to 3 fail")
-        finalSequence = thin_client.packAndSend(1, finalSequence, 0, 0, 0, 0, socketName)
+        
+        sequence = 3
+        finalSequence = thin_client.packAndSend(1, sequence, 0, 0, 0, 0, socketName)
         self.assertEqual(finalSequence, 4, "packAndSend sequence from 3 to 4 fail")
         
     # Check if pygame is initialized successfully
