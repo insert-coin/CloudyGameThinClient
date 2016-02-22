@@ -21,6 +21,11 @@ public class CloudyLauncherRestructured extends Application {
     }
 
     @FXML
+    protected void handleJoinGame(ActionEvent event) {
+        System.out.println("handle join game");
+    }
+
+    @FXML
     protected void handleLogOut(ActionEvent event) {
         System.out.println("handle logout");
     }

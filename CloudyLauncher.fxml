@@ -108,5 +108,18 @@
             </tabs>
         </TabPane>
     </left>
+    <center>
+        <TilePane fx:id="gameRoot">
+        </TilePane>
 
+    </center>
+    <bottom>
+        <VBox>
+            <Text id="game-info" />
+            <Button
+                text="Join Game"
+                onAction="#handleJoinGame" />
+            <Text id="join-feedback" />
+        </VBox>
+    </bottom>
 </BorderPane>
