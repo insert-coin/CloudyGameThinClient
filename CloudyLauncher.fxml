@@ -18,6 +18,9 @@
     fx:controller="CloudyLauncherRestructured"
     xmlns:fx="http://javafx.com/fxml"
     styleClass="root">
+    <top>
+        <Button text="Log Out" onAction="#handleLogOut"/>
+    </top>
     <left>
         <TabPane>
             <tabs>

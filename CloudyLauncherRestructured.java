@@ -20,6 +20,11 @@ public class CloudyLauncherRestructured extends Application {
         System.out.println("handle login");
     }
 
+    @FXML
+    protected void handleLogOut(ActionEvent event) {
+        System.out.println("handle logout");
+    }
+
     @Override
     public void start(Stage primaryStage) throws Exception {
 
