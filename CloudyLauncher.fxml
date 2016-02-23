@@ -16,6 +16,7 @@
 <VBox
     fx:controller="CloudyLauncherRestructured"
     xmlns:fx="http://javafx.com/fxml"
+    fx:id="rootLayout"
     styleClass="root">
     <children>
         <TabPane>
@@ -29,7 +30,7 @@
                                 text="First Name"
                                 GridPane.columnIndex="0"
                                 GridPane.rowIndex="0" />
-                            <TextField
+                            <TextField fx:id="signupFirstName"
                                 promptText="Enter first name"
                                 GridPane.columnIndex="1"
                                 GridPane.rowIndex="0" />
@@ -37,7 +38,7 @@
                                 text="Last Name"
                                 GridPane.columnIndex="0"
                                 GridPane.rowIndex="1" />
-                            <TextField
+                            <TextField fx:id="signupLastName"
                                 promptText="Enter last name"
                                 GridPane.columnIndex="1"
                                 GridPane.rowIndex="1" />
@@ -45,7 +46,7 @@
                                 text="Email"
                                 GridPane.columnIndex="0"
                                 GridPane.rowIndex="2" />
-                            <TextField
+                            <TextField fx:id="signupEmail"
                                 promptText="Enter email"
                                 GridPane.columnIndex="1"
                                 GridPane.rowIndex="2" />
@@ -53,7 +54,7 @@
                                 text="Username"
                                 GridPane.columnIndex="0"
                                 GridPane.rowIndex="3" />
-                            <TextField
+                            <TextField fx:id="signupUsername"
                                 promptText="Enter username"
                                 GridPane.columnIndex="1"
                                 GridPane.rowIndex="3" />
@@ -61,7 +62,7 @@
                                 text="Password"
                                 GridPane.columnIndex="0"
                                 GridPane.rowIndex="4" />
-                            <TextField
+                            <TextField fx:id="signupPassword"
                                 promptText="Enter password"
                                 GridPane.columnIndex="1"
                                 GridPane.rowIndex="4" />
@@ -70,7 +71,7 @@
                         <Button
                             text="Sign Up"
                             onAction="#handleSignIn" />
-                        <Text id="signup-feedback" />
+                        <Text fx:id="signupFeedback" />
                     </VBox>
                 </Tab>
                 <Tab
@@ -82,7 +83,7 @@
                                 text="Username"
                                 GridPane.columnIndex="0"
                                 GridPane.rowIndex="0" />
-                            <TextField
+                            <TextField fx:id="loginUsername"
                                 promptText="Enter username"
                                 GridPane.columnIndex="1"
                                 GridPane.rowIndex="0" />
@@ -90,7 +91,7 @@
                                 text="Password"
                                 GridPane.columnIndex="0"
                                 GridPane.rowIndex="1" />
-                            <TextField
+                            <TextField fx:id="loginPassword"
                                 promptText="Enter password"
                                 GridPane.columnIndex="1"
                                 GridPane.rowIndex="1" />
@@ -98,12 +99,12 @@
                         <Button
                             text="Login"
                             onAction="#handleLogin" />
-                        <Text id="login-feedback" />
+                        <Text fx:id="loginFeedback" />
                     </VBox>
                 </Tab>
             </tabs>
         </TabPane>
-        <VBox>
+        <VBox fx:id="gameDisplayLayout">
             <children>
                 <Button
                     text="Log Out"
@@ -115,11 +116,11 @@
             </children>
         </VBox>
         <VBox>
-            <Text id="game-info" />
+            <Text fx:id="gameInfo" />
             <Button
                 text="Join Game"
                 onAction="#handleJoinGame" />
-            <Text id="join-feedback" />
+            <Text fx:id="joinFeedback" />
         </VBox>
     </children>
 </VBox>

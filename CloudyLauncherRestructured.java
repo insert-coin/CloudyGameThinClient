@@ -6,18 +6,33 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.control.TabPane;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 public class CloudyLauncherRestructured extends Application {
 
-    private VBox rootLayout;
-    private Node manageUserPanel;
-    private VBox gameDisplayLayout;
-    private Node gameInfo;
+    @FXML private VBox rootLayout;
+    @FXML private TabPane manageUserPanel;
+    @FXML private VBox gameDisplayLayout;
+    @FXML private Node gameInfo;
+
+    @FXML TextField signupEmail;
+    @FXML TextField signupFirstName;
+    @FXML TextField signupLastName;
+    @FXML TextField signupUsername;
+    @FXML Text signupFeedback;
+
+    @FXML TextField signupPassword;
+    @FXML TextField loginUsername;
+    @FXML TextField loginPassword;
+    @FXML Text loginFeedback;
 
     @FXML TilePane gameRoot;
 
@@ -45,10 +60,6 @@ public class CloudyLauncherRestructured extends Application {
         try {
             rootLayout = (VBox) FXMLLoader.load(getClass().getResource("CloudyLauncher.fxml"));
             ObservableList<Node> rChildren = rootLayout.getChildren();
-            System.out.println(rChildren);
-            manageUserPanel = rChildren.get(0);
-            gameDisplayLayout = (VBox) rChildren.get(1);
-            gameInfo = rChildren.get(2);
 
             rChildren.remove(1, rChildren.size());
 
