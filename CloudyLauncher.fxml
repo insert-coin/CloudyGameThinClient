@@ -13,15 +13,11 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.text.Text?>
 
-
-<BorderPane
+<VBox
     fx:controller="CloudyLauncherRestructured"
     xmlns:fx="http://javafx.com/fxml"
     styleClass="root">
-    <top>
-        <Button text="Log Out" onAction="#handleLogOut"/>
-    </top>
-    <left>
+    <children>
         <TabPane>
             <tabs>
                 <Tab
@@ -107,13 +103,17 @@
                 </Tab>
             </tabs>
         </TabPane>
-    </left>
-    <center>
-        <TilePane fx:id="gameRoot">
-        </TilePane>
+        <VBox>
+            <children>
+                <Button
+                    text="Log Out"
+                    onAction="#handleLogOut" />
 
-    </center>
-    <bottom>
+                <TilePane fx:id="gameRoot">
+                </TilePane>
+
+            </children>
+        </VBox>
         <VBox>
             <Text id="game-info" />
             <Button
@@ -121,5 +121,7 @@
                 onAction="#handleJoinGame" />
             <Text id="join-feedback" />
         </VBox>
-    </bottom>
-</BorderPane>
+    </children>
+</VBox>
+
+ 
