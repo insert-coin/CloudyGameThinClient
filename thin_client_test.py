@@ -11,24 +11,32 @@ class thin_client_test(unittest.TestCase):
         
         sequence = 0
         finalSequence = thin_client.packAndSend(1, sequence, 0, 0, 0, 0, socketName)
-        self.assertEqual(finalSequence, 1, "packAndSend sequence from 0 to 1 fail")
+        self.assertEqual(finalSequence, 1, "packAndSend: fail to increase sequence from 0 to 1.")
         
         sequence = 1
         finalSequence = thin_client.packAndSend(1, sequence, 0, 0, 0, 0, socketName)
-        self.assertEqual(finalSequence, 2, "packAndSend sequence from 1 to 2 fail")
+        self.assertEqual(finalSequence, 2, "packAndSend: fail to increase sequence from 1 to 2.")
         
         sequence = 2
         finalSequence = thin_client.packAndSend(1, sequence, 0, 0, 0, 0, socketName)
-        self.assertEqual(finalSequence, 3, "packAndSend sequence from 2 to 3 fail")
+        self.assertEqual(finalSequence, 3, "packAndSend: fail to increase sequence from 2 to 3.")
         
         sequence = 3
         finalSequence = thin_client.packAndSend(1, sequence, 0, 0, 0, 0, socketName)
-        self.assertEqual(finalSequence, 4, "packAndSend sequence from 3 to 4 fail")
+        self.assertEqual(finalSequence, 4, "packAndSend: fail to increase sequence from 3 to 4.")
         
     # Check if pygame is initialized successfully
-    def test_initializePygame_30FPS(self):
-        assertTrue(thin_client.initializePygame(30), "initializePygame at 30 FPS fail")
-        assertTrue(thin_client.initializePygame(60), "initializePygame at 60 FPS fail")       
+    def test_initializePygame_30_fps(self):
+        try:
+            thin_client.initializePygame(30)
+        except:
+            self.fail("Fail to initialize 30 FPS")
+
+    def test_initializePygame_60_fps(self):
+        try:
+            thin_client.initializePygame(60)
+        except:
+            self.fail("Fail to initialize 60 FPS")    
 
 if __name__ == '__main__':
     unittest.main()

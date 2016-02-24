@@ -152,9 +152,7 @@ def initializePygame(FPS):
     screen.blit(label, (renderPosX, renderPosY))
     screen.blit(mouseLabel, (renderPosX - 100, renderPosY + 50))
     pygame.display.update()
-    
-    return True
-    
+
 # Taken from https://gist.github.com/smathot/1521059 with modifications
 def initializeStream(playerControllerID):
     # Tested formats: rtmp, rtsp, http
