@@ -49,6 +49,7 @@ public class CloudyLauncherRestructured extends Application {
     @FXML private Text loginFeedback;
 
     @FXML private TilePane gameRoot;
+    @FXML private VBox gameInfoPanel;
 
     private String baseurl = "http://127.0.0.1:8000";
     private String token = "";
@@ -82,7 +83,20 @@ public class CloudyLauncherRestructured extends Application {
     }
 
     private void handleDisplayGameInfo(MouseEvent event) {
-        System.out.println("handle display game info");
+        if (rootLayout.getChildren().contains(gameInfoPanel)) {
+            gameInfo.setText("");
+        } else {
+            rootLayout.getChildren().add(gameInfoPanel);
+        }
+
+//        ImageView selectedIcon = (ImageView) event.getTarget();
+        Rectangle selectedIcon = (Rectangle) event.getTarget();
+        Game selectedGame = (Game) selectedIcon.getUserData();
+
+        String baseGameInfo = "Name: %s\nPublisher: %s\nMaximum number of players: %s\nAvailability: %s";
+        gameInfo.setText(String.format(baseGameInfo, selectedGame.getName(),
+                                       selectedGame.getPublisher(),
+                                       selectedGame.getLimit(), "N.A."));
     }
 
     private void setToken(String newToken) {
@@ -353,7 +367,6 @@ public class CloudyLauncherRestructured extends Application {
 
         rootLayout.getChildren().remove(manageUserPanel);
         rootLayout.getChildren().add(gameDisplayLayout);
-        rootLayout.getChildren().add(gameInfo);
     }
 
     private void resetAllValues() {
