@@ -24,6 +24,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -77,7 +78,7 @@ public class CloudyLauncherRestructured extends Application {
 
     @FXML
     protected void handleLogOut(ActionEvent event) {
-        System.out.println("handle logout");
+        resetAllValues();
     }
 
     private void handleDisplayGameInfo(MouseEvent event) {
@@ -126,7 +127,7 @@ public class CloudyLauncherRestructured extends Application {
 
                 initialiseGameDisplayPanel();
 
-            } else{
+            } else {
                 setFeedback(connection.getHeaderField(0));
             }
 
@@ -346,13 +347,36 @@ public class CloudyLauncherRestructured extends Application {
     }
 
     private void initialiseGameDisplayPanel() {
-        gameDisplayLayout.getChildren().add(gameInfo);
 
         initialiseGameList();
         addGamesToDisplayList();
 
         rootLayout.getChildren().remove(manageUserPanel);
         rootLayout.getChildren().add(gameDisplayLayout);
+        rootLayout.getChildren().add(gameInfo);
+    }
+
+    private void resetAllValues() {
+
+        token = "";
+        feedback = "";
+        listOfGames.clear();
+
+        signupEmail.clear();
+        signupFirstName.clear();
+        signupLastName.clear();
+        signupUsername.clear();
+        signupPassword.clear();
+        signupFeedback.setText("");
+
+        loginUsername.clear();
+        loginPassword.clear();
+        loginFeedback.setText("");
+
+        gameInfo.setText("");
+        gameRoot.getChildren().clear();
+        rootLayout.getChildren().clear();
+        rootLayout.getChildren().add(manageUserPanel);
     }
 
     private void initialise() {
