@@ -5,17 +5,23 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import javafx.application.Application;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextField;
+import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
@@ -28,7 +34,7 @@ public class CloudyLauncherRestructured extends Application {
     @FXML private VBox rootLayout;
     @FXML private TabPane manageUserPanel;
     @FXML private VBox gameDisplayLayout;
-    @FXML private Node gameInfo;
+    @FXML private Text gameInfo;
 
     @FXML private TextField signupEmail;
     @FXML private TextField signupFirstName;
@@ -46,6 +52,7 @@ public class CloudyLauncherRestructured extends Application {
     private String baseurl = "http://127.0.0.1:8000";
     private String token = "";
     private String feedback = "";
+    private List<Game> listOfGames = new ArrayList<Game>();
     
     @FXML
     protected void handleSignUp(ActionEvent event) {
@@ -71,6 +78,10 @@ public class CloudyLauncherRestructured extends Application {
     @FXML
     protected void handleLogOut(ActionEvent event) {
         System.out.println("handle logout");
+    }
+
+    private void handleDisplayGameInfo(MouseEvent event) {
+        System.out.println("handle display game info");
     }
 
     private void setToken(String newToken) {
@@ -112,6 +123,8 @@ public class CloudyLauncherRestructured extends Application {
                 setToken(responseToken);
 
                 setFeedback("User recognised.");
+
+                initialiseGameDisplayPanel();
 
             } else{
                 setFeedback(connection.getHeaderField(0));
@@ -245,7 +258,104 @@ public class CloudyLauncherRestructured extends Application {
         }
     }
 
-    void initialise() {
+    private Game getGameFromJson(JSONObject gameObj) {
+
+        try {
+            String gId = Integer.toString(gameObj.getInt("id"));
+            String gName = gameObj.getString("name");
+            String gPublisher = gameObj.getString("publisher");
+            String gLimit = Integer.toString(gameObj.getInt("max_limit"));
+            String gAddress = gameObj.getString("address");
+
+            JSONArray users = gameObj.getJSONArray("users");
+            List<String> gUsers = new ArrayList<String>();
+
+            for (int i = 0; i < users.length(); i++) {
+                String uUsername = users.getString(i);
+                gUsers.add(uUsername);
+            }
+
+            Game newGame = new Game(gId, gName, gPublisher,
+                                    Integer.parseInt(gLimit), gAddress, gUsers);
+            return newGame;
+
+        } catch (JSONException e) {
+            gameInfo.setText("Error in parsing game information");
+
+        }
+        return null;
+    }
+
+    private void initialiseGameList() {
+        try {
+            URL url = new URL(baseurl + "/games/");
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+
+            String auth = "Token " + token;
+
+            connection.setRequestMethod("GET");
+            connection.setRequestProperty("Authorization", auth);
+            connection.setRequestProperty("Accept", "application/json");
+
+            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            String response = reader.readLine();
+            reader.close();
+
+            if (connection.getResponseCode() == HttpURLConnection.HTTP_FORBIDDEN) {
+                // if login (and token retrieval) is successful, should never reach here.
+
+                setErrorMessageFromConnection(connection);
+
+            } else if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                setFeedback("token recognised.");
+
+                JSONArray gameListString = new JSONArray(response);
+
+                for (int i = 0; i < gameListString.length(); i++) {
+                    JSONObject gameJSON = gameListString.getJSONObject(i);
+                    Game game = getGameFromJson(gameJSON);
+                    listOfGames.add(game);
+                }
+
+            } else {
+                setFeedback(connection.getHeaderField(0));
+            }
+
+        } catch (IOException e) {
+            setFeedback("Check connection to server.");
+        }
+    }
+
+    private void addGamesToDisplayList() {
+        for (Game game : listOfGames) {
+//            ImageView gameIcon = new ImageView("pix.jpg");
+//            gameIcon.setFitHeight(100);
+//            gameIcon.setFitWidth(100);
+
+            Rectangle gameIcon = new Rectangle(100, 100);
+            gameIcon.setUserData(game);
+            gameIcon.setOnMouseClicked(new EventHandler<MouseEvent>() {
+                @Override
+                public void handle(MouseEvent event) {
+                    handleDisplayGameInfo(event);
+                }
+            });
+
+            gameRoot.getChildren().add(gameIcon);
+        }
+    }
+
+    private void initialiseGameDisplayPanel() {
+        gameDisplayLayout.getChildren().add(gameInfo);
+
+        initialiseGameList();
+        addGamesToDisplayList();
+
+        rootLayout.getChildren().remove(manageUserPanel);
+        rootLayout.getChildren().add(gameDisplayLayout);
+    }
+
+    private void initialise() {
         try {
             rootLayout = (VBox) FXMLLoader.load(getClass().getResource("CloudyLauncher.fxml"));
             ObservableList<Node> rChildren = rootLayout.getChildren();
