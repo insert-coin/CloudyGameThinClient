@@ -30,7 +30,8 @@
                                 text="First Name"
                                 GridPane.columnIndex="0"
                                 GridPane.rowIndex="0" />
-                            <TextField fx:id="signupFirstName"
+                            <TextField
+                                fx:id="signupFirstName"
                                 promptText="Enter first name"
                                 GridPane.columnIndex="1"
                                 GridPane.rowIndex="0" />
@@ -38,7 +39,8 @@
                                 text="Last Name"
                                 GridPane.columnIndex="0"
                                 GridPane.rowIndex="1" />
-                            <TextField fx:id="signupLastName"
+                            <TextField
+                                fx:id="signupLastName"
                                 promptText="Enter last name"
                                 GridPane.columnIndex="1"
                                 GridPane.rowIndex="1" />
@@ -46,7 +48,8 @@
                                 text="Email"
                                 GridPane.columnIndex="0"
                                 GridPane.rowIndex="2" />
-                            <TextField fx:id="signupEmail"
+                            <TextField
+                                fx:id="signupEmail"
                                 promptText="Enter email"
                                 GridPane.columnIndex="1"
                                 GridPane.rowIndex="2" />
@@ -54,7 +57,8 @@
                                 text="Username"
                                 GridPane.columnIndex="0"
                                 GridPane.rowIndex="3" />
-                            <TextField fx:id="signupUsername"
+                            <TextField
+                                fx:id="signupUsername"
                                 promptText="Enter username"
                                 GridPane.columnIndex="1"
                                 GridPane.rowIndex="3" />
@@ -62,7 +66,8 @@
                                 text="Password"
                                 GridPane.columnIndex="0"
                                 GridPane.rowIndex="4" />
-                            <TextField fx:id="signupPassword"
+                            <TextField
+                                fx:id="signupPassword"
                                 promptText="Enter password"
                                 GridPane.columnIndex="1"
                                 GridPane.rowIndex="4" />
@@ -70,7 +75,7 @@
 
                         <Button
                             text="Sign Up"
-                            onAction="#handleSignIn" />
+                            onAction="#handleSignUp" />
                         <Text fx:id="signupFeedback" />
                     </VBox>
                 </Tab>
@@ -83,7 +88,8 @@
                                 text="Username"
                                 GridPane.columnIndex="0"
                                 GridPane.rowIndex="0" />
-                            <TextField fx:id="loginUsername"
+                            <TextField
+                                fx:id="loginUsername"
                                 promptText="Enter username"
                                 GridPane.columnIndex="1"
                                 GridPane.rowIndex="0" />
@@ -91,7 +97,8 @@
                                 text="Password"
                                 GridPane.columnIndex="0"
                                 GridPane.rowIndex="1" />
-                            <TextField fx:id="loginPassword"
+                            <TextField
+                                fx:id="loginPassword"
                                 promptText="Enter password"
                                 GridPane.columnIndex="1"
                                 GridPane.rowIndex="1" />
