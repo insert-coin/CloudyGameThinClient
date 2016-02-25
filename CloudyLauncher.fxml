@@ -14,7 +14,7 @@
 <?import javafx.scene.text.Text?>
 
 <VBox
-    fx:controller="CloudyLauncherRestructured"
+    fx:controller="CloudyLauncher"
     xmlns:fx="http://javafx.com/fxml"
     fx:id="rootLayout"
     styleClass="root">
