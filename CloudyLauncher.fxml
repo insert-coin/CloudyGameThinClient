@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.net.URL?>
+
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.PasswordField?>
@@ -24,8 +26,8 @@
                 <Tab
                     text="Sign Up"
                     closable="false">
-                    <VBox id="signup-panel">
-                        <GridPane>
+                    <VBox styleClass="user-panel">
+                        <GridPane styleClass="grid-pane">
                             <Label
                                 text="Email"
                                 GridPane.columnIndex="0"
@@ -61,14 +63,15 @@
                         <Button
                             text="Sign Up"
                             onAction="#handleSignUp" />
-                        <Text fx:id="signupFeedback" />
+                        <Text fx:id="signupFeedback" styleClass="feedback"/>
+
                     </VBox>
                 </Tab>
                 <Tab
                     text="Login"
                     closable="false">
-                    <VBox id="login-panel">
-                        <GridPane>
+                    <VBox styleClass="user-panel">
+                        <GridPane styleClass="grid-pane">
                             <Label
                                 text="Username"
                                 GridPane.columnIndex="0"
@@ -93,28 +96,31 @@
                         <Button
                             text="Login"
                             onAction="#handleLogin" />
-                        <Text fx:id="loginFeedback" />
+                        <Text fx:id="loginFeedback" styleClass="feedback"/>
                     </VBox>
                 </Tab>
             </tabs>
         </TabPane>
-        <VBox fx:id="gameDisplayLayout">
+        <VBox fx:id="gameDisplayLayout" styleClass="game-tile-layout">
             <children>
                 <Button
                     text="Log Out"
                     onAction="#handleLogOut" />
 
-                <TilePane fx:id="gameRoot">
+                <TilePane fx:id="gameRoot" styleClass="game-root">
                 </TilePane>
 
             </children>
         </VBox>
-        <VBox fx:id="gameInfoPanel">
-            <Text fx:id="gameInfo" />
+        <VBox fx:id="gameInfoPanel" styleClass="game-info">
+            <Text fx:id="gameInfo" styleClass="feedback"/>
             <Button
                 text="Join Game"
                 onAction="#handleJoinGame" />
-            <Text fx:id="joinFeedback" />
+            <Text fx:id="joinFeedback" styleClass="feedback"/>
         </VBox>
     </children>
+    <stylesheets>
+        <URL value="@style.css" />
+    </stylesheets>
 </VBox>

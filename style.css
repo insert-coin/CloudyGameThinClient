@@ -1,0 +1,80 @@
+.root {
+    -fx-background-color: #023350;
+}
+
+.user-panel {
+    -fx-alignment: top-center;
+    -fx-min-height: 400;
+    -fx-padding: 20;
+    -fx-spacing: 20;
+}
+
+.grid-pane {
+    -fx-alignment: center;
+    -fx-hgap: 20;
+    -fx-vgap: 10;
+    -fx-text-fill: #FDCCAF;
+}
+
+.button {
+    -fx-background-color: #0D4E75;
+    -fx-text-fill: #D98F63;
+}
+
+.button:hover {
+    -fx-background-color: #6DA9CC;
+    -fx-text-fill: #925633;
+}
+
+.tab-header-background{
+    -fx-background-color: #0D4E75;
+}
+
+.headers-region{
+    -fx-color: #D98F63;
+}
+
+.tab:selected {
+    -fx-background-color: #6DA9CC;
+}
+
+.tab:hover{
+    -fx-background-color: #6DA9CC;
+}
+
+.tab-label{
+    -fx-text-fill: #925633;
+}
+
+.label {
+    -fx-text-fill: #FDCCAF;
+}
+
+.feedback {
+    -fx-fill: #FDCCAF;
+    -fx-height: 100;
+    -fx-min-height: 100;
+}
+
+.text-field {
+    -fx-background-color: #6DA9CC;
+    -fx-highlight-text-fill: #F2B18A;
+    -fx-prompt-text-fill: #925633;
+}
+
+.game-tile-layout {
+    -fx-alignment: top-right;
+    -fx-padding: 10;
+    -fx-spacing: 20;
+}
+
+.game-root {
+    -fx-alignment: center;
+    -fx-hgap: 10;
+    -fx-vgap: 10;
+}
+
+.game-info {
+    -fx-alignment: center;
+    -fx-spacing: 20;
+}
