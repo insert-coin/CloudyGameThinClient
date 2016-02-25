@@ -27,24 +27,6 @@
                     <VBox id="signup-panel">
                         <GridPane>
                             <Label
-                                text="First Name"
-                                GridPane.columnIndex="0"
-                                GridPane.rowIndex="0" />
-                            <TextField
-                                fx:id="signupFirstName"
-                                promptText="Enter first name"
-                                GridPane.columnIndex="1"
-                                GridPane.rowIndex="0" />
-                            <Label
-                                text="Last Name"
-                                GridPane.columnIndex="0"
-                                GridPane.rowIndex="1" />
-                            <TextField
-                                fx:id="signupLastName"
-                                promptText="Enter last name"
-                                GridPane.columnIndex="1"
-                                GridPane.rowIndex="1" />
-                            <Label
                                 text="Email"
                                 GridPane.columnIndex="0"
                                 GridPane.rowIndex="2" />

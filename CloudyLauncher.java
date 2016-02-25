@@ -38,8 +38,6 @@ public class CloudyLauncher extends Application {
     @FXML private Text gameInfo;
 
     @FXML private TextField signupEmail;
-    @FXML private TextField signupFirstName;
-    @FXML private TextField signupLastName;
     @FXML private TextField signupUsername;
     @FXML private Text signupFeedback;
 
@@ -61,9 +59,7 @@ public class CloudyLauncher extends Application {
     protected void handleSignUp(ActionEvent event) {
         attemptUserRegistration(signupUsername.getText(),
                                 signupPassword.getText(),
-                                signupEmail.getText(),
-                                signupFirstName.getText(),
-                                signupLastName.getText());
+                                signupEmail.getText());
         signupFeedback.setText(feedback);
     }
 
@@ -164,8 +160,7 @@ public class CloudyLauncher extends Application {
     }
 
     private void attemptUserRegistration(String username, String password,
-                                         String email, String firstName,
-                                         String lastName) {
+                                         String email) {
 
         try {
             URL url = new URL(baseurl + "/users/");
@@ -173,9 +168,8 @@ public class CloudyLauncher extends Application {
 
             connection.setRequestMethod("POST");
             connection.setRequestProperty("Accept", "application/json");
-            String queryData = String.format("username=%s&password=%s&email=%s&first_name=%s&last_name=%s",
-                                             username, password, email,
-                                             firstName, lastName);
+            String queryData = String.format("username=%s&password=%s&email=%s",
+                                             username, password, email);
 
             connection.setDoOutput(true);
             DataOutputStream writer = new DataOutputStream(connection.getOutputStream());
@@ -432,8 +426,6 @@ public class CloudyLauncher extends Application {
         listOfGames.clear();
 
         signupEmail.clear();
-        signupFirstName.clear();
-        signupLastName.clear();
         signupUsername.clear();
         signupPassword.clear();
         signupFeedback.setText("");
