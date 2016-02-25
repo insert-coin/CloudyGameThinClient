@@ -29,30 +29,30 @@
                             <Label
                                 text="Email"
                                 GridPane.columnIndex="0"
-                                GridPane.rowIndex="2" />
+                                GridPane.rowIndex="0" />
                             <TextField
                                 fx:id="signupEmail"
                                 promptText="Enter email"
                                 GridPane.columnIndex="1"
-                                GridPane.rowIndex="2" />
+                                GridPane.rowIndex="0" />
                             <Label
                                 text="Username"
                                 GridPane.columnIndex="0"
-                                GridPane.rowIndex="3" />
+                                GridPane.rowIndex="1" />
                             <TextField
                                 fx:id="signupUsername"
                                 promptText="Enter username"
                                 GridPane.columnIndex="1"
-                                GridPane.rowIndex="3" />
+                                GridPane.rowIndex="1" />
                             <Label
                                 text="Password"
                                 GridPane.columnIndex="0"
-                                GridPane.rowIndex="4" />
+                                GridPane.rowIndex="2" />
                             <TextField
                                 fx:id="signupPassword"
                                 promptText="Enter password"
                                 GridPane.columnIndex="1"
-                                GridPane.rowIndex="4" />
+                                GridPane.rowIndex="2" />
                         </GridPane>
 
                         <Button
@@ -69,21 +69,21 @@
                             <Label
                                 text="Username"
                                 GridPane.columnIndex="0"
-                                GridPane.rowIndex="0" />
+                                GridPane.rowIndex="1" />
                             <TextField
                                 fx:id="loginUsername"
                                 promptText="Enter username"
                                 GridPane.columnIndex="1"
-                                GridPane.rowIndex="0" />
+                                GridPane.rowIndex="1" />
                             <Label
                                 text="Password"
                                 GridPane.columnIndex="0"
-                                GridPane.rowIndex="1" />
+                                GridPane.rowIndex="2" />
                             <TextField
                                 fx:id="loginPassword"
                                 promptText="Enter password"
                                 GridPane.columnIndex="1"
-                                GridPane.rowIndex="1" />
+                                GridPane.rowIndex="2" />
                         </GridPane>
                         <Button
                             text="Login"
