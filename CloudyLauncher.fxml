@@ -34,7 +34,8 @@
                                 fx:id="signupEmail"
                                 promptText="Enter email"
                                 GridPane.columnIndex="1"
-                                GridPane.rowIndex="0" />
+                                GridPane.rowIndex="0"
+                                onAction="#handleSignUp" />
                             <Label
                                 text="Username"
                                 GridPane.columnIndex="0"
@@ -43,7 +44,8 @@
                                 fx:id="signupUsername"
                                 promptText="Enter username"
                                 GridPane.columnIndex="1"
-                                GridPane.rowIndex="1" />
+                                GridPane.rowIndex="1"
+                                onAction="#handleSignUp"/>
                             <Label
                                 text="Password"
                                 GridPane.columnIndex="0"
@@ -52,7 +54,8 @@
                                 fx:id="signupPassword"
                                 promptText="Enter password"
                                 GridPane.columnIndex="1"
-                                GridPane.rowIndex="2" />
+                                GridPane.rowIndex="2"
+                                onAction="#handleSignUp" />
                         </GridPane>
 
                         <Button
@@ -74,7 +77,8 @@
                                 fx:id="loginUsername"
                                 promptText="Enter username"
                                 GridPane.columnIndex="1"
-                                GridPane.rowIndex="1" />
+                                GridPane.rowIndex="1"
+                                onAction="#handleLogin" />
                             <Label
                                 text="Password"
                                 GridPane.columnIndex="0"
@@ -83,7 +87,8 @@
                                 fx:id="loginPassword"
                                 promptText="Enter password"
                                 GridPane.columnIndex="1"
-                                GridPane.rowIndex="2" />
+                                GridPane.rowIndex="2"
+                                onAction="#handleLogin"/>
                         </GridPane>
                         <Button
                             text="Login"
