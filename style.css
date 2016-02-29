@@ -51,7 +51,8 @@
 }
 
 .feedback {
-    -fx-fill: #FDCCAF;
+    -fx-fill: #F28A8A;
+    -fx-font-weight: bold;
     -fx-height: 100;
     -fx-min-height: 100;
 }
