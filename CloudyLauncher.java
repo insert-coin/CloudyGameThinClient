@@ -36,6 +36,7 @@ public class CloudyLauncher extends Application {
     @FXML private VBox rootLayout;
     @FXML private TabPane manageUserPanel;
     @FXML private HBox gameDisplayLayout;
+    @FXML private Text gameName;
     @FXML private Text gameInfo;
 
     @FXML private TextField signupEmail;
@@ -113,8 +114,9 @@ public class CloudyLauncher extends Application {
             Rectangle selectedIcon = (Rectangle) event.getTarget();
             selectedGame = (Game) selectedIcon.getUserData();
 
-            String baseGameInfo = "Name: %s\nPublisher: %s\nMaximum number of players: %s\nAvailability: %s";
-            gameInfo.setText(String.format(baseGameInfo, selectedGame.getName(),
+            String baseGameInfo = "Publisher: %s\nMaximum number of players: %s\nAvailability: %s";
+            gameName.setText(selectedGame.getName());
+            gameInfo.setText(String.format(baseGameInfo,
                                            selectedGame.getPublisher(),
                                            selectedGame.getLimit(), "N.A."));
 

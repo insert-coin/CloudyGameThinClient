@@ -84,6 +84,14 @@
     -fx-vgap: 10;
 }
 
+.game-info-name {
+    -fx-fill: #FDCCAF;
+    -fx-font-family: "Arial Narrow";
+    -fx-font-weight: bold;
+    -fx-font-size: 25;
+    -fx-underline: true;
+}
+
 .game-info {
     -fx-alignment: center;
     -fx-spacing: 20;

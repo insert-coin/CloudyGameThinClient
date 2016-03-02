@@ -117,6 +117,7 @@
                 </children>
             </VBox>
             <VBox fx:id="gameInfoPanel" styleClass="game-info">
+                <Text fx:id="gameName" styleClass="game-info-name"/>
                 <Text fx:id="gameInfo" styleClass="feedback"/>
                 <Button
                     text="Join Game"
