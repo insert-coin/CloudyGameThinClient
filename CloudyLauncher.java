@@ -49,6 +49,7 @@ public class CloudyLauncher extends Application {
 
     @FXML private TilePane gameRoot;
     @FXML private VBox gameInfoPanel;
+    @FXML private VBox tilePaneBase;
 
     private String baseurl = "http://127.0.0.1:8000";
     private String token = "";
@@ -94,15 +95,38 @@ public class CloudyLauncher extends Application {
         resetAllValues();
     }
 
+    @FXML
     private void handleDisplayGameInfo(MouseEvent event) {
-//        ImageView selectedIcon = (ImageView) event.getTarget();
-        Rectangle selectedIcon = (Rectangle) event.getTarget();
-        selectedGame = (Game) selectedIcon.getUserData();
 
-        String baseGameInfo = "Name: %s\nPublisher: %s\nMaximum number of players: %s\nAvailability: %s";
-        gameInfo.setText(String.format(baseGameInfo, selectedGame.getName(),
-                                       selectedGame.getPublisher(),
-                                       selectedGame.getLimit(), "N.A."));
+        Node target = (Node) event.getTarget();
+        String tid = target.getId();
+        double infoWidth = 250;
+
+        if (target instanceof Rectangle) {
+//        if (target instanceof ImageView) {
+            if (!gameDisplayLayout.getChildren().contains(gameInfoPanel)) {
+                gameDisplayLayout.getChildren().add(gameInfoPanel);
+                gameStage.setWidth(gameStage.getWidth() + infoWidth);
+            }
+
+//          ImageView selectedIcon = (ImageView) event.getTarget();
+            Rectangle selectedIcon = (Rectangle) event.getTarget();
+            selectedGame = (Game) selectedIcon.getUserData();
+
+            String baseGameInfo = "Name: %s\nPublisher: %s\nMaximum number of players: %s\nAvailability: %s";
+            gameInfo.setText(String.format(baseGameInfo, selectedGame.getName(),
+                                           selectedGame.getPublisher(),
+                                           selectedGame.getLimit(), "N.A."));
+
+        } else if (tid.equals("tilePaneBase") || tid.equals("gameRoot")) {
+            if (gameDisplayLayout.getChildren().contains(gameInfoPanel)) {
+                gameDisplayLayout.getChildren().remove(gameInfoPanel);
+                gameStage.setWidth(gameStage.getWidth() - infoWidth);
+            }
+
+        } else {
+            System.out.println("click!!");
+        }
     }
 
     private void setToken(String newToken) {
@@ -410,6 +434,10 @@ public class CloudyLauncher extends Application {
 
         } catch (IllegalArgumentException e) {
             // gameStage already initialised
+        }
+
+        if (gameDisplayLayout.getChildren().contains(gameInfoPanel)) {
+            gameDisplayLayout.getChildren().remove(gameInfoPanel);
         }
 
         userStage.hide();

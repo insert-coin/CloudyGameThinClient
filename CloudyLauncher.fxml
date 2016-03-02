@@ -101,8 +101,11 @@
                 </Tab>
             </tabs>
         </TabPane>
-        <HBox  fx:id="gameDisplayLayout" styleClass="game-display-layout">
-            <VBox styleClass="game-tile-layout">
+        <HBox
+            fx:id="gameDisplayLayout"
+            styleClass="game-display-layout"
+            onMouseClicked="#handleDisplayGameInfo">
+            <VBox fx:id="tilePaneBase" styleClass="game-tile-layout">
                 <children>
                     <Button
                         text="Log Out"
