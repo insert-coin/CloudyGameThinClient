@@ -71,6 +71,7 @@
     -fx-prompt-text-fill: #925633;
 }
 
+
 .game-tile-layout {
     -fx-alignment: top-right;
     -fx-padding: 10;
@@ -86,4 +87,8 @@
 .game-info {
     -fx-alignment: center;
     -fx-spacing: 20;
+    -fx-min-width: 250;
+    -fx-border-width: 0 0 0 5;
+    -fx-border-color: radial-gradient(center 50% 50%, radius 50%,  #023350, #925633, #023350);
+    -fx-border-style: solid;
 }
