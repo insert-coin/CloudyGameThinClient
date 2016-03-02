@@ -22,6 +22,7 @@ import javafx.scene.control.TabPane;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
@@ -34,7 +35,7 @@ public class CloudyLauncher extends Application {
 
     @FXML private VBox rootLayout;
     @FXML private TabPane manageUserPanel;
-    @FXML private VBox gameDisplayLayout;
+    @FXML private HBox gameDisplayLayout;
     @FXML private Text gameInfo;
 
     @FXML private TextField signupEmail;
@@ -54,6 +55,8 @@ public class CloudyLauncher extends Application {
     private String feedback = "";
     private List<Game> listOfGames = new ArrayList<Game>();
     private Game selectedGame;
+    static Stage userStage = new Stage();
+    static Stage gameStage = new Stage();
     
     @FXML
     protected void handleSignUp(ActionEvent event) {
@@ -92,12 +95,6 @@ public class CloudyLauncher extends Application {
     }
 
     private void handleDisplayGameInfo(MouseEvent event) {
-        if (rootLayout.getChildren().contains(gameInfoPanel)) {
-            gameInfo.setText("");
-        } else {
-            rootLayout.getChildren().add(gameInfoPanel);
-        }
-
 //        ImageView selectedIcon = (ImageView) event.getTarget();
         Rectangle selectedIcon = (Rectangle) event.getTarget();
         selectedGame = (Game) selectedIcon.getUserData();
@@ -407,8 +404,18 @@ public class CloudyLauncher extends Application {
         initialiseGameList();
         addGamesToDisplayList();
 
-        rootLayout.getChildren().remove(manageUserPanel);
-        rootLayout.getChildren().add(gameDisplayLayout);
+        try {
+            Scene scene = new Scene(gameDisplayLayout, 500, 300);
+            gameStage.setScene(scene);
+
+        } catch (IllegalArgumentException e) {
+            // gameStage already initialised
+        }
+
+        userStage.hide();
+        gameStage.show();
+        gameStage.setMinWidth(500);
+        gameStage.sizeToScene();
     }
 
     private void resetAllValues() {
@@ -428,8 +435,9 @@ public class CloudyLauncher extends Application {
 
         gameInfo.setText("");
         gameRoot.getChildren().clear();
-        rootLayout.getChildren().clear();
-        rootLayout.getChildren().add(manageUserPanel);
+
+        userStage.show();
+        gameStage.hide();
     }
 
     private void initialise() {
@@ -448,11 +456,12 @@ public class CloudyLauncher extends Application {
     public void start(Stage primaryStage) throws Exception {
 
         initialise();
-        Scene scene = new Scene(rootLayout, 300, 275);
+        Scene scene = new Scene(rootLayout, 300, 300);
 
-        primaryStage.setTitle("CloudyLauncher");
-        primaryStage.setScene(scene);
-        primaryStage.show();
+        userStage.setResizable(false);
+        userStage.setTitle("CloudyLauncher");
+        userStage.setScene(scene);
+        userStage.show();
     }
 
     public static void main(String[] args) {

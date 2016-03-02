@@ -101,24 +101,30 @@
                 </Tab>
             </tabs>
         </TabPane>
-        <VBox fx:id="gameDisplayLayout" styleClass="game-tile-layout">
-            <children>
+        <HBox  fx:id="gameDisplayLayout" styleClass="game-display-layout">
+            <VBox styleClass="game-tile-layout">
+                <children>
+                    <Button
+                        text="Log Out"
+                        onAction="#handleLogOut" />
+
+                    <TilePane fx:id="gameRoot" styleClass="game-root">
+                    </TilePane>
+
+                </children>
+            </VBox>
+            <VBox fx:id="gameInfoPanel" styleClass="game-info">
+                <Text fx:id="gameInfo" styleClass="feedback"/>
                 <Button
-                    text="Log Out"
-                    onAction="#handleLogOut" />
+                    text="Join Game"
+                    onAction="#handleJoinGame" />
+                <Text fx:id="joinFeedback" styleClass="feedback"/>
+            </VBox>
+            <stylesheets>
+                <URL value="@style.css" />
+            </stylesheets>
 
-                <TilePane fx:id="gameRoot" styleClass="game-root">
-                </TilePane>
-
-            </children>
-        </VBox>
-        <VBox fx:id="gameInfoPanel" styleClass="game-info">
-            <Text fx:id="gameInfo" styleClass="feedback"/>
-            <Button
-                text="Join Game"
-                onAction="#handleJoinGame" />
-            <Text fx:id="joinFeedback" styleClass="feedback"/>
-        </VBox>
+        </HBox>
     </children>
     <stylesheets>
         <URL value="@style.css" />
