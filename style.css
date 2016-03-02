@@ -19,11 +19,16 @@
 .button {
     -fx-background-color: #0D4E75;
     -fx-text-fill: #D98F63;
+    -fx-font-family: "trajan pro";
 }
 
 .button:hover {
     -fx-background-color: #6DA9CC;
     -fx-text-fill: #925633;
+}
+
+.tab-pane {
+    -fx-tab-min-width: 120;
 }
 
 .tab-header-background{
@@ -32,6 +37,8 @@
 
 .headers-region{
     -fx-color: #D98F63;
+    -fx-font-weight: bold;
+    -fx-font-family: "trajan pro";
 }
 
 .tab:selected {
@@ -48,6 +55,7 @@
 
 .label {
     -fx-text-fill: #FDCCAF;
+    -fx-font-size: 15;
 }
 
 .feedback {
