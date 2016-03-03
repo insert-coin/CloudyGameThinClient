@@ -154,21 +154,14 @@ def initializePygame(FPS):
     pygame.display.update()
 
 # Taken from https://gist.github.com/smathot/1521059 with modifications
-def initializeStream(playerControllerID):
+def initializeStream(IP, port):
     # Tested formats: rtmp, rtsp, http
     # Get more test links here: http://www.vlc.eu.pn/
     # http://futuretv.cdn.mangomolo.com/futuretv/smil:futuretv.smil/gmswf.m3u8
     # rtmp://wowza-bnr.cdp.triple-it.nl/bnr/BNRstudio1
     # rtsp://wowzaec2demo.streamlock.net/vod/mp4:BigBuckBunny_115k.mov
-
-    if (playerControllerID == 0):
-        movieAddress = "http://localhost:30000"
-    elif (playerControllerID == 1):
-        movieAddress = "http://localhost:30001"
-    elif (playerControllerID == 2):
-        movieAddress = "http://localhost:30002"
-    elif (playerControllerID == 3):
-        movieAddress = "http://localhost:30003"
+   
+    movieAddress = "http://" + IP + ":" + port
 
     # Create instane of VLC and create reference to movieAddress.
     vlcInstance = vlc.Instance()
@@ -200,7 +193,7 @@ def initializeStream(playerControllerID):
     # Start movieAddress playback
     player.play()
     
-def startClient(playerControllerID):
+def startClient(IP, port, playerControllerID):
     sequence = 0
     print("UDP target IP:", UDP_IP)
     print("UDP target port:", UDP_PORT)
@@ -209,7 +202,7 @@ def startClient(playerControllerID):
                          socket.SOCK_DGRAM) # UDP
 
     initializePygame(30) #FPS
-    initializeStream(playerControllerID)
+    initializeStream(IP, port)
     isRunning = True
     isMouseGrabbed = True
 
@@ -275,13 +268,14 @@ def startClient(playerControllerID):
 
     pygame.quit()
 
-def main(playerControllerID):
-    startClient(playerControllerID)
+def main(IP, port, playerControllerID):
+    startClient(IP, port, int(playerControllerID))
     
 if __name__ == '__main__':
     # If an argument is passed with the script
-    if len(sys.argv) > 1:
-        main(sys.argv[1])
-    # If no argument, launch with playerControllerID as 0
+    # [IP, port, controllerID]
+    if len(sys.argv) > 3:
+        main(sys.argv[1], sys.argv[2], sys.argv[3])
+    # If none or missing argument, launch with these defaults
     else:
-        main(0)
+        main("127.0.0.1", 30000, 0)
