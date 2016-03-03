@@ -36,8 +36,6 @@ public class CloudyLauncher extends Application {
     @FXML private VBox rootLayout;
     @FXML private TabPane manageUserPanel;
     @FXML private HBox gameDisplayLayout;
-    @FXML private Text gameName;
-    @FXML private Text gameInfo;
 
     @FXML private TextField signupEmail;
     @FXML private TextField signupUsername;
@@ -51,6 +49,9 @@ public class CloudyLauncher extends Application {
     @FXML private TilePane gameRoot;
     @FXML private VBox gameInfoPanel;
     @FXML private VBox tilePaneBase;
+    @FXML private Text gameName;
+    @FXML private Text gameInfo;
+    @FXML private Text joinFeedback;
 
     private String baseurl = "http://127.0.0.1:8000";
     private String token = "";
@@ -80,7 +81,7 @@ public class CloudyLauncher extends Application {
         // used to launch the thin_client
         // to be changed: api is not yet updated, value not correct
         String controllerId = getControllerId(selectedGame);
-        gameInfo.setText(feedback);
+        joinFeedback.setText(feedback);
 
         try {
             controllerId = "0";
