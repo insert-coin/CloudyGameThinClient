@@ -63,7 +63,7 @@
                         <Button
                             text="Sign Up"
                             onAction="#handleSignUp" />
-                        <Text fx:id="signupFeedback" styleClass="feedback"/>
+                        <Text fx:id="signupFeedback" styleClass="feedback" wrappingWidth="290" />
 
                     </VBox>
                 </Tab>
@@ -96,7 +96,7 @@
                         <Button
                             text="Login"
                             onAction="#handleLogin" />
-                        <Text fx:id="loginFeedback" styleClass="feedback"/>
+                        <Text fx:id="loginFeedback" styleClass="feedback"  wrappingWidth="290" />
                     </VBox>
                 </Tab>
             </tabs>

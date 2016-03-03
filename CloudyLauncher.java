@@ -486,7 +486,7 @@ public class CloudyLauncher extends Application {
     public void start(Stage primaryStage) throws Exception {
 
         initialise();
-        Scene scene = new Scene(rootLayout, 300, 300);
+        Scene scene = new Scene(rootLayout, 320, 300);
 
         userStage.setResizable(false);
         userStage.setTitle("CloudyLauncher");
