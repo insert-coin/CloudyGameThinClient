@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.TilePane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.text.Text?>
+
+<VBox
+    fx:controller="CloudyLauncher"
+    xmlns:fx="http://javafx.com/fxml"
+    fx:id="rootLayout"
+    styleClass="root">
+    <children>
+        <TabPane fx:id="manageUserPanel">
+            <tabs>
+                <Tab
+                    text="Sign Up"
+                    closable="false">
+                    <VBox id="signup-panel">
+                        <GridPane>
+                            <Label
+                                text="Email"
+                                GridPane.columnIndex="0"
+                                GridPane.rowIndex="0" />
+                            <TextField
+                                fx:id="signupEmail"
+                                promptText="Enter email"
+                                GridPane.columnIndex="1"
+                                GridPane.rowIndex="0" />
+                            <Label
+                                text="Username"
+                                GridPane.columnIndex="0"
+                                GridPane.rowIndex="1" />
+                            <TextField
+                                fx:id="signupUsername"
+                                promptText="Enter username"
+                                GridPane.columnIndex="1"
+                                GridPane.rowIndex="1" />
+                            <Label
+                                text="Password"
+                                GridPane.columnIndex="0"
+                                GridPane.rowIndex="2" />
+                            <TextField
+                                fx:id="signupPassword"
+                                promptText="Enter password"
+                                GridPane.columnIndex="1"
+                                GridPane.rowIndex="2" />
+                        </GridPane>
+
+                        <Button
+                            text="Sign Up"
+                            onAction="#handleSignUp" />
+                        <Text fx:id="signupFeedback" />
+                    </VBox>
+                </Tab>
+                <Tab
+                    text="Login"
+                    closable="false">
+                    <VBox id="login-panel">
+                        <GridPane>
+                            <Label
+                                text="Username"
+                                GridPane.columnIndex="0"
+                                GridPane.rowIndex="1" />
+                            <TextField
+                                fx:id="loginUsername"
+                                promptText="Enter username"
+                                GridPane.columnIndex="1"
+                                GridPane.rowIndex="1" />
+                            <Label
+                                text="Password"
+                                GridPane.columnIndex="0"
+                                GridPane.rowIndex="2" />
+                            <TextField
+                                fx:id="loginPassword"
+                                promptText="Enter password"
+                                GridPane.columnIndex="1"
+                                GridPane.rowIndex="2" />
+                        </GridPane>
+                        <Button
+                            text="Login"
+                            onAction="#handleLogin" />
+                        <Text fx:id="loginFeedback" />
+                    </VBox>
+                </Tab>
+            </tabs>
+        </TabPane>
+        <VBox fx:id="gameDisplayLayout">
+            <children>
+                <Button
+                    text="Log Out"
+                    onAction="#handleLogOut" />
+
+                <TilePane fx:id="gameRoot">
+                </TilePane>
+
+            </children>
+        </VBox>
+        <VBox fx:id="gameInfoPanel">
+            <Text fx:id="gameInfo" />
+            <Button
+                text="Join Game"
+                onAction="#handleJoinGame" />
+            <Text fx:id="joinFeedback" />
+        </VBox>
+    </children>
+</VBox>
