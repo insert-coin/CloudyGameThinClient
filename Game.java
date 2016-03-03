@@ -7,7 +7,6 @@ public class Game {
     private String publisher;
     private Integer maxLimit;
     private String address;
-    private List<String> users;
 
     /** 
      * Constructor for a Game object.
@@ -20,13 +19,12 @@ public class Game {
      * @param gUsers      the users with access to the game
      *                    given format: "user1","user2","user3",...
      */
-    public Game(String gId, String gName, String gPublisher, Integer gLimit, String gAddress, List<String> gUsers) {
+    public Game(String gId, String gName, String gPublisher, Integer gLimit, String gAddress) {
         id = gId;
         name = gName;
         publisher = gPublisher;
         maxLimit = gLimit;
         address = gAddress;
-        users = gUsers;
     }
     
     /**
@@ -72,14 +70,5 @@ public class Game {
      */
     public String getAddress() {
         return address;
-    }
-    
-    /**
-     * Get method for the users
-     * 
-     * @return  the list of users with access to the game
-     */
-    public List<String> getUsers() {
-        return users;
     }
 }

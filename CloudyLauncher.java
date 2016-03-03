@@ -289,16 +289,8 @@ public class CloudyLauncher extends Application {
             String gLimit = Integer.toString(gameObj.getInt("max_limit"));
             String gAddress = gameObj.getString("address");
 
-            JSONArray users = gameObj.getJSONArray("users");
-            List<String> gUsers = new ArrayList<String>();
-
-            for (int i = 0; i < users.length(); i++) {
-                String uUsername = users.getString(i);
-                gUsers.add(uUsername);
-            }
-
             Game newGame = new Game(gId, gName, gPublisher,
-                                    Integer.parseInt(gLimit), gAddress, gUsers);
+                                    Integer.parseInt(gLimit), gAddress);
             return newGame;
 
         } catch (JSONException e) {
