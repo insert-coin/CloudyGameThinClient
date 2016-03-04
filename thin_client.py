@@ -112,9 +112,9 @@ i = signed int (4 bytes)
 """
 PACKET_FORMAT_KEY = "=BBIBIIB"
 PACKET_FORMAT_MOUSE = "=BBIBii"
-UDP_IP = "127.0.0.1"
+UDP_IP = "127.0.0.1" # Connection to Remote Controller
 UDP_PORT = 55555
-TCP_IP = "127.0.0.1"
+TCP_IP = "127.0.0.1" # Connection to CPP
 TCP_PORT = 55556
 VERSION = 0
 RESO_WIDTH = 640
@@ -161,7 +161,8 @@ def initializeStream(IP, port):
     # rtmp://wowza-bnr.cdp.triple-it.nl/bnr/BNRstudio1
     # rtsp://wowzaec2demo.streamlock.net/vod/mp4:BigBuckBunny_115k.mov
    
-    movieAddress = "http://" + IP + ":" + port
+    movieAddress = "http://" + str(IP) + ":" + str(port)
+    print (movieAddress)
 
     # Create instane of VLC and create reference to movieAddress.
     vlcInstance = vlc.Instance()
@@ -254,12 +255,11 @@ def startClient(IP, port, playerControllerID):
             print(pygame.mouse.get_pressed(), "=>", UEKeyCode)
             
         if (event.type == QUIT):
-            QUIT_MESSAGE = "quit_client"
-            MESSAGE_BYTE = QUIT_MESSAGE.encode("utf-8")
+            quitCommand = "0001000" + str(playerControllerID)
             try:
                 cpsocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                 cpsocket.connect((TCP_IP, TCP_PORT))
-                cpsocket.sendall(MESSAGE_BYTE)
+                cpsocket.sendall(quitCommand.encode("utf-8"))
             except socket.error as error:
                 print("Thin client:", os.strerror(error.errno));
             finally:
