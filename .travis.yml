@@ -14,5 +14,5 @@ install:
   - "pip install -r requirements.txt"
 # command to run tests
 script:
-  - py.test test_thin_client.py 
-  - py.test test_networking.py 
+  - py.test thin_client/test/test_thin_client.py 
+  - py.test thin_client/test/test_networking.py 
