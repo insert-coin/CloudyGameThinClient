@@ -11,7 +11,6 @@ def initializeStream(IP, port, pygame):
    
     movieAddress = "http://" + str(IP) + ":" + str(port)
     print (movieAddress)
-    movieAddress = "rtsp://wowzaec2demo.streamlock.net/vod/mp4:BigBuckBunny_115k.mov"
 
     # Create instane of VLC and create reference to movieAddress.
     vlcInstance = vlc.Instance()
