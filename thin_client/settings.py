@@ -25,6 +25,11 @@ RESO_HEIGHT = 480
 DEVICE_KEYBOARD = 1
 DEVICE_MOUSE = 2
 FPS = 30
+TEXT_WINDOW_TITLE = "CloudyGame Thin Client"
+TEXT_LOADING = "Loading..."
+TEXT_INSTRUCTIONS = "Press ESC to lock/unlock mouse."
+TEXT_FONT_SIZE = 30
+TEXT_COLOUR = (255, 255, 255)
 
 # Keyboard mappings
 ASCII_TO_UE_KEYCODE = {

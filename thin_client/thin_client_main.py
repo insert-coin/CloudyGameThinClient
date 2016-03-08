@@ -1,111 +1,119 @@
-import pygame
 import sys
+import os
+sys.path.append(os.path.dirname(os.getcwd()))
+import logging
+import pygame
+import argparse
 from pygame.locals import * 
 import thin_client.vlc_addon as vlc_addon
-import thin_client.networking as networking
-import thin_client.settings as s
+import thin_client.protocol as protocol
+import thin_client.settings as settings
     
-def initializePygame(FPS):
+def initialize_pygame(fps):
     pygame.init()
-    screen = pygame.display.set_mode((s.RESO_WIDTH, s.RESO_HEIGHT))
-    pygame.display.set_caption("Remote Keyboard")
+    screen = pygame.display.set_mode((settings.RESO_WIDTH, settings.RESO_HEIGHT))
+    pygame.display.set_caption(settings.TEXT_WINDOW_TITLE)
     pygame.mouse.set_visible(False) # Makes mouse invisible
     pygame.event.set_grab(True) # confines the mouse cursor to the window
-    frameInterval = int((1/FPS)*1000)
-    pygame.key.set_repeat(frameInterval, frameInterval) # 1 input per frame
+    frame_interval = int((1/fps)*1000)
+    pygame.key.set_repeat(frame_interval, frame_interval) # 1 input per frame
     
-    myFont = pygame.font.Font(None, 30)
-    label = myFont.render("Loading...", True, (255, 255, 255))
-    mouseLabel = myFont.render("Press ESC to lock/unlock mouse.", True, (255, 255, 255))
-    textRect = label.get_rect()
-    renderPosX = screen.get_rect().centerx - textRect.centerx
-    renderPosY = screen.get_rect().centery - textRect.centery
-    screen.blit(label, (renderPosX, renderPosY))
-    screen.blit(mouseLabel, (renderPosX - 100, renderPosY + 50))
+    my_font = pygame.font.Font(None, settings.TEXT_FONT_SIZE)
+    label = my_font.render(settings.TEXT_LOADING, True, settings.TEXT_COLOUR)
+    mouse_label = my_font.render(settings.TEXT_INSTRUCTIONS, True, settings.TEXT_COLOUR)
+    text_rect = label.get_rect()
+    render_pos_x = screen.get_rect().centerx - text_rect.centerx
+    render_pos_y = screen.get_rect().centery - text_rect.centery
+    screen.blit(label, (render_pos_x, render_pos_y))
+    screen.blit(mouse_label, (render_pos_x - 100, render_pos_y + 50))
     pygame.display.update()
 
     return pygame
 
-def processMouseButtons(playerControllerID, sequence, sock, pygame, event):
-    leftMouseButton, middleMouseButton, rightMouseButton = pygame.mouse.get_pressed()
-    if (leftMouseButton == 1):
-        UECharCode = 1
-    elif (middleMouseButton == 1):
-        UECharCode = 4
-    elif (rightMouseButton == 1):
-        UECharCode = 2
+def process_mouse_buttons(player_controller_id, sequence, sock, pygame, event):
+    left_mouse_button, middle_mouse_button, right_mouse_button = pygame.mouse.get_pressed()
+    if (left_mouse_button == 1):
+        ue_char_code = 1
+    elif (middle_mouse_button == 1):
+        ue_char_code = 4
+    elif (right_mouse_button == 1):
+        ue_char_code = 2
     else:
-        UECharCode = 0
-    UEKeyCode = UECharCode
+        ue_char_code = 0
+    ue_key_code = ue_char_code
     if (event.type == MOUSEBUTTONDOWN):
-        sequence = networking.packAndSend(s.DEVICE_KEYBOARD, sequence, playerControllerID, UEKeyCode, UECharCode, 2, sock)
+        sequence = protocol.pack_and_send(settings.DEVICE_KEYBOARD, sequence, player_controller_id, ue_key_code, ue_char_code, 2, sock)
     elif (event.type == MOUSEBUTTONUP):
-        sequence = networking.packAndSend(s.DEVICE_KEYBOARD, sequence, playerControllerID, UEKeyCode, UECharCode, 3, sock)
-    print(pygame.mouse.get_pressed(), "=>", UEKeyCode)
+        sequence = protocol.pack_and_send(settings.DEVICE_KEYBOARD, sequence, player_controller_id, ue_key_code, ue_char_code, 3, sock)
+    logging.info(pygame.mouse.get_pressed(), "=>", ue_key_code)
     
-def processMouseMotion(playerControllerID, sequence, sock, pygame, event):
+def process_mouse_motion(player_controller_id, sequence, sock, pygame, event):
     x, y = pygame.mouse.get_rel()
-    sequence = networking.packAndSend(s.DEVICE_MOUSE, sequence, playerControllerID, x, y, event.type, sock)
-    print("Mouse:", x,y)
+    sequence = protocol.pack_and_send(settings.DEVICE_MOUSE, sequence, player_controller_id, x, y, event.type, sock)
+    logging.info("Mouse:", x,y)
 
-def processKeyboardPress(playerControllerID, sequence, sock, pygame, event):
-    print("ASCII Key is:", event.key)
-    UEKeyCode = s.ASCII_TO_UE_KEYCODE.get(event.key, 0)
-    UECharCode = s.ASCII_TO_UE_CHARCODE.get(event.key, UEKeyCode)
-    UEKeyCode = UECharCode or UEKeyCode # This code is redundant. It changes nothing.
-    print(UEKeyCode, UECharCode)
-    sequence = networking.packAndSend(s.DEVICE_KEYBOARD, sequence, playerControllerID, UEKeyCode, UECharCode, event.type, sock)
-    print(event.key, "=>", UEKeyCode)
+def process_keyboard_press(player_controller_id, sequence, sock, pygame, event):
+    logging.info("ASCII Key is:", event.key)
+    ue_key_code = settings.ASCII_TO_UE_KEYCODE.get(event.key, 0)
+    ue_char_code = settings.ASCII_TO_UE_CHARCODE.get(event.key, ue_key_code)
+    ue_key_code = ue_char_code or ue_key_code # This code is redundant. It changes nothing.
+    logging.info(ue_key_code, ue_char_code)
+    sequence = protocol.pack_and_send(settings.DEVICE_KEYBOARD, sequence, player_controller_id, ue_key_code, ue_char_code, event.type, sock)
+    logging.info(event.key, "=>", ue_key_code)
 
-def toggleMouseGrab(pygame, isMouseGrabbed):
-    if (isMouseGrabbed == True):
-        isMouseGrabbed = False
+def toggle_mouse_grab(pygame, is_mouse_grabbed):
+    if (is_mouse_grabbed == True):
+        is_mouse_grabbed = False
         pygame.event.set_grab(False)
         pygame.mouse.set_visible(True)
     else:
-        isMouseGrabbed = True
+        is_mouse_grabbed = True
         pygame.event.set_grab(True)
         pygame.mouse.set_visible(False)
         
-    return isMouseGrabbed
+    return is_mouse_grabbed
 
-def startClient(IP, port, playerControllerID):
+def start_client(ip, port, player_controller_id):
     sequence = 0
     
-    sock = networking.initializeUDPSocket()
-    pygame = initializePygame(s.FPS) #FPS
-    pygame = vlc_addon.initializeStream(IP, port, pygame)
-    isRunning = True
-    isMouseGrabbed = True
+    sock = protocol.initialize_udp_socket()
+    pygame = initialize_pygame(settings.FPS) #FPS
+    pygame = vlc_addon.initialize_stream(ip, port, pygame)
+    is_running = True
+    is_mouse_grabbed = True
 
-    while (isRunning):
+    while (is_running):
         event = pygame.event.wait() # program will sleep if there are no events in the queue
 
         if (event.type == KEYDOWN or event.type == KEYUP):
-            processKeyboardPress(playerControllerID, sequence, sock, pygame, event)
+            process_keyboard_press(player_controller_id, sequence, sock, pygame, event)
             
             # To toggle mouse grabbing within the window
             if (event.type == KEYUP and event.key == K_ESCAPE):
-                isMouseGrabbed = toggleMouseGrab(pygame, isMouseGrabbed)
+                is_mouse_grabbed = toggle_mouse_grab(pygame, is_mouse_grabbed)
 
         if (event.type == pygame.MOUSEMOTION):
-            processMouseMotion(playerControllerID, sequence, sock, pygame, event)
+            process_mouse_motion(player_controller_id, sequence, sock, pygame, event)
         if (event.type == MOUSEBUTTONDOWN or event.type == MOUSEBUTTONUP):
-            processMouseButtons(playerControllerID, sequence, sock, pygame, event)            
+            process_mouse_buttons(player_controller_id, sequence, sock, pygame, event)            
         if (event.type == QUIT):
-            networking.sendQuitCommand(playerControllerID)
-            isRunning = False
+            protocol.send_quit_command(player_controller_id)
+            is_running = False
 
     pygame.quit()
 
-def main(IP, port, playerControllerID):
-    startClient(IP, port, int(playerControllerID))
+def main(ip, port, player_controller_id):
+    start_client(ip, port, int(player_controller_id))
     
 if __name__ == '__main__':
-    # If an argument is passed with the script
-    # [IP, port, controllerID]
-    if len(sys.argv) > 3:
-        main(sys.argv[1], sys.argv[2], sys.argv[3])
-    # If none or missing argument, launch with these defaults
-    else:
-        main("127.0.0.1", 30000, 0)
+    parser = argparse.ArgumentParser(description='Process some integers.')
+    parser.add_argument('string', metavar='ip', type=str, default="127.0.0.1",
+                       help="IP address to obtain video stream from")
+    parser.add_argument('integer', metavar='port', type=int, default=30000,
+                       help="Port of the IP address you are connecting to")
+    parser.add_argument('integer', metavar='player_id', type=int, default=0,
+                       help="Player controller ID of the player")
+    
+    args = parser.parse_args()
+    
+    main(sys.argv[1], sys.argv[2], sys.argv[3])

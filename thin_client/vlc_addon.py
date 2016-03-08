@@ -1,24 +1,26 @@
 import sys
 import vlc
+import logging
 
 # Taken from https://gist.github.com/smathot/1521059 with modifications
-def initializeStream(IP, port, pygame):
+def initialize_stream(IP, port, pygame):
     # Tested formats: rtmp, rtsp, http
     # Get more test links here: http://www.vlc.eu.pn/
     # http://futuretv.cdn.mangomolo.com/futuretv/smil:futuretv.smil/gmswf.m3u8
     # rtmp://wowza-bnr.cdp.triple-it.nl/bnr/BNRstudio1
     # rtsp://wowzaec2demo.streamlock.net/vod/mp4:BigBuckBunny_115k.mov
    
-    movieAddress = "http://" + str(IP) + ":" + str(port)
-    print (movieAddress)
+    movie_address = "http://" + str(IP) + ":" + str(port)
+    logging.info("Connecting to:", movie_address)
+    movie_address = "rtsp://wowzaec2demo.streamlock.net/vod/mp4:BigBuckBunny_115k.mov"
 
     # Create instane of VLC and create reference to movieAddress.
-    vlcInstance = vlc.Instance()
-    media = vlcInstance.media_new(movieAddress)
+    vlc_instance = vlc.Instance()
+    media = vlc_instance.media_new(movie_address)
     media.get_mrl()
     
     # Create new instance of vlc player
-    player = vlcInstance.media_player_new()
+    player = vlc_instance.media_player_new()
         
     # Pass pygame window id to vlc player, so it can render its contents there.
     win_id = pygame.display.get_wm_info()['window']
