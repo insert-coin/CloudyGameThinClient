@@ -12,7 +12,6 @@ def initialize_stream(IP, port, pygame):
    
     movie_address = "http://" + str(IP) + ":" + str(port)
     logging.info("Connecting to:", movie_address)
-    movie_address = "rtsp://wowzaec2demo.streamlock.net/vod/mp4:BigBuckBunny_115k.mov"
 
     # Create instane of VLC and create reference to movieAddress.
     vlc_instance = vlc.Instance()
