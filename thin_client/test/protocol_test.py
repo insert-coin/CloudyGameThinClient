@@ -32,5 +32,5 @@ class ProtocolTest(unittest.TestCase):
         final_sequence = protocol.pack_and_send(1, sequence, 0, 0, 0, 0, socket_name)
         self.assertEqual(final_sequence, 4, "packAndSend: fail to increase sequence from 3 to 4.")
         
-    if __name__ == '__main__':
-        unittest.main()
+if __name__ == '__main__':
+    unittest.main()
