@@ -1,5 +1,11 @@
 import string
 
+"""
+Packet formats:
+B = unsigned char (1 byte)
+I = unsigned int (4 bytes)
+i = signed int (4 bytes)
+"""
 # Networking constants
 PACKET_FORMAT_KEY = "=BBIBIIB"
 PACKET_FORMAT_MOUSE = "=BBIBii"

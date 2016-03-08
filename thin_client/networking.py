@@ -25,11 +25,6 @@ Mouse:
 8bit ControllerID (start from 0)
 32bit x-axis movement
 32bit y-axis movement
-
-Packet formats:
-B = unsigned char (1 byte)
-I = unsigned int (4 bytes)
-i = signed int (4 bytes)
 """
 def packAndSend(deviceType, sequence, controllerID, UEKeyCode, UECharCode, eventType, socketName):
     dataKeyboard = (s.VERSION, deviceType, sequence, controllerID, UEKeyCode, UECharCode, eventType)
