@@ -109,10 +109,10 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Process some integers.')
     parser.add_argument('string', metavar='ip', type=str, default="127.0.0.1",
                        help="IP address to obtain video stream from")
-    parser.add_argument('integer', metavar='port', type=int, default=30000,
-                       help="Port of the IP address you are connecting to")
-    parser.add_argument('integer', metavar='player_id', type=int, default=0,
-                       help="Player controller ID of the player")
+    parser.add_argument('integer', metavar='port', type=int, default=30000, choices=range(30000, 30004),
+                       help="Port of the IP address you are connecting to. Value from 30000 to 30003")
+    parser.add_argument('integer', metavar='player_id', type=int, default=0, choices=range(0, 4),
+                       help="Player controller ID of the player. Value from 0 to 3.")
     
     args = parser.parse_args()
     
