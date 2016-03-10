@@ -2,7 +2,7 @@ import os
 import struct
 import socket
 import logging
-from thin_client import settings
+import settings
 
 def initialize_udp_socket():
     sock = socket.socket(socket.AF_INET, # Internet
