@@ -53,10 +53,13 @@ public class CloudyLauncher extends Application {
     @FXML private Text gameInfo;
     @FXML private Text joinFeedback;
 
+    private double infoWidth = 250;
+
     private String baseurl = "http://127.0.0.1:8000";
     private String token = "";
     private String feedback = "";
     private List<Game> listOfGames = new ArrayList<Game>();
+    private List<String> listOfOwnedIds = new ArrayList<String>();
     private Game selectedGame;
     static Stage userStage = new Stage();
     static Stage gameStage = new Stage();
@@ -106,12 +109,51 @@ public class CloudyLauncher extends Application {
 
     @FXML
     protected void handleDisplayAllGames(ActionEvent event) {
-        System.out.println("handle display all games");
+        gameRoot.getChildren().clear();
+        for (Game game : listOfGames) {
+//          ImageView gameIcon = new ImageView("pix.jpg");
+//          gameIcon.setFitHeight(100);
+//          gameIcon.setFitWidth(100);
+
+          Rectangle gameIcon = new Rectangle(100, 100);
+          gameIcon.setUserData(game);
+          gameIcon.setOnMouseClicked(new EventHandler<MouseEvent>() {
+              @Override
+              public void handle(MouseEvent event) {
+                  handleDisplayGameInfo(event);
+              }
+          });
+
+          gameRoot.getChildren().add(gameIcon);
+      }
     }
 
     @FXML
     protected void handleDisplayMyGames(ActionEvent event) {
-        System.out.println("handle display my games");
+        gameRoot.getChildren().clear();
+        for (Game game : listOfGames) {
+//          ImageView gameIcon = new ImageView("pix.jpg");
+//          gameIcon.setFitHeight(100);
+//          gameIcon.setFitWidth(100);
+            if (listOfOwnedIds.contains(game.getId())) {
+
+                Rectangle gameIcon = new Rectangle(100, 100);
+                gameIcon.setUserData(game);
+                gameIcon.setOnMouseClicked(new EventHandler<MouseEvent>() {
+                    @Override
+                    public void handle(MouseEvent event) {
+                        handleDisplayGameInfo(event);
+                    }
+                });
+
+                gameRoot.getChildren().add(gameIcon);
+            }
+        }
+        if (gameDisplayLayout.getChildren().contains(gameInfoPanel)) {
+            gameDisplayLayout.getChildren().remove(gameInfoPanel);
+            gameStage.setWidth(gameStage.getWidth() - 250);
+        }
+
     }
 
     @FXML
@@ -119,7 +161,6 @@ public class CloudyLauncher extends Application {
 
         Node target = (Node) event.getTarget();
         String tid = target.getId();
-        double infoWidth = 250;
 
         if (target instanceof Rectangle) {
 //        if (target instanceof ImageView) {
@@ -134,9 +175,17 @@ public class CloudyLauncher extends Application {
 
             String baseGameInfo = "Publisher: %s\nMaximum number of players: %s\nAvailability: %s";
             gameName.setText(selectedGame.getName());
+            boolean isGameOwned = listOfOwnedIds.contains(selectedGame.getId());
+
+            String availability;
+            if (isGameOwned) {
+                availability = "Owned";
+            } else {
+                availability = "Not Owned";
+            }
             gameInfo.setText(String.format(baseGameInfo,
                                            selectedGame.getPublisher(),
-                                           selectedGame.getLimit(), "N.A."));
+                                           selectedGame.getLimit(), availability));
 
         } else if (tid.equals("tilePaneBase") || tid.equals("gameRoot")) {
             if (gameDisplayLayout.getChildren().contains(gameInfoPanel)) {
@@ -471,6 +520,50 @@ public class CloudyLauncher extends Application {
         }
     }
 
+    private void getOwnedGamesList() {
+        try {
+            URL url = new URL(baseurl + "/game-ownership/?user=" + loginUsername.getText());
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+
+            String auth = "Token " + token;
+
+            connection.setRequestMethod("GET");
+            connection.setRequestProperty("Authorization", auth);
+            connection.setRequestProperty("Accept", "application/json");
+
+            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            String response = reader.readLine();
+            reader.close();
+
+            if (connection.getResponseCode() == HttpURLConnection.HTTP_FORBIDDEN) {
+                System.out.println("invalid token");
+                setErrorMessageFromConnection(connection);
+
+            } else if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                setFeedback("token recognised.");
+
+                JSONArray gameOwnedString = new JSONArray(response);
+
+                for (int i = 0; i < gameOwnedString.length(); i++) {
+                    JSONObject gameJSON = gameOwnedString.getJSONObject(i);
+                    try {
+                        String gId = Integer.toString(gameJSON.getInt("game"));
+                        listOfOwnedIds.add(gId);
+
+                    } catch (JSONException e) {
+                        gameInfo.setText("Error in parsing owned games");
+                    }
+                }
+
+            } else {
+                setFeedback(connection.getHeaderField(0));
+            }
+
+        } catch (IOException e) {
+            setFeedback("Check connection to server.");
+        }
+    }
+
     private void addGamesToDisplayList() {
         for (Game game : listOfGames) {
 //            ImageView gameIcon = new ImageView("pix.jpg");
@@ -493,7 +586,8 @@ public class CloudyLauncher extends Application {
     private void initialiseGameDisplayPanel() {
 
         initialiseGameList();
-        addGamesToDisplayList();
+        getOwnedGamesList();
+        handleDisplayAllGames(new ActionEvent());
 
         try {
             Scene scene = new Scene(gameDisplayLayout, 500, 300);
@@ -518,6 +612,7 @@ public class CloudyLauncher extends Application {
         token = "";
         feedback = "";
         listOfGames.clear();
+        listOfOwnedIds.clear();
 
         signupEmail.clear();
         signupUsername.clear();
