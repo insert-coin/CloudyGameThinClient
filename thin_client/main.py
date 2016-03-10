@@ -5,10 +5,10 @@ import logging
 import pygame
 import argparse
 from pygame.locals import * 
-import thin_client.vlc_addon as vlc_addon
-import thin_client.protocol as protocol
-import thin_client.settings as settings
-    
+from thin_client import vlc_addon
+from thin_client import protocol
+from thin_client import settings
+
 def initialize_pygame(fps):
     pygame.init()
     screen = pygame.display.set_mode((settings.RESO_WIDTH, settings.RESO_HEIGHT))

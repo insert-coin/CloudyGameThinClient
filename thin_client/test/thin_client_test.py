@@ -1,5 +1,5 @@
 import unittest
-import thin_client.thin_client_main as thin_client
+import thin_client.main as thin_client
             
 class ThinClientTest (unittest.TestCase):      
     # Check if pygame is initialized successfully

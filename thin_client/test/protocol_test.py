@@ -1,5 +1,5 @@
 import unittest
-import thin_client.protocol as protocol
+from thin_client import protocol
 import socket
 
 class ProtocolTest(unittest.TestCase):
