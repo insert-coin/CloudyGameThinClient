@@ -22,6 +22,7 @@ import javafx.scene.control.TabPane;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
@@ -34,8 +35,7 @@ public class CloudyLauncher extends Application {
 
     @FXML private VBox rootLayout;
     @FXML private TabPane manageUserPanel;
-    @FXML private VBox gameDisplayLayout;
-    @FXML private Text gameInfo;
+    @FXML private HBox gameDisplayLayout;
 
     @FXML private TextField signupEmail;
     @FXML private TextField signupUsername;
@@ -48,12 +48,18 @@ public class CloudyLauncher extends Application {
 
     @FXML private TilePane gameRoot;
     @FXML private VBox gameInfoPanel;
+    @FXML private VBox tilePaneBase;
+    @FXML private Text gameName;
+    @FXML private Text gameInfo;
+    @FXML private Text joinFeedback;
 
     private String baseurl = "http://127.0.0.1:8000";
     private String token = "";
     private String feedback = "";
     private List<Game> listOfGames = new ArrayList<Game>();
     private Game selectedGame;
+    static Stage userStage = new Stage();
+    static Stage gameStage = new Stage();
     
     @FXML
     protected void handleSignUp(ActionEvent event) {
@@ -75,7 +81,7 @@ public class CloudyLauncher extends Application {
         // used to launch the thin_client
         // to be changed: api is not yet updated, value not correct
         String controllerId = getControllerId(selectedGame);
-        gameInfo.setText(feedback);
+        joinFeedback.setText(feedback);
 
         try {
             controllerId = "0";
@@ -91,21 +97,39 @@ public class CloudyLauncher extends Application {
         resetAllValues();
     }
 
+    @FXML
     private void handleDisplayGameInfo(MouseEvent event) {
-        if (rootLayout.getChildren().contains(gameInfoPanel)) {
-            gameInfo.setText("");
+
+        Node target = (Node) event.getTarget();
+        String tid = target.getId();
+        double infoWidth = 250;
+
+        if (target instanceof Rectangle) {
+//        if (target instanceof ImageView) {
+            if (!gameDisplayLayout.getChildren().contains(gameInfoPanel)) {
+                gameDisplayLayout.getChildren().add(gameInfoPanel);
+                gameStage.setWidth(gameStage.getWidth() + infoWidth);
+            }
+
+//          ImageView selectedIcon = (ImageView) event.getTarget();
+            Rectangle selectedIcon = (Rectangle) event.getTarget();
+            selectedGame = (Game) selectedIcon.getUserData();
+
+            String baseGameInfo = "Publisher: %s\nMaximum number of players: %s\nAvailability: %s";
+            gameName.setText(selectedGame.getName());
+            gameInfo.setText(String.format(baseGameInfo,
+                                           selectedGame.getPublisher(),
+                                           selectedGame.getLimit(), "N.A."));
+
+        } else if (tid.equals("tilePaneBase") || tid.equals("gameRoot")) {
+            if (gameDisplayLayout.getChildren().contains(gameInfoPanel)) {
+                gameDisplayLayout.getChildren().remove(gameInfoPanel);
+                gameStage.setWidth(gameStage.getWidth() - infoWidth);
+            }
+
         } else {
-            rootLayout.getChildren().add(gameInfoPanel);
+            System.out.println("click!!");
         }
-
-//        ImageView selectedIcon = (ImageView) event.getTarget();
-        Rectangle selectedIcon = (Rectangle) event.getTarget();
-        selectedGame = (Game) selectedIcon.getUserData();
-
-        String baseGameInfo = "Name: %s\nPublisher: %s\nMaximum number of players: %s\nAvailability: %s";
-        gameInfo.setText(String.format(baseGameInfo, selectedGame.getName(),
-                                       selectedGame.getPublisher(),
-                                       selectedGame.getLimit(), "N.A."));
     }
 
     private void setToken(String newToken) {
@@ -407,8 +431,22 @@ public class CloudyLauncher extends Application {
         initialiseGameList();
         addGamesToDisplayList();
 
-        rootLayout.getChildren().remove(manageUserPanel);
-        rootLayout.getChildren().add(gameDisplayLayout);
+        try {
+            Scene scene = new Scene(gameDisplayLayout, 500, 300);
+            gameStage.setScene(scene);
+
+        } catch (IllegalArgumentException e) {
+            // gameStage already initialised
+        }
+
+        if (gameDisplayLayout.getChildren().contains(gameInfoPanel)) {
+            gameDisplayLayout.getChildren().remove(gameInfoPanel);
+        }
+
+        userStage.hide();
+        gameStage.show();
+        gameStage.setMinWidth(500);
+        gameStage.sizeToScene();
     }
 
     private void resetAllValues() {
@@ -428,8 +466,9 @@ public class CloudyLauncher extends Application {
 
         gameInfo.setText("");
         gameRoot.getChildren().clear();
-        rootLayout.getChildren().clear();
-        rootLayout.getChildren().add(manageUserPanel);
+
+        userStage.show();
+        gameStage.hide();
     }
 
     private void initialise() {
@@ -448,11 +487,12 @@ public class CloudyLauncher extends Application {
     public void start(Stage primaryStage) throws Exception {
 
         initialise();
-        Scene scene = new Scene(rootLayout, 300, 275);
+        Scene scene = new Scene(rootLayout, 320, 300);
 
-        primaryStage.setTitle("CloudyLauncher");
-        primaryStage.setScene(scene);
-        primaryStage.show();
+        userStage.setResizable(false);
+        userStage.setTitle("CloudyLauncher");
+        userStage.setScene(scene);
+        userStage.show();
     }
 
     public static void main(String[] args) {
