@@ -16,6 +16,10 @@
     -fx-text-fill: #FDCCAF;
 }
 
+.buttons-display {
+    -fx-spacing: 10;
+}
+
 .button {
     -fx-background-color: #0D4E75;
     -fx-text-fill: #D98F63;

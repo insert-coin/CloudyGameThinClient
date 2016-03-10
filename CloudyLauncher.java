@@ -60,7 +60,7 @@ public class CloudyLauncher extends Application {
     private Game selectedGame;
     static Stage userStage = new Stage();
     static Stage gameStage = new Stage();
-    
+
     @FXML
     protected void handleSignUp(ActionEvent event) {
         attemptUserRegistration(signupUsername.getText(),
@@ -102,6 +102,16 @@ public class CloudyLauncher extends Application {
     @FXML
     protected void handleLogOut(ActionEvent event) {
         resetAllValues();
+    }
+
+    @FXML
+    protected void handleDisplayAllGames(ActionEvent event) {
+        System.out.println("handle display all games");
+    }
+
+    @FXML
+    protected void handleDisplayMyGames(ActionEvent event) {
+        System.out.println("handle display my games");
     }
 
     @FXML
