@@ -1,13 +1,13 @@
 import sys
 import os
-#sys.path.append(os.path.dirname(os.getcwd()))
+sys.path.append(os.path.dirname(os.getcwd()))
 import logging
 import pygame
 import argparse
 from pygame.locals import * 
-import vlc_addon
-import protocol
-import settings
+from thin_client import vlc_addon
+from thin_client import protocol
+from thin_client import settings
 
 
 class Action:
