@@ -37,7 +37,8 @@ def initialize_stream(IP, port, pygame):
     player.video_set_mouse_input(False)
     player.video_set_key_input(False)
     
-    # Quit pygame mixer to allow vlc full access to audio device (REINIT AFTER MOVIE PLAYBACK IS FINISHED!)
+    # Quit pygame mixer to allow vlc full access to audio device 
+    # (REINIT AFTER MOVIE PLAYBACK IS FINISHED!)
     pygame.mixer.quit()
     
     # Start movieAddress playback
