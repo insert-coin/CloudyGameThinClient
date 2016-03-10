@@ -1,6 +1,7 @@
 import sys
 import os
 sys.path.append(os.path.dirname(os.getcwd()))
+sys.path.append(os.getcwd())
 import logging
 import pygame
 import argparse
