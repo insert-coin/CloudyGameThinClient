@@ -9,6 +9,54 @@ from thin_client import vlc_addon
 from thin_client import protocol
 from thin_client import settings
 
+
+class Action:
+    def process(self, player_controller_id, sequence, sock, pygame, event):
+        pass
+    
+    
+class MouseButton(Action):
+    def process(self, player_controller_id, sequence, sock, pygame, event):
+        left_mouse_button, middle_mouse_button, right_mouse_button = pygame.mouse.get_pressed()
+        if (left_mouse_button == 1):
+            ue_char_code = 1
+        elif (middle_mouse_button == 1):
+            ue_char_code = 4
+        elif (right_mouse_button == 1):
+            ue_char_code = 2
+        else:
+            ue_char_code = 0
+        ue_key_code = ue_char_code
+        if (event.type == MOUSEBUTTONDOWN):
+            sequence = protocol.pack_and_send(settings.DEVICE_KEYBOARD, sequence, 
+                                              player_controller_id, ue_key_code, 
+                                              ue_char_code, 2, sock)
+        elif (event.type == MOUSEBUTTONUP):
+            sequence = protocol.pack_and_send(settings.DEVICE_KEYBOARD, sequence, 
+                                              player_controller_id, ue_key_code, 
+                                              ue_char_code, 3, sock)
+        logging.info("Mouse button: %s => %s", pygame.mouse.get_pressed(), ue_key_code)
+    
+
+class MouseMotion(Action):
+    def process(self, player_controller_id, sequence, sock, pygame, event):
+        x, y = pygame.mouse.get_rel()
+        sequence = protocol.pack_and_send(settings.DEVICE_MOUSE, sequence, 
+                                          player_controller_id, x, y, event.type, sock)
+        logging.info("Mouse motion: %d %d", x,y)
+    
+
+class KeyboardButton(Action):
+    def process(self, player_controller_id, sequence, sock, pygame, event):
+        ue_key_code = settings.ASCII_TO_UE_KEYCODE.get(event.key, 0)
+        ue_char_code = settings.ASCII_TO_UE_CHARCODE.get(event.key, ue_key_code)
+        ue_key_code = ue_char_code or ue_key_code # This code is redundant. It changes nothing.
+        sequence = protocol.pack_and_send(settings.DEVICE_KEYBOARD, sequence, 
+                                          player_controller_id, ue_key_code,
+                                          ue_char_code, event.type, sock)
+        
+        logging.info("Keyboard: %s => %s", event.key, ue_key_code)
+
 def initialize_pygame(fps):
     pygame.init()
     screen = pygame.display.set_mode((settings.RESO_WIDTH, settings.RESO_HEIGHT))
@@ -29,44 +77,6 @@ def initialize_pygame(fps):
     pygame.display.update()
 
     return pygame
-
-def process_mouse_buttons(player_controller_id, sequence, sock, pygame, event):
-    left_mouse_button, middle_mouse_button, right_mouse_button = pygame.mouse.get_pressed()
-    if (left_mouse_button == 1):
-        ue_char_code = 1
-    elif (middle_mouse_button == 1):
-        ue_char_code = 4
-    elif (right_mouse_button == 1):
-        ue_char_code = 2
-    else:
-        ue_char_code = 0
-    ue_key_code = ue_char_code
-    if (event.type == MOUSEBUTTONDOWN):
-        sequence = protocol.pack_and_send(settings.DEVICE_KEYBOARD, sequence, 
-                                          player_controller_id, ue_key_code, 
-                                          ue_char_code, 2, sock)
-    elif (event.type == MOUSEBUTTONUP):
-        sequence = protocol.pack_and_send(settings.DEVICE_KEYBOARD, sequence, 
-                                          player_controller_id, ue_key_code, 
-                                          ue_char_code, 3, sock)
-    logging.info(pygame.mouse.get_pressed(), "=>", ue_key_code)
-    
-def process_mouse_motion(player_controller_id, sequence, sock, pygame, event):
-    x, y = pygame.mouse.get_rel()
-    sequence = protocol.pack_and_send(settings.DEVICE_MOUSE, sequence, 
-                                      player_controller_id, x, y, event.type, sock)
-    logging.info("Mouse:", x,y)
-
-def process_keyboard_press(player_controller_id, sequence, sock, pygame, event):
-    logging.info("ASCII Key is:", event.key)
-    ue_key_code = settings.ASCII_TO_UE_KEYCODE.get(event.key, 0)
-    ue_char_code = settings.ASCII_TO_UE_CHARCODE.get(event.key, ue_key_code)
-    ue_key_code = ue_char_code or ue_key_code # This code is redundant. It changes nothing.
-    logging.info(ue_key_code, ue_char_code)
-    sequence = protocol.pack_and_send(settings.DEVICE_KEYBOARD, sequence, 
-                                      player_controller_id, ue_key_code,
-                                      ue_char_code, event.type, sock)
-    logging.info(event.key, "=>", ue_key_code)
 
 def toggle_mouse_grab(pygame, is_mouse_grabbed):
     if (is_mouse_grabbed == True):
@@ -91,21 +101,24 @@ def start_client(ip, port, player_controller_id):
 
     while (is_running):
         event = pygame.event.wait() # program will sleep if there are no events in the queue
+        action = Action()
 
         if (event.type == KEYDOWN or event.type == KEYUP):
-            process_keyboard_press(player_controller_id, sequence, sock, pygame, event)
+            action = KeyboardButton()
             
             # To toggle mouse grabbing within the window
             if (event.type == KEYUP and event.key == K_ESCAPE):
                 is_mouse_grabbed = toggle_mouse_grab(pygame, is_mouse_grabbed)
 
         if (event.type == pygame.MOUSEMOTION):
-            process_mouse_motion(player_controller_id, sequence, sock, pygame, event)
+            action = MouseMotion()
         if (event.type == MOUSEBUTTONDOWN or event.type == MOUSEBUTTONUP):
-            process_mouse_buttons(player_controller_id, sequence, sock, pygame, event)            
+            action = MouseButton()
         if (event.type == QUIT):
             protocol.send_quit_command(player_controller_id)
             is_running = False
+            
+        action.process(player_controller_id, sequence, sock, pygame, event)
 
     pygame.quit()
 
