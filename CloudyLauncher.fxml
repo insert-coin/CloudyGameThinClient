@@ -52,7 +52,7 @@
                                 text="Password"
                                 GridPane.columnIndex="0"
                                 GridPane.rowIndex="2" />
-                            <TextField
+                            <PasswordField
                                 fx:id="signupPassword"
                                 promptText="Enter password"
                                 GridPane.columnIndex="1"
@@ -86,7 +86,7 @@
                                 text="Password"
                                 GridPane.columnIndex="0"
                                 GridPane.rowIndex="2" />
-                            <TextField
+                            <PasswordField
                                 fx:id="loginPassword"
                                 promptText="Enter password"
                                 GridPane.columnIndex="1"
