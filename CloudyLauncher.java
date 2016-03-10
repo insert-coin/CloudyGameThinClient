@@ -80,19 +80,23 @@ public class CloudyLauncher extends Application {
 
         try {
             String controllerId = getControllerId(selectedGame);
+            String streamingPort = getStreamingPort(selectedGame);
 
-            if (controllerId == "-1") {
-                setFeedback("Error requesting controller from server");
+            if ((controllerId == "-1") || (streamingPort == "-1")){
+                joinFeedback.setText(feedback);
 
             } else {
-                Runtime.getRuntime().exec("python thin_client.py " + controllerId);
+
+                String runThinClientCommand = String.format("python thin_client.py %s %s %s",
+                                                            selectedGame.getAddress(),
+                                                            streamingPort, controllerId);
+                Runtime.getRuntime().exec(runThinClientCommand);
             }
 
         } catch (IOException e) {
             setFeedback("Error joining game");
+            joinFeedback.setText(feedback);
         }
-
-        joinFeedback.setText(feedback);
     }
 
     @FXML
@@ -327,9 +331,46 @@ public class CloudyLauncher extends Application {
         return null;
     }
 
+    private String getStreamingPort(Game gameToJoin) {
+        try {
+            URL url = new URL(baseurl + String.format("/game-session/?game=%s&user=%s",
+                                                      gameToJoin.getId(),
+                                                      loginUsername.getText()));
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+
+            String auth = "Token " + token;
+
+            connection.setRequestMethod("GET");
+            connection.setRequestProperty("Authorization", auth);
+            connection.setRequestProperty("Accept", "application/json");
+
+            if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
+
+                BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                String response = reader.readLine();
+                reader.close();
+
+                JSONObject gameSession = new JSONArray(response).getJSONObject(0);
+                try {
+                    String portNum = Integer.toString(gameSession.getInt("streaming_port"));
+                    return portNum;
+                } catch (JSONException e) {
+                    setFeedback("Error parsing port number from server");
+                }
+
+            } else {
+                // if system is working properly, should not reach here
+                setFeedback(connection.getHeaderField(0));
+            }
+
+        } catch (IOException e) {
+            setFeedback("Check connection to server.");
+        }
+
+        return "-1";
+    }
     private String getControllerId(Game gameToJoin) {
         try {
-
             URL url = new URL(baseurl + "/game-session/");
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
@@ -360,6 +401,7 @@ public class CloudyLauncher extends Application {
                 reader.close();
 
                 JSONObject gameSession = new JSONObject(response);
+
                 try {
                     String controllerId = Integer.toString(gameSession.getInt("controller"));
                     return controllerId;
