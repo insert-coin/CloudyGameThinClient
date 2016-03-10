@@ -42,14 +42,19 @@ def process_mouse_buttons(player_controller_id, sequence, sock, pygame, event):
         ue_char_code = 0
     ue_key_code = ue_char_code
     if (event.type == MOUSEBUTTONDOWN):
-        sequence = protocol.pack_and_send(settings.DEVICE_KEYBOARD, sequence, player_controller_id, ue_key_code, ue_char_code, 2, sock)
+        sequence = protocol.pack_and_send(settings.DEVICE_KEYBOARD, sequence, 
+                                          player_controller_id, ue_key_code, 
+                                          ue_char_code, 2, sock)
     elif (event.type == MOUSEBUTTONUP):
-        sequence = protocol.pack_and_send(settings.DEVICE_KEYBOARD, sequence, player_controller_id, ue_key_code, ue_char_code, 3, sock)
+        sequence = protocol.pack_and_send(settings.DEVICE_KEYBOARD, sequence, 
+                                          player_controller_id, ue_key_code, 
+                                          ue_char_code, 3, sock)
     logging.info(pygame.mouse.get_pressed(), "=>", ue_key_code)
     
 def process_mouse_motion(player_controller_id, sequence, sock, pygame, event):
     x, y = pygame.mouse.get_rel()
-    sequence = protocol.pack_and_send(settings.DEVICE_MOUSE, sequence, player_controller_id, x, y, event.type, sock)
+    sequence = protocol.pack_and_send(settings.DEVICE_MOUSE, sequence, 
+                                      player_controller_id, x, y, event.type, sock)
     logging.info("Mouse:", x,y)
 
 def process_keyboard_press(player_controller_id, sequence, sock, pygame, event):
@@ -58,7 +63,9 @@ def process_keyboard_press(player_controller_id, sequence, sock, pygame, event):
     ue_char_code = settings.ASCII_TO_UE_CHARCODE.get(event.key, ue_key_code)
     ue_key_code = ue_char_code or ue_key_code # This code is redundant. It changes nothing.
     logging.info(ue_key_code, ue_char_code)
-    sequence = protocol.pack_and_send(settings.DEVICE_KEYBOARD, sequence, player_controller_id, ue_key_code, ue_char_code, event.type, sock)
+    sequence = protocol.pack_and_send(settings.DEVICE_KEYBOARD, sequence, 
+                                      player_controller_id, ue_key_code,
+                                      ue_char_code, event.type, sock)
     logging.info(event.key, "=>", ue_key_code)
 
 def toggle_mouse_grab(pygame, is_mouse_grabbed):
@@ -108,11 +115,13 @@ def main(ip, port, player_controller_id):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Process some integers.')
     parser.add_argument('string', metavar='ip', type=str, default="127.0.0.1",
-                       help="IP address to obtain video stream from")
-    parser.add_argument('integer', metavar='port', type=int, default=30000, choices=range(30000, 30004),
-                       help="Port of the IP address you are connecting to. Value from 30000 to 30003")
-    parser.add_argument('integer', metavar='player_id', type=int, default=0, choices=range(0, 4),
-                       help="Player controller ID of the player. Value from 0 to 3.")
+                        help="IP address to obtain video stream from")
+    parser.add_argument('integer', metavar='port', type=int, default=30000, 
+                        choices=range(30000, 30004),
+                        help="Port of the IP address you are connecting to. Value from 30000 to 30003")
+    parser.add_argument('integer', metavar='player_id', type=int, default=0, 
+                        choices=range(0, 4),
+                        help="Player controller ID of the player. Value from 0 to 3.")
     
     args = parser.parse_args()
     

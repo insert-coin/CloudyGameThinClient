@@ -27,9 +27,12 @@ Mouse:
 32bit x-axis movement
 32bit y-axis movement
 """
-def pack_and_send(device_type, sequence, controller_id, ue_key_code, ue_char_code, event_type, socket_name):
-    data_keyboard = (settings.VERSION, device_type, sequence, controller_id, ue_key_code, ue_char_code, event_type)
-    data_mouse = (settings.VERSION, device_type, sequence, controller_id, ue_key_code, ue_char_code)
+def pack_and_send(device_type, sequence, controller_id, ue_key_code, 
+                  ue_char_code, event_type, socket_name):
+    data_keyboard = (settings.VERSION, device_type, sequence, controller_id,
+                     ue_key_code, ue_char_code, event_type)
+    data_mouse = (settings.VERSION, device_type, sequence, controller_id, 
+                  ue_key_code, ue_char_code)
     if (device_type == settings.DEVICE_KEYBOARD):
         message = struct.pack(settings.PACKET_FORMAT_KEY, *data_keyboard)
     elif (device_type == settings.DEVICE_MOUSE):
