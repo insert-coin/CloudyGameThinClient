@@ -87,7 +87,7 @@ public class CloudyLauncher extends Application {
 
             } else {
 
-                String runThinClientCommand = String.format("python thin_client.py %s %s %s",
+                String runThinClientCommand = String.format("python thin_client/main.py %s %s %s",
                                                             selectedGame.getAddress(),
                                                             streamingPort, controllerId);
                 Runtime.getRuntime().exec(runThinClientCommand);
