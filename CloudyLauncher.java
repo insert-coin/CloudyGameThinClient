@@ -77,18 +77,25 @@ public class CloudyLauncher extends Application {
 
     @FXML
     protected void handleJoinGame(ActionEvent event) {
-        // controllerId is to be sent from the api,
-        // used to launch the thin_client
-        // to be changed: api is not yet updated, value not correct
-        String controllerId = getControllerId(selectedGame);
-        joinFeedback.setText(feedback);
 
         try {
-            controllerId = "0";
-            Runtime.getRuntime().exec("python thin_client.py " + controllerId);
+            String controllerId = getControllerId(selectedGame);
+            String streamingPort = getStreamingPort(selectedGame);
+
+            if ((controllerId == "-1") || (streamingPort == "-1")){
+                joinFeedback.setText(feedback);
+
+            } else {
+
+                String runThinClientCommand = String.format("python thin_client/main.py %s %s %s",
+                                                            selectedGame.getAddress(),
+                                                            streamingPort, controllerId);
+                Runtime.getRuntime().exec(runThinClientCommand);
+            }
 
         } catch (IOException e) {
             setFeedback("Error joining game");
+            joinFeedback.setText(feedback);
         }
     }
 
@@ -324,25 +331,18 @@ public class CloudyLauncher extends Application {
         return null;
     }
 
-    private String getControllerId(Game gameToJoin) {
+    private String getStreamingPort(Game gameToJoin) {
         try {
-
-            URL url = new URL(baseurl + "/game-session/");
+            URL url = new URL(baseurl + String.format("/game-session/?game=%s&user=%s",
+                                                      gameToJoin.getId(),
+                                                      loginUsername.getText()));
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
             String auth = "Token " + token;
 
-            connection.setRequestMethod("POST");
+            connection.setRequestMethod("GET");
             connection.setRequestProperty("Authorization", auth);
             connection.setRequestProperty("Accept", "application/json");
-            String queryData = String.format("game=%s", gameToJoin.getId());
-
-            connection.setDoOutput(true);
-            DataOutputStream writer = new DataOutputStream(connection.getOutputStream());
-
-            writer.writeBytes(queryData);
-            writer.flush();
-            writer.close();
 
             if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
 
@@ -350,10 +350,13 @@ public class CloudyLauncher extends Application {
                 String response = reader.readLine();
                 reader.close();
 
-                JSONObject gameSession = new JSONObject(response);
-                String controllerId = gameSession.getString("controller");
-
-                return controllerId;
+                JSONObject gameSession = new JSONArray(response).getJSONObject(0);
+                try {
+                    String portNum = Integer.toString(gameSession.getInt("streaming_port"));
+                    return portNum;
+                } catch (JSONException e) {
+                    setFeedback("Error parsing port number from server");
+                }
 
             } else {
                 // if system is working properly, should not reach here
@@ -364,7 +367,58 @@ public class CloudyLauncher extends Application {
             setFeedback("Check connection to server.");
         }
 
-        return "0";
+        return "-1";
+    }
+    private String getControllerId(Game gameToJoin) {
+        try {
+            URL url = new URL(baseurl + "/game-session/");
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+
+            String auth = "Token " + token;
+
+            connection.setRequestMethod("POST");
+            connection.setRequestProperty("Authorization", auth);
+            connection.setRequestProperty("Accept", "application/json");
+            String queryData = String.format("game=%s&user=%s",
+                                             gameToJoin.getId(),
+                                             loginUsername.getText());
+
+            connection.setDoOutput(true);
+            DataOutputStream writer = new DataOutputStream(connection.getOutputStream());
+
+            writer.writeBytes(queryData);
+            writer.flush();
+            writer.close();
+
+            if (connection.getResponseCode() == HttpURLConnection.HTTP_BAD_REQUEST) {
+                System.out.println("bad request: possibly wrong data format passed,"
+                        + "possibly session already exists");
+
+            } else if (connection.getResponseCode() == HttpURLConnection.HTTP_CREATED) {
+
+                BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                String response = reader.readLine();
+                reader.close();
+
+                JSONObject gameSession = new JSONObject(response);
+
+                try {
+                    String controllerId = Integer.toString(gameSession.getInt("controller"));
+                    return controllerId;
+                } catch (JSONException e) {
+                    setFeedback("Error parsing controller id from server");
+                }
+
+            } else {
+                // if system is working properly, should not reach here
+                setFeedback(connection.getHeaderField(0));
+            }
+
+        } catch (IOException e) {
+            setFeedback("Check connection to server.");
+        }
+
+        return "-1";
     }
 
     private void initialiseGameList() {
