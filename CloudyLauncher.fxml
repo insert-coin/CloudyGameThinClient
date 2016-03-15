@@ -127,7 +127,7 @@
             </VBox>
             <VBox fx:id="gameInfoPanel" styleClass="game-info">
                 <Text fx:id="gameName" styleClass="game-info-name"/>
-                <Button
+                <Button fx:id="gameButton"
                     text="Join Game"
                     onAction="#handleJoinGame" />
                 <Text fx:id="joinFeedback" styleClass="feedback"/>

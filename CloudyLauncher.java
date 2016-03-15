@@ -18,6 +18,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.control.Button;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
@@ -51,6 +52,7 @@ public class CloudyLauncher extends Application {
     @FXML private VBox tilePaneBase;
     @FXML private Text gameName;
     @FXML private Text gameInfo;
+    @FXML private Button gameButton;
     @FXML private Text joinFeedback;
 
     private double infoWidth = 250;
@@ -174,14 +176,17 @@ public class CloudyLauncher extends Application {
             selectedGame = (Game) selectedIcon.getUserData();
 
             String baseGameInfo = "Publisher: %s\nMaximum number of players: %s\nAvailability: %s";
+
             gameName.setText(selectedGame.getName());
             boolean isGameOwned = listOfOwnedIds.contains(selectedGame.getId());
 
             String availability;
             if (isGameOwned) {
                 availability = "Owned";
+                gameButton.setText("Join Game");
             } else {
                 availability = "Not Owned";
+                gameButton.setText("Buy Game");
             }
             gameInfo.setText(String.format(baseGameInfo,
                                            selectedGame.getPublisher(),
