@@ -25,6 +25,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
@@ -119,7 +120,7 @@ public class CloudyLauncher extends Application {
         gameRoot.getChildren().clear();
         for (Game game : listOfGames) {
 
-            Rectangle gameIcon = createNewGameThumbnail(game);
+            StackPane gameIcon = createNewGameThumbnail(game);
             gameRoot.getChildren().add(gameIcon);
         }
     }
@@ -129,8 +130,7 @@ public class CloudyLauncher extends Application {
         gameRoot.getChildren().clear();
         for (Game game : listOfGames) {
             if (listOfOwnedIds.contains(game.getId())) {
-
-                Rectangle gameIcon = createNewGameThumbnail(game);
+                StackPane gameIcon = createNewGameThumbnail(game);
                 gameRoot.getChildren().add(gameIcon);
             }
         }
@@ -183,25 +183,34 @@ public class CloudyLauncher extends Application {
             }
 
         } else {
-            System.out.println("click!!");
         }
     }
 
-    private Rectangle createNewGameThumbnail(Game gameInfo) {
+    private StackPane createNewGameThumbnail(Game gameInfo) {
 //      ImageView gameIcon = new ImageView("pix.jpg");
 //      gameIcon.setFitHeight(100);
 //      gameIcon.setFitWidth(100);
 
-      Rectangle gameIcon = new Rectangle(100, 100);
-      gameIcon.setUserData(gameInfo);
-      gameIcon.setOnMouseClicked(new EventHandler<MouseEvent>() {
-          @Override
-          public void handle(MouseEvent event) {
-              handleDisplayGameInfo(event);
-          }
-      });
+        Rectangle gameIcon = new Rectangle(100, 100);
 
-      return gameIcon;
+        gameIcon.setUserData(gameInfo);
+        gameIcon.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                handleDisplayGameInfo(event);
+            }
+        });
+
+        ImageView icon = new ImageView("orangeribbon.png");
+        StackPane img = new StackPane();
+        img.getStyleClass().add("game-icon");
+        if (listOfOwnedIds.contains(gameInfo.getId())) {
+            img.getChildren().addAll(gameIcon, icon);
+        } else {
+            img.getChildren().addAll(gameIcon);
+        }
+
+        return img;
     }
 
     private void setToken(String newToken) {

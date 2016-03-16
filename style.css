@@ -88,6 +88,10 @@
     -fx-vgap: 10;
 }
 
+.game-icon {
+	-fx-alignment: top-right;
+}
+
 .game-info-name {
     -fx-fill: #FDCCAF;
     -fx-font-family: "Arial Narrow";
