@@ -85,19 +85,23 @@ public class CloudyLauncher extends Application {
 
         try {
             String controllerId = getControllerId(selectedGame);
-            String streamingPort = getStreamingPort(selectedGame);
+            String streamingPort;
 
-            if ((controllerId == "-1") || (streamingPort == "-1")){
+            if (controllerId == "-1") {
                 joinFeedback.setText(feedback);
-
             } else {
+                streamingPort = getStreamingPort(selectedGame);
+                if (streamingPort == "-1") {
+                    joinFeedback.setText(feedback);
 
-                String runThinClientCommand = String.format("python thin_client/main.py %s %s %s",
-                                                            selectedGame.getAddress(),
-                                                            streamingPort, controllerId);
-                Runtime.getRuntime().exec(runThinClientCommand);
+                } else {
+
+                    String runThinClientCommand = String.format("python thin_client/main.py %s %s %s",
+                                                                selectedGame.getAddress(),
+                                                                streamingPort, controllerId);
+                    Runtime.getRuntime().exec(runThinClientCommand);
+                }
             }
-
         } catch (IOException e) {
             setFeedback("Error joining game");
             joinFeedback.setText(feedback);
