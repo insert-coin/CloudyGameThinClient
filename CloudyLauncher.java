@@ -24,6 +24,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
@@ -117,41 +118,19 @@ public class CloudyLauncher extends Application {
     protected void handleDisplayAllGames(ActionEvent event) {
         gameRoot.getChildren().clear();
         for (Game game : listOfGames) {
-//          ImageView gameIcon = new ImageView("pix.jpg");
-//          gameIcon.setFitHeight(100);
-//          gameIcon.setFitWidth(100);
 
-          Rectangle gameIcon = new Rectangle(100, 100);
-          gameIcon.setUserData(game);
-          gameIcon.setOnMouseClicked(new EventHandler<MouseEvent>() {
-              @Override
-              public void handle(MouseEvent event) {
-                  handleDisplayGameInfo(event);
-              }
-          });
-
-          gameRoot.getChildren().add(gameIcon);
-      }
+            Rectangle gameIcon = createNewGameThumbnail(game);
+            gameRoot.getChildren().add(gameIcon);
+        }
     }
 
     @FXML
     protected void handleDisplayMyGames(ActionEvent event) {
         gameRoot.getChildren().clear();
         for (Game game : listOfGames) {
-//          ImageView gameIcon = new ImageView("pix.jpg");
-//          gameIcon.setFitHeight(100);
-//          gameIcon.setFitWidth(100);
             if (listOfOwnedIds.contains(game.getId())) {
 
-                Rectangle gameIcon = new Rectangle(100, 100);
-                gameIcon.setUserData(game);
-                gameIcon.setOnMouseClicked(new EventHandler<MouseEvent>() {
-                    @Override
-                    public void handle(MouseEvent event) {
-                        handleDisplayGameInfo(event);
-                    }
-                });
-
+                Rectangle gameIcon = createNewGameThumbnail(game);
                 gameRoot.getChildren().add(gameIcon);
             }
         }
@@ -196,7 +175,8 @@ public class CloudyLauncher extends Application {
                                            selectedGame.getPublisher(),
                                            selectedGame.getLimit(), availability));
 
-        } else if (tid.equals("tilePaneBase") || tid.equals("gameRoot")) {
+        } else if ((target instanceof Region) || (tid.equals("tilePaneBase"))
+                   || (tid.equals("gameRoot"))) {
             if (gameDisplayLayout.getChildren().contains(gameInfoPanel)) {
                 gameDisplayLayout.getChildren().remove(gameInfoPanel);
                 gameStage.setWidth(gameStage.getWidth() - infoWidth);
@@ -205,6 +185,23 @@ public class CloudyLauncher extends Application {
         } else {
             System.out.println("click!!");
         }
+    }
+
+    private Rectangle createNewGameThumbnail(Game gameInfo) {
+//      ImageView gameIcon = new ImageView("pix.jpg");
+//      gameIcon.setFitHeight(100);
+//      gameIcon.setFitWidth(100);
+
+      Rectangle gameIcon = new Rectangle(100, 100);
+      gameIcon.setUserData(gameInfo);
+      gameIcon.setOnMouseClicked(new EventHandler<MouseEvent>() {
+          @Override
+          public void handle(MouseEvent event) {
+              handleDisplayGameInfo(event);
+          }
+      });
+
+      return gameIcon;
     }
 
     private void setToken(String newToken) {
