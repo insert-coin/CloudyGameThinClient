@@ -573,25 +573,6 @@ public class CloudyLauncher extends Application {
         }
     }
 
-    private void addGamesToDisplayList() {
-        for (Game game : listOfGames) {
-//            ImageView gameIcon = new ImageView("pix.jpg");
-//            gameIcon.setFitHeight(100);
-//            gameIcon.setFitWidth(100);
-
-            Rectangle gameIcon = new Rectangle(100, 100);
-            gameIcon.setUserData(game);
-            gameIcon.setOnMouseClicked(new EventHandler<MouseEvent>() {
-                @Override
-                public void handle(MouseEvent event) {
-                    handleDisplayGameInfo(event);
-                }
-            });
-
-            gameRoot.getChildren().add(gameIcon);
-        }
-    }
-
     private void initialiseGameDisplayPanel() {
 
         initialiseGameList();
