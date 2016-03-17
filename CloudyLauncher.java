@@ -83,31 +83,16 @@ public class CloudyLauncher extends Application {
     }
 
     @FXML
-    protected void handleJoinGame(ActionEvent event) {
+    protected void handleGame(ActionEvent event) {
 
-        try {
-            String controllerId = getControllerId(selectedGame);
-            String streamingPort;
-
-            if (controllerId == "-1") {
-                joinFeedback.setText(feedback);
-            } else {
-                streamingPort = getStreamingPort(selectedGame);
-                if (streamingPort == "-1") {
-                    joinFeedback.setText(feedback);
-
-                } else {
-
-                    String runThinClientCommand = String.format("python thin_client/main.py %s %s %s",
-                                                                selectedGame.getAddress(),
-                                                                streamingPort, controllerId);
-                    Runtime.getRuntime().exec(runThinClientCommand);
-                }
-            }
-        } catch (IOException e) {
-            setFeedback("Error joining game");
-            joinFeedback.setText(feedback);
+        Button gameButton = (Button) event.getTarget();
+        if (gameButton.getText().equals("Join Game")) {
+            joinGame(selectedGame);
+        } else {
+            buyGame(selectedGame);
         }
+
+        joinFeedback.setText(feedback);
     }
 
     @FXML
@@ -138,7 +123,6 @@ public class CloudyLauncher extends Application {
             gameDisplayLayout.getChildren().remove(gameInfoPanel);
             gameStage.setWidth(gameStage.getWidth() - 250);
         }
-
     }
 
     @FXML
@@ -183,6 +167,70 @@ public class CloudyLauncher extends Application {
             }
 
         } else {
+        }
+    }
+
+    private void buyGame(Game gameToBuy) {
+        try {
+            URL url = new URL(baseurl + "/game-ownership/");
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+
+            String auth = "Token " + token;
+
+            connection.setRequestMethod("POST");
+            connection.setRequestProperty("Authorization", auth);
+            connection.setRequestProperty("Accept", "application/json");
+            String queryData = String.format("game=%s&user=%s",
+                                             gameToBuy.getId(),
+                                             loginUsername.getText());
+
+            connection.setDoOutput(true);
+            DataOutputStream writer = new DataOutputStream(connection.getOutputStream());
+
+            writer.writeBytes(queryData);
+            writer.flush();
+            writer.close();
+
+            if (connection.getResponseCode() == HttpURLConnection.HTTP_FORBIDDEN) {
+                setFeedback("Invalid authorization token");
+
+            } else if (connection.getResponseCode() == HttpURLConnection.HTTP_CREATED) {
+                setFeedback("Successfully requested game");
+
+            } else {
+                // if system is working properly, should not reach here
+                setFeedback(connection.getHeaderField(0));
+            }
+
+        } catch (IOException e) {
+            setFeedback("Check connection to server.");
+        }
+    }
+
+    private void joinGame(Game gameToJoin) {
+
+        try {
+            String controllerId = getControllerId(gameToJoin);
+            String streamingPort;
+
+            if (controllerId == "-1") {
+                joinFeedback.setText(feedback);
+            } else {
+                streamingPort = getStreamingPort(gameToJoin);
+                if (streamingPort == "-1") {
+                    joinFeedback.setText(feedback);
+
+                } else {
+
+                    String runThinClientCommand = String.format("python thin_client/main.py %s %s %s",
+                                                                gameToJoin.getAddress(),
+                                                                streamingPort, controllerId);
+                    Runtime.getRuntime().exec(runThinClientCommand);
+                }
+            }
+        } catch (IOException e) {
+            setFeedback("Error joining game");
+            joinFeedback.setText(feedback);
         }
     }
 
@@ -621,6 +669,7 @@ public class CloudyLauncher extends Application {
 
         gameInfo.setText("");
         gameRoot.getChildren().clear();
+        joinFeedback.setText("");
 
         userStage.show();
         gameStage.hide();

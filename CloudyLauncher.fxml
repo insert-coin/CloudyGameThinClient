@@ -126,13 +126,13 @@
                 </children>
             </VBox>
             <VBox fx:id="gameInfoPanel" styleClass="game-info">
+
                 <Text fx:id="gameName" styleClass="game-info-name"/>
                 <Button fx:id="gameButton"
                     text="Join Game"
-                    onAction="#handleJoinGame" />
+                    onAction="#handleGame" />
                 <Text fx:id="joinFeedback" styleClass="feedback"/>
                 <Text fx:id="gameInfo" styleClass="feedback"/>
-
             </VBox>
             <stylesheets>
                 <URL value="@style.css" />
