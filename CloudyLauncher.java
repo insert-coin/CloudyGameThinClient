@@ -165,8 +165,8 @@ public class CloudyLauncher extends Application {
                                            selectedGame.getPublisher(),
                                            selectedGame.getLimit(), availability));
 
-        } else if ((target instanceof Region) || (tid.equals("tilePaneBase"))
-                   || (tid.equals("gameRoot"))) {
+        } else if (((target instanceof Region) && !(target instanceof VBox))
+                   || (tid.equals("tilePaneBase")) || (tid.equals("gameRoot"))) {
             if (gameDisplayLayout.getChildren().contains(gameInfoPanel)) {
                 gameDisplayLayout.getChildren().remove(gameInfoPanel);
                 gameStage.setWidth(gameStage.getWidth() - infoWidth);
