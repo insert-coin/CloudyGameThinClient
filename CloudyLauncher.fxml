@@ -14,6 +14,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.text.Text?>
+<?import javafx.scene.layout.Region?>
 
 <VBox
     fx:controller="CloudyLauncher"
@@ -107,23 +108,34 @@
             onMouseClicked="#handleDisplayGameInfo">
             <VBox fx:id="tilePaneBase" styleClass="game-tile-layout">
                 <children>
-                    <Button
-                        text="Log Out"
-                        onAction="#handleLogOut" />
-
+                    <HBox styleClass="buttons-display">
+                        <Button
+                            text="All Games"
+                            onAction="#handleDisplayAllGames" />
+                        <Button
+                            text="My Games"
+                            onAction="#handleDisplayMyGames" />
+                        <Button
+                            styleClass="refresh-button"
+                            onAction="#handleRefreshGameList" />
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <Button
+                            text="Log Out"
+                            onAction="#handleLogOut" />
+                    </HBox>
                     <TilePane fx:id="gameRoot" styleClass="game-root">
                     </TilePane>
 
                 </children>
             </VBox>
             <VBox fx:id="gameInfoPanel" styleClass="game-info">
+
                 <Text fx:id="gameName" styleClass="game-info-name"/>
-                <Button
+                <Button fx:id="gameButton"
                     text="Join Game"
-                    onAction="#handleJoinGame" />
+                    onAction="#handleGame" />
                 <Text fx:id="joinFeedback" styleClass="feedback"/>
                 <Text fx:id="gameInfo" styleClass="feedback"/>
-
             </VBox>
             <stylesheets>
                 <URL value="@style.css" />

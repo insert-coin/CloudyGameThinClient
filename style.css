@@ -16,6 +16,10 @@
     -fx-text-fill: #FDCCAF;
 }
 
+.buttons-display {
+    -fx-spacing: 10;
+}
+
 .button {
     -fx-background-color: #0D4E75;
     -fx-text-fill: #D98F63;
@@ -71,6 +75,10 @@
     -fx-prompt-text-fill: #925633;
 }
 
+.refresh-button {
+    -fx-background-image: url("images/refresh.png");
+    -fx-min-width: 25;
+}
 
 .game-tile-layout {
     -fx-alignment: top-right;
@@ -82,6 +90,10 @@
     -fx-alignment: center;
     -fx-hgap: 10;
     -fx-vgap: 10;
+}
+
+.game-icon {
+    -fx-alignment: top-right;
 }
 
 .game-info-name {

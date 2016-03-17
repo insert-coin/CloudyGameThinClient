@@ -18,11 +18,14 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.control.Button;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
@@ -51,16 +54,20 @@ public class CloudyLauncher extends Application {
     @FXML private VBox tilePaneBase;
     @FXML private Text gameName;
     @FXML private Text gameInfo;
+    @FXML private Button gameButton;
     @FXML private Text joinFeedback;
+
+    private double infoWidth = 250;
 
     private String baseurl = "http://127.0.0.1:8000";
     private String token = "";
     private String feedback = "";
     private List<Game> listOfGames = new ArrayList<Game>();
+    private List<String> listOfOwnedIds = new ArrayList<String>();
     private Game selectedGame;
     static Stage userStage = new Stage();
     static Stage gameStage = new Stage();
-    
+
     @FXML
     protected void handleSignUp(ActionEvent event) {
         attemptUserRegistration(signupUsername.getText(),
@@ -76,27 +83,17 @@ public class CloudyLauncher extends Application {
     }
 
     @FXML
-    protected void handleJoinGame(ActionEvent event) {
+    protected void handleGame(ActionEvent event) {
 
-        try {
-            String controllerId = getControllerId(selectedGame);
-            String streamingPort = getStreamingPort(selectedGame);
-
-            if ((controllerId == "-1") || (streamingPort == "-1")){
-                joinFeedback.setText(feedback);
-
-            } else {
-
-                String runThinClientCommand = String.format("python thin_client/main.py %s %s %s",
-                                                            selectedGame.getAddress(),
-                                                            streamingPort, controllerId);
-                Runtime.getRuntime().exec(runThinClientCommand);
-            }
-
-        } catch (IOException e) {
-            setFeedback("Error joining game");
-            joinFeedback.setText(feedback);
+        Button gameButton = (Button) event.getTarget();
+        if (gameButton.getText().equals("Join Game")) {
+            joinGame(selectedGame);
+        } else {
+            buyGame(selectedGame);
+            handleRefreshGameList(new ActionEvent());
         }
+
+        joinFeedback.setText(feedback);
     }
 
     @FXML
@@ -105,11 +102,41 @@ public class CloudyLauncher extends Application {
     }
 
     @FXML
+    protected void handleDisplayAllGames(ActionEvent event) {
+        gameRoot.getChildren().clear();
+        for (Game game : listOfGames) {
+
+            StackPane gameIcon = createNewGameThumbnail(game);
+            gameRoot.getChildren().add(gameIcon);
+        }
+    }
+
+    @FXML
+    protected void handleDisplayMyGames(ActionEvent event) {
+        gameRoot.getChildren().clear();
+        for (Game game : listOfGames) {
+            if (listOfOwnedIds.contains(game.getId())) {
+                StackPane gameIcon = createNewGameThumbnail(game);
+                gameRoot.getChildren().add(gameIcon);
+            }
+        }
+        if (gameDisplayLayout.getChildren().contains(gameInfoPanel)) {
+            gameDisplayLayout.getChildren().remove(gameInfoPanel);
+            gameStage.setWidth(gameStage.getWidth() - 250);
+        }
+    }
+
+    @FXML
+    protected void handleRefreshGameList(ActionEvent event) {
+        resetGameListValues();
+        initialiseGameDisplayPanel();
+    }
+
+    @FXML
     private void handleDisplayGameInfo(MouseEvent event) {
 
         Node target = (Node) event.getTarget();
         String tid = target.getId();
-        double infoWidth = 250;
 
         if (target instanceof Rectangle) {
 //        if (target instanceof ImageView) {
@@ -123,20 +150,122 @@ public class CloudyLauncher extends Application {
             selectedGame = (Game) selectedIcon.getUserData();
 
             String baseGameInfo = "Publisher: %s\nMaximum number of players: %s\nAvailability: %s";
+
             gameName.setText(selectedGame.getName());
+            boolean isGameOwned = listOfOwnedIds.contains(selectedGame.getId());
+
+            String availability;
+            if (isGameOwned) {
+                availability = "Owned";
+                gameButton.setText("Join Game");
+            } else {
+                availability = "Not Owned";
+                gameButton.setText("Buy Game");
+            }
             gameInfo.setText(String.format(baseGameInfo,
                                            selectedGame.getPublisher(),
-                                           selectedGame.getLimit(), "N.A."));
+                                           selectedGame.getLimit(), availability));
 
-        } else if (tid.equals("tilePaneBase") || tid.equals("gameRoot")) {
+        } else if (((target instanceof Region) && !(target instanceof VBox))
+                   || (tid.equals("tilePaneBase")) || (tid.equals("gameRoot"))) {
             if (gameDisplayLayout.getChildren().contains(gameInfoPanel)) {
                 gameDisplayLayout.getChildren().remove(gameInfoPanel);
                 gameStage.setWidth(gameStage.getWidth() - infoWidth);
             }
 
         } else {
-            System.out.println("click!!");
         }
+    }
+
+    private void buyGame(Game gameToBuy) {
+        try {
+            URL url = new URL(baseurl + "/game-ownership/");
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+
+            String auth = "Token " + token;
+
+            connection.setRequestMethod("POST");
+            connection.setRequestProperty("Authorization", auth);
+            connection.setRequestProperty("Accept", "application/json");
+            String queryData = String.format("game=%s&user=%s",
+                                             gameToBuy.getId(),
+                                             loginUsername.getText());
+
+            connection.setDoOutput(true);
+            DataOutputStream writer = new DataOutputStream(connection.getOutputStream());
+
+            writer.writeBytes(queryData);
+            writer.flush();
+            writer.close();
+
+            if (connection.getResponseCode() == HttpURLConnection.HTTP_FORBIDDEN) {
+                setFeedback("Invalid authorization token");
+
+            } else if (connection.getResponseCode() == HttpURLConnection.HTTP_CREATED) {
+                setFeedback("Successfully requested game");
+
+            } else {
+                // if system is working properly, should not reach here
+                setFeedback(connection.getHeaderField(0));
+            }
+
+        } catch (IOException e) {
+            setFeedback("Check connection to server.");
+        }
+    }
+
+    private void joinGame(Game gameToJoin) {
+
+        try {
+            String controllerId = getControllerId(gameToJoin);
+            String streamingPort;
+
+            if (controllerId == "-1") {
+                joinFeedback.setText(feedback);
+            } else {
+                streamingPort = getStreamingPort(gameToJoin);
+                if (streamingPort == "-1") {
+                    joinFeedback.setText(feedback);
+
+                } else {
+
+                    String runThinClientCommand = String.format("python thin_client/main.py %s %s %s",
+                                                                gameToJoin.getAddress(),
+                                                                streamingPort, controllerId);
+                    Runtime.getRuntime().exec(runThinClientCommand);
+                }
+            }
+        } catch (IOException e) {
+            setFeedback("Error joining game");
+            joinFeedback.setText(feedback);
+        }
+    }
+
+    private StackPane createNewGameThumbnail(Game gameInfo) {
+//      ImageView gameIcon = new ImageView("pix.jpg");
+//      gameIcon.setFitHeight(100);
+//      gameIcon.setFitWidth(100);
+
+        Rectangle gameIcon = new Rectangle(100, 100);
+
+        gameIcon.setUserData(gameInfo);
+        gameIcon.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                handleDisplayGameInfo(event);
+            }
+        });
+
+        ImageView icon = new ImageView("images/orangeribbon.png");
+        StackPane img = new StackPane();
+        img.getStyleClass().add("game-icon");
+        if (listOfOwnedIds.contains(gameInfo.getId())) {
+            img.getChildren().addAll(gameIcon, icon);
+        } else {
+            img.getChildren().addAll(gameIcon);
+        }
+
+        return img;
     }
 
     private void setToken(String newToken) {
@@ -461,29 +590,55 @@ public class CloudyLauncher extends Application {
         }
     }
 
-    private void addGamesToDisplayList() {
-        for (Game game : listOfGames) {
-//            ImageView gameIcon = new ImageView("pix.jpg");
-//            gameIcon.setFitHeight(100);
-//            gameIcon.setFitWidth(100);
+    private void getOwnedGamesList() {
+        try {
+            URL url = new URL(baseurl + "/game-ownership/?user=" + loginUsername.getText());
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
-            Rectangle gameIcon = new Rectangle(100, 100);
-            gameIcon.setUserData(game);
-            gameIcon.setOnMouseClicked(new EventHandler<MouseEvent>() {
-                @Override
-                public void handle(MouseEvent event) {
-                    handleDisplayGameInfo(event);
+            String auth = "Token " + token;
+
+            connection.setRequestMethod("GET");
+            connection.setRequestProperty("Authorization", auth);
+            connection.setRequestProperty("Accept", "application/json");
+
+            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            String response = reader.readLine();
+            reader.close();
+
+            if (connection.getResponseCode() == HttpURLConnection.HTTP_FORBIDDEN) {
+                System.out.println("invalid token");
+                setErrorMessageFromConnection(connection);
+
+            } else if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                setFeedback("token recognised.");
+
+                JSONArray gameOwnedString = new JSONArray(response);
+
+                for (int i = 0; i < gameOwnedString.length(); i++) {
+                    JSONObject gameJSON = gameOwnedString.getJSONObject(i);
+                    try {
+                        String gId = Integer.toString(gameJSON.getInt("game"));
+                        listOfOwnedIds.add(gId);
+
+                    } catch (JSONException e) {
+                        gameInfo.setText("Error in parsing owned games");
+                    }
                 }
-            });
 
-            gameRoot.getChildren().add(gameIcon);
+            } else {
+                setFeedback(connection.getHeaderField(0));
+            }
+
+        } catch (IOException e) {
+            setFeedback("Check connection to server.");
         }
     }
 
     private void initialiseGameDisplayPanel() {
 
         initialiseGameList();
-        addGamesToDisplayList();
+        getOwnedGamesList();
+        handleDisplayAllGames(new ActionEvent());
 
         try {
             Scene scene = new Scene(gameDisplayLayout, 500, 300);
@@ -500,6 +655,7 @@ public class CloudyLauncher extends Application {
         userStage.hide();
         gameStage.show();
         gameStage.setMinWidth(500);
+        gameStage.setMinHeight(300);
         gameStage.sizeToScene();
     }
 
@@ -507,7 +663,6 @@ public class CloudyLauncher extends Application {
 
         token = "";
         feedback = "";
-        listOfGames.clear();
 
         signupEmail.clear();
         signupUsername.clear();
@@ -518,11 +673,18 @@ public class CloudyLauncher extends Application {
         loginPassword.clear();
         loginFeedback.setText("");
 
-        gameInfo.setText("");
-        gameRoot.getChildren().clear();
+        resetGameListValues();
 
         userStage.show();
         gameStage.hide();
+    }
+
+    private void resetGameListValues() {
+        listOfGames.clear();
+        listOfOwnedIds.clear();
+        gameInfo.setText("");
+        gameRoot.getChildren().clear();
+        joinFeedback.setText("");
     }
 
     private void initialise() {
