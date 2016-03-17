@@ -115,6 +115,9 @@
                         <Button
                             text="My Games"
                             onAction="#handleDisplayMyGames" />
+                        <Button
+                            styleClass="refresh-button"
+                            onAction="#handleRefreshGameList" />
                         <Region HBox.hgrow="ALWAYS"/>
                         <Button
                             text="Log Out"

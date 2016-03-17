@@ -75,6 +75,10 @@
     -fx-prompt-text-fill: #925633;
 }
 
+.refresh-button {
+    -fx-background-image: url("images/refresh.png");
+    -fx-min-width: 25;
+}
 
 .game-tile-layout {
     -fx-alignment: top-right;
@@ -89,7 +93,7 @@
 }
 
 .game-icon {
-	-fx-alignment: top-right;
+    -fx-alignment: top-right;
 }
 
 .game-info-name {

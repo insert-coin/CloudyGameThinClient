@@ -126,6 +126,12 @@ public class CloudyLauncher extends Application {
     }
 
     @FXML
+    protected void handleRefreshGameList(ActionEvent event) {
+        resetGameListValues();
+        initialiseGameDisplayPanel();
+    }
+
+    @FXML
     private void handleDisplayGameInfo(MouseEvent event) {
 
         Node target = (Node) event.getTarget();
@@ -249,7 +255,7 @@ public class CloudyLauncher extends Application {
             }
         });
 
-        ImageView icon = new ImageView("orangeribbon.png");
+        ImageView icon = new ImageView("images/orangeribbon.png");
         StackPane img = new StackPane();
         img.getStyleClass().add("game-icon");
         if (listOfOwnedIds.contains(gameInfo.getId())) {
@@ -655,8 +661,6 @@ public class CloudyLauncher extends Application {
 
         token = "";
         feedback = "";
-        listOfGames.clear();
-        listOfOwnedIds.clear();
 
         signupEmail.clear();
         signupUsername.clear();
@@ -667,12 +671,18 @@ public class CloudyLauncher extends Application {
         loginPassword.clear();
         loginFeedback.setText("");
 
-        gameInfo.setText("");
-        gameRoot.getChildren().clear();
-        joinFeedback.setText("");
+        resetGameListValues();
 
         userStage.show();
         gameStage.hide();
+    }
+
+    private void resetGameListValues() {
+        listOfGames.clear();
+        listOfOwnedIds.clear();
+        gameInfo.setText("");
+        gameRoot.getChildren().clear();
+        joinFeedback.setText("");
     }
 
     private void initialise() {
