@@ -28,7 +28,7 @@ Mouse:
 32bit y-axis movement
 """
 def pack_and_send(device_type, sequence, controller_id, ue_key_code, 
-                  ue_char_code, event_type, socket_name):
+                  ue_char_code, event_type, socket_name, ip_address):
     data_keyboard = (settings.VERSION, device_type, sequence, controller_id,
                      ue_key_code, ue_char_code, event_type)
     data_mouse = (settings.VERSION, device_type, sequence, controller_id, 
@@ -37,15 +37,15 @@ def pack_and_send(device_type, sequence, controller_id, ue_key_code,
         message = struct.pack(settings.PACKET_FORMAT_KEY, *data_keyboard)
     elif (device_type == settings.DEVICE_MOUSE):
         message = struct.pack(settings.PACKET_FORMAT_MOUSE, *data_mouse)
-    socket_name.sendto(message, (settings.UDP_IP, settings.UDP_PORT))
+    socket_name.sendto(message, (ip_address, settings.UDP_PORT))
     sequence += 1 
     return sequence
 
-def send_quit_command(player_controller_id):
+def send_quit_command(player_controller_id, ip_address):
     quit_command = "0001000" + str(player_controller_id)
     try:
         tcp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        tcp_socket.connect((settings.TCP_IP, settings.TCP_PORT))
+        tcp_socket.connect((ip_address, settings.TCP_PORT))
         tcp_socket.sendall(quit_command.encode("utf-8"))
     except socket.error as error:
         logging.warning(os.strerror(error.errno));

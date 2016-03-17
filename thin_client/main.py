@@ -12,12 +12,12 @@ from thin_client import settings
 
 
 class Action:
-    def process(self, player_controller_id, sequence, sock, pygame, event):
+    def process(self, player_controller_id, sequence, sock, pygame, event, ip_address):
         pass
     
     
 class MouseButton(Action):
-    def process(self, player_controller_id, sequence, sock, pygame, event):
+    def process(self, player_controller_id, sequence, sock, pygame, event, ip_address):
         left_mouse_button, middle_mouse_button, right_mouse_button = pygame.mouse.get_pressed()
         if (left_mouse_button == 1):
             ue_char_code = 1
@@ -31,30 +31,30 @@ class MouseButton(Action):
         if (event.type == MOUSEBUTTONDOWN):
             sequence = protocol.pack_and_send(settings.DEVICE_KEYBOARD, sequence, 
                                               player_controller_id, ue_key_code, 
-                                              ue_char_code, 2, sock)
+                                              ue_char_code, 2, sock, ip_address)
         elif (event.type == MOUSEBUTTONUP):
             sequence = protocol.pack_and_send(settings.DEVICE_KEYBOARD, sequence, 
                                               player_controller_id, ue_key_code, 
-                                              ue_char_code, 3, sock)
+                                              ue_char_code, 3, sock, ip_address)
         logging.info("Mouse button: %s => %s", pygame.mouse.get_pressed(), ue_key_code)
     
 
 class MouseMotion(Action):
-    def process(self, player_controller_id, sequence, sock, pygame, event):
+    def process(self, player_controller_id, sequence, sock, pygame, event, ip_address):
         x, y = pygame.mouse.get_rel()
         sequence = protocol.pack_and_send(settings.DEVICE_MOUSE, sequence, 
-                                          player_controller_id, x, y, event.type, sock)
+                                          player_controller_id, x, y, event.type, sock, ip_address)
         logging.info("Mouse motion: %d %d", x,y)
     
 
 class KeyboardButton(Action):
-    def process(self, player_controller_id, sequence, sock, pygame, event):
+    def process(self, player_controller_id, sequence, sock, pygame, event, ip_address):
         ue_key_code = settings.ASCII_TO_UE_KEYCODE.get(event.key, 0)
         ue_char_code = settings.ASCII_TO_UE_CHARCODE.get(event.key, ue_key_code)
         ue_key_code = ue_char_code or ue_key_code # This code is redundant. It changes nothing.
         sequence = protocol.pack_and_send(settings.DEVICE_KEYBOARD, sequence, 
                                           player_controller_id, ue_key_code,
-                                          ue_char_code, event.type, sock)
+                                          ue_char_code, event.type, sock, ip_address)
         
         logging.info("Keyboard: %s => %s", event.key, ue_key_code)
 
@@ -116,10 +116,10 @@ def start_client(ip, port, player_controller_id):
         if (event.type == MOUSEBUTTONDOWN or event.type == MOUSEBUTTONUP):
             action = MouseButton()
         if (event.type == QUIT):
-            protocol.send_quit_command(player_controller_id)
+            protocol.send_quit_command(player_controller_id, ip_address)
             is_running = False
             
-        action.process(player_controller_id, sequence, sock, pygame, event)
+        action.process(player_controller_id, sequence, sock, pygame, event, ip)
 
     pygame.quit()
 
