@@ -90,6 +90,7 @@ public class CloudyLauncher extends Application {
             joinGame(selectedGame);
         } else {
             buyGame(selectedGame);
+            handleRefreshGameList(new ActionEvent());
         }
 
         joinFeedback.setText(feedback);
