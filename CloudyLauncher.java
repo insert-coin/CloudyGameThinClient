@@ -654,6 +654,7 @@ public class CloudyLauncher extends Application {
         userStage.hide();
         gameStage.show();
         gameStage.setMinWidth(500);
+        gameStage.setMinHeight(300);
         gameStage.sizeToScene();
     }
 
