@@ -45,7 +45,18 @@ def send_quit_command(player_controller_id, ip_address):
     quit_command = "0001000" + str(player_controller_id)
     try:
         tcp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        tcp_socket.connect((ip_address, settings.TCP_PORT))
+        tcp_socket.connect((ip_address, settings.TCP_STREAMING_PORT))
+        tcp_socket.sendall(quit_command.encode("utf-8"))
+    except socket.error as error:
+        logging.warning(os.strerror(error.errno));
+    finally:
+        tcp_socket.close()
+        
+def send_save_file_url(save_file_url, player_controller_id):
+    quit_command = save_file_url + ";" + str(player_controller_id)
+    try:
+        tcp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        tcp_socket.connect((ip_address, settings.TCP_CLOUDYWEBAPI_PORT))
         tcp_socket.sendall(quit_command.encode("utf-8"))
     except socket.error as error:
         logging.warning(os.strerror(error.errno));
