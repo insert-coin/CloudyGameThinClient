@@ -28,7 +28,6 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
-import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -138,15 +137,13 @@ public class CloudyLauncher extends Application {
         Node target = (Node) event.getTarget();
         String tid = target.getId();
 
-        if (target instanceof Rectangle) {
-//        if (target instanceof ImageView) {
+        if (target instanceof ImageView) {
             if (!gameDisplayLayout.getChildren().contains(gameInfoPanel)) {
                 gameDisplayLayout.getChildren().add(gameInfoPanel);
                 gameStage.setWidth(gameStage.getWidth() + infoWidth);
             }
 
-//          ImageView selectedIcon = (ImageView) event.getTarget();
-            Rectangle selectedIcon = (Rectangle) event.getTarget();
+            ImageView selectedIcon = (ImageView) event.getTarget();
             selectedGame = (Game) selectedIcon.getUserData();
 
             String baseGameInfo = "Publisher: %s\nMaximum number of players: %s\nAvailability: %s";
@@ -242,11 +239,9 @@ public class CloudyLauncher extends Application {
     }
 
     private StackPane createNewGameThumbnail(Game gameInfo) {
-//      ImageView gameIcon = new ImageView("pix.jpg");
-//      gameIcon.setFitHeight(100);
-//      gameIcon.setFitWidth(100);
-
-        Rectangle gameIcon = new Rectangle(100, 100);
+        ImageView gameIcon = new ImageView(gameInfo.getThumbnail());
+        gameIcon.setFitHeight(100);
+        gameIcon.setFitWidth(100);
 
         gameIcon.setUserData(gameInfo);
         gameIcon.setOnMouseClicked(new EventHandler<MouseEvent>() {
@@ -448,9 +443,10 @@ public class CloudyLauncher extends Application {
             String gPublisher = gameObj.getString("publisher");
             String gLimit = Integer.toString(gameObj.getInt("max_limit"));
             String gAddress = gameObj.getString("address");
+            String gThumbnail = gameObj.getString("thumbnail");
 
             Game newGame = new Game(gId, gName, gPublisher,
-                                    Integer.parseInt(gLimit), gAddress);
+                                    Integer.parseInt(gLimit), gAddress, gThumbnail);
             return newGame;
 
         } catch (JSONException e) {
