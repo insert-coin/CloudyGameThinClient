@@ -1,12 +1,12 @@
-import java.util.List;
 
 public class Game {
-    
+
     private String id;
     private String name;
     private String publisher;
     private Integer maxLimit;
     private String address;
+    private String thumbnail;
 
     /** 
      * Constructor for a Game object.
@@ -16,17 +16,19 @@ public class Game {
      * @param gPublisher  the publisher of the game
      * @param gLimit      the maximum number of players
      * @param gAddress    the address of the game
-     * @param gUsers      the users with access to the game
-     *                    given format: "user1","user2","user3",...
+     * @param gThumbnail  the url of the thumbnail of the game image
+     * 
      */
-    public Game(String gId, String gName, String gPublisher, Integer gLimit, String gAddress) {
+    public Game(String gId, String gName, String gPublisher, 
+                Integer gLimit, String gAddress, String gThumbnail) {
         id = gId;
         name = gName;
         publisher = gPublisher;
         maxLimit = gLimit;
         address = gAddress;
+        thumbnail = gThumbnail;
     }
-    
+
     /**
      * Get method for the game id
      * 
@@ -35,7 +37,7 @@ public class Game {
     public String getId() {
         return id;
     }
-    
+
     /**
      * Get method for the game name
      * 
@@ -44,7 +46,7 @@ public class Game {
     public String getName() {
         return name;
     }
-    
+
     /**
      * Get method for the game publisher
      * 
@@ -53,7 +55,7 @@ public class Game {
     public String getPublisher() {
         return publisher;
     }
-    
+
     /**
      * Get method for the number of players
      * 
@@ -62,7 +64,7 @@ public class Game {
     public Integer getLimit() {
         return maxLimit;
     }
-    
+
     /**
      * Get method for the game address
      * 
@@ -70,5 +72,14 @@ public class Game {
      */
     public String getAddress() {
         return address;
+    }
+
+    /**
+     * Get method for the url of the thumbnail image
+     *
+     * @return the url of the thumbnail image of the game
+     */
+    public String getThumbnail() {
+        return thumbnail;
     }
 }
