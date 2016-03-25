@@ -17,7 +17,8 @@ class Action:
         self.pygame = pygame
 
     def process(self, event):
-        raise NotImplementedError
+        """Do Nothing by default"""
+        pass
 
 class MouseButton(Action):
     def process(self, event):
