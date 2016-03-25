@@ -60,7 +60,7 @@ class KeyboardButton(Action):
 
 class QuitAction(Action):
     def process(self, event):
-        self.session.send_quit_command(session)
+        self.session.send_quit_command()
 
 def initialize_pygame(fps):
     pygame.init()
