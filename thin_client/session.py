@@ -33,9 +33,9 @@ class GameSession(object):
 
     def pack_and_send(self, device_type, ue_key_code, 
                       ue_char_code, event_type):
-        data_keyboard = (settings.VERSION, device_type, self.sequence, controller_id,
+        data_keyboard = (settings.VERSION, device_type, self.sequence, self.player_controller_id,
                          ue_key_code, ue_char_code, event_type)
-        data_mouse = (settings.VERSION, device_type, self.sequence, controller_id, 
+        data_mouse = (settings.VERSION, device_type, self.sequence, self.player_controller_id, 
                       ue_key_code, ue_char_code)
         if (device_type == settings.DEVICE_KEYBOARD):
             message = struct.pack(settings.PACKET_FORMAT_KEY, *data_keyboard)
