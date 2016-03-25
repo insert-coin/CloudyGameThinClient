@@ -95,7 +95,6 @@ def toggle_mouse_grab(pygame, is_mouse_grabbed):
     return is_mouse_grabbed
 
 def start_client(ip, port, player_controller_id):
-    sequence = 0
     session = GameSession(ip, player_controller_id)
     pygame = initialize_pygame(settings.FPS) #FPS
     pygame = vlc_addon.initialize_stream(ip, port, pygame)

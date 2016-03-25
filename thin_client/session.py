@@ -29,6 +29,7 @@ class GameSession(object):
                          socket.SOCK_DGRAM) # UDP
         self.ip_address = ip_address
         self.player_controller_id = player_controller_id
+        self.sequence = 0
 
     def pack_and_send(self, device_type, ue_key_code, 
                       ue_char_code, event_type):
