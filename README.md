@@ -2,6 +2,11 @@
 This is an application that the player uses to play the game. The player will receive an input video stream from the cloud servers, and send their keyboard and mouse inputs to the servers via this application.
 
 ## Usage
+To run the thin client itself, you will need to pass in 3 arguments: the IP from which to receive the video stream from, the port number, and the player controller ID. 
+
+Example: 
+`python main.py 127.0.0.1 30000 0`
+
 Press ESC to unlock the mouse cursor from the window.
 
 ## Prerequisites for using the Python Thin Client 
