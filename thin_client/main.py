@@ -129,7 +129,7 @@ def main(ip, port, player_controller_id):
     start_client(ip, port, int(player_controller_id))
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Process some integers.')
+    parser = argparse.ArgumentParser(description='Launch the thin client.')
     parser.add_argument('string', metavar='ip', type=str, default="127.0.0.1",
                         help="IP address to obtain video stream from")
     parser.add_argument('integer', metavar='port', type=int, default=30000,
@@ -138,6 +138,8 @@ if __name__ == '__main__':
     parser.add_argument('integer', metavar='player_id', type=int, default=0,
                         choices=range(0, 4),
                         help="Player controller ID of the player. Value from 0 to 3.")
+    parser.add_argument('integer', metavar='game_session_id', type=int, default=0,
+                        help="ID of the current game session being used.")
 
     args = parser.parse_args()
 
