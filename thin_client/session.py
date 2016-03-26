@@ -2,6 +2,7 @@ import os
 import struct
 import socket
 import logging
+import json
 from thin_client import settings
 
 class GameSession(object):
@@ -45,7 +46,11 @@ class GameSession(object):
         self.sequence += 1 
 
     def send_quit_command(self):
-        quit_command = "0001000" + str(self.player_controller_id)
+        json_data = {
+           "command" : "quit",
+           "controller" : self.player_controller_id
+        }
+        quit_command = json.dumps(json_data)
         try:
             tcp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             tcp_socket.connect((self.ip_address, settings.TCP_STREAMING_PORT))
