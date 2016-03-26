@@ -14,11 +14,11 @@ class ProtocolTest(unittest.TestCase):
         """Check if packAndSend increments the sequence number correctly"""
 
         # Arrange 
-        device_type, ue_key_code, ue_char_code, event_typ = (1, 0, 0, 0)
+        device_type, ue_key_code, ue_char_code, event_type = (1, 0, 0, 0)
         current_sequence = self.session.sequence
 
         # Act
-        self.session.pack_and_send(device_type, ue_key_code, ue_char_code, event_typ)
+        self.session.pack_and_send(device_type, ue_key_code, ue_char_code, event_type)
 
         # Assert
         self.assertEqual(self.session.sequence, current_sequence + 1,
