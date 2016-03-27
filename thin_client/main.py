@@ -118,33 +118,35 @@ def start_client(ip, port, player_controller_id):
         #event = pygame.event.wait() # program will sleep if there are no events in the queue
         event = pygame.event.poll()
 
-        if (event.type == KEYDOWN or event.type == KEYUP):
-            action = KeyboardButton(session, pygame)
-
-            # To toggle mouse grabbing within the window
-            if (event.type == KEYUP and event.key == K_ESCAPE):
-                is_mouse_grabbed = toggle_mouse_grab(pygame, is_mouse_grabbed)
-                
-        elif (event.type == pygame.MOUSEMOTION):
-            action = MouseMotion(session, pygame)
-        elif (event.type == MOUSEBUTTONDOWN or event.type == MOUSEBUTTONUP):
-            action = MouseButton(session, pygame)
-        elif (event.type == QUIT):
-            action = QuitAction(session, pygame)
-            is_running = False
-        else:
-            action = Action(session, pygame)
-        action.process(event)
-        
         if (image_frame == False):
             show_message(settings.TEXT_SERVER_DISCONNECTED, settings.TEXT_RESTART_CLIENT, screen)
         else:
+            if (event.type == KEYDOWN or event.type == KEYUP):
+                action = KeyboardButton(session, pygame)
+
+                # To toggle mouse grabbing within the window
+                if (event.type == KEYUP and event.key == K_ESCAPE):
+                    is_mouse_grabbed = toggle_mouse_grab(pygame, is_mouse_grabbed)
+                    
+            elif (event.type == pygame.MOUSEMOTION):
+                action = MouseMotion(session, pygame)
+            elif (event.type == MOUSEBUTTONDOWN or event.type == MOUSEBUTTONUP):
+                action = MouseButton(session, pygame)
+            else:
+                action = Action(session, pygame)
+
             # Display the frame on the pygame window
             if (is_width_smaller):
                 screen.blit(image_frame, (0, offset))
             else:
                 screen.blit(image_frame, (offset, 0))
             pygame.display.flip()
+            
+        if (event.type == QUIT):
+            action = QuitAction(session, pygame)
+            is_running = False
+
+        action.process(event)
 
     pygame.quit()
 
