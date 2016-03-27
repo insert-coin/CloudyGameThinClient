@@ -59,6 +59,7 @@ Include the json jar in the classpath:
 ```bash
 Linux/Mac:
 java -cp .:path/to/json/jar/file CloudyLauncher
+
 Windows:
 java -cp .;path/to/json/jar/file CloudyLauncher
 ```
