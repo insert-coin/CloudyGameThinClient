@@ -5,6 +5,8 @@ sys.path.append(os.getcwd())
 import logging
 import pygame
 import argparse
+import cv2
+import numpy
 from pygame.locals import *
 from thin_client import vlc_addon
 from thin_client.session import GameSession
@@ -81,7 +83,7 @@ def initialize_pygame(fps):
     screen.blit(mouse_label, (render_pos_x - 100, render_pos_y + 50))
     pygame.display.update()
 
-    return pygame
+    return screen
 
 def toggle_mouse_grab(pygame, is_mouse_grabbed):
     if (is_mouse_grabbed == True):
@@ -94,16 +96,59 @@ def toggle_mouse_grab(pygame, is_mouse_grabbed):
         pygame.mouse.set_visible(False)
 
     return is_mouse_grabbed
+    
+# Reads the capture object and transforms it into a pygame readable image
+def getStreamFrame(captureObject, scale):
+    retval, frame = captureObject.read()
+    frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+    frame = numpy.flipud(numpy.rot90(frame))
+    frame = cv2.resize(frame, (0, 0), fx=scale, fy=scale)  # Makes the image smaller so you can see everything in imshow
+    frame = pygame.surfarray.make_surface(frame)
+    return frame  
+    
+# Scale up or down the received stream to fit the window
+def getScaleFactor(captureObject):
+    frameWidth = int(captureObject.get(3))
+    frameHeight = int(captureObject.get(4))
+    widthScale = settings.RESO_WIDTH / frameWidth
+    heightScale = settings.RESO_HEIGHT / frameHeight
+    if (widthScale < heightScale):
+        scale = widthScale
+        widthIsSmaller = True
+    else:
+        scale = heightScale
+        widthIsSmaller = False 
+        
+    return scale, widthIsSmaller
+
+# Offset to center the image in the window
+def getOffset(scale, widthIsSmaller, frameWidth, frameHeight):
+    if (widthIsSmaller):
+        frameHeight = frameHeight * scale
+        offset = (settings.RESO_HEIGHT - frameHeight) / 2
+    else:
+        frameWidth = frameWidth * scale
+        offset = (settings.RESO_WIDTH - frameWidth) / 2
+    
+    return offset
 
 def start_client(ip, port, player_controller_id):
     session = GameSession(ip, player_controller_id)
-    pygame = initialize_pygame(settings.FPS) #FPS
-    pygame = vlc_addon.initialize_stream(ip, port, pygame)
+    screen = initialize_pygame(settings.FPS) #FPS
+    #pygame = vlc_addon.initialize_stream(ip, port, pygame)
     is_running = True
     is_mouse_grabbed = True
+    
+    cap = cv2.VideoCapture("http://127.0.0.1:30000")
+    frameWidth = int(cap.get(3))
+    frameHeight = int(cap.get(4))
+    scale, widthIsSmaller = getScaleFactor(cap)
+    offset = getOffset(scale, widthIsSmaller, frameWidth, frameHeight)
 
     while (is_running):
-        event = pygame.event.wait() # program will sleep if there are no events in the queue
+        imgFrame = getStreamFrame(cap, scale)
+        #event = pygame.event.wait() # program will sleep if there are no events in the queue
+        event = pygame.event.poll() 
 
         if (event.type == KEYDOWN or event.type == KEYUP):
             action = KeyboardButton(session, pygame)
@@ -122,6 +167,13 @@ def start_client(ip, port, player_controller_id):
         else:
             action = Action(session, pygame)
         action.process(event)
+        
+        # Display the frame on the pygame window
+        if (widthIsSmaller):
+            screen.blit(imgFrame, (0, offset))
+        else:
+            screen.blit(imgFrame, (offset, 0))
+        pygame.display.flip()
 
     pygame.quit()
 
