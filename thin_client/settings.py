@@ -26,10 +26,12 @@ DEVICE_MOUSE = 2
 FPS = 30
 TEXT_WINDOW_TITLE = "CloudyGame Thin Client"
 TEXT_LOADING = "Loading..."
+TEXT_PATIENCE = "Please be patient."
 TEXT_INSTRUCTIONS = "Press ESC to lock/unlock mouse."
-TEXT_SERVER_DISCONNECTED = "The server disconnected."
-TEXT_RESTART_CLIENT = "Please close the thin client."
-TEXT_FONT_SIZE = 30
+TEXT_SERVER_DISCONNECTED = "The game server is not running."
+TEXT_RESTART_CLIENT = "Please try playing again later."
+TEXT_MAIN_FONT_SIZE = 30
+TEXT_SMALL_FONT_SIZE = 25
 TEXT_COLOUR = (255, 255, 255)           # White
 SCREEN_BACKGROUND_COLOR = (0, 0, 0)     # Black
 

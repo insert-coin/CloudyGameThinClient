@@ -19,6 +19,9 @@ def get_frame(capture_object, scale):
 def get_scale_factor(capture_object):
     frame_width = int(capture_object.get(3))
     frame_height = int(capture_object.get(4))
+    if (frame_width == 0 or frame_height == 0):
+        frame_width = 1
+        frame_height = 1
     widthScale = settings.RESO_WIDTH / frame_width
     heightScale = settings.RESO_HEIGHT / frame_height
     if (widthScale < heightScale):
@@ -47,7 +50,7 @@ def initialize_stream(ip, port):
     cap = cv2.VideoCapture(address)
     frame_width = int(cap.get(3))
     frame_height = int(cap.get(4))
-    
+
     return (cap, frame_width, frame_height)
 
 # Reads the stream, find the scale factor, and the image offset from the center of the window

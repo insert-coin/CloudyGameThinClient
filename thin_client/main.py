@@ -72,23 +72,29 @@ def initialize_pygame(fps):
     frame_interval = int((1/fps)*1000)
     pygame.key.set_repeat(frame_interval, frame_interval) # 1 input per frame
 
-    show_message(settings.TEXT_LOADING, settings.TEXT_INSTRUCTIONS, screen)
+    show_message(screen, settings.TEXT_LOADING, settings.TEXT_PATIENCE)
 
     return screen
 
-# Shows 2 lines of text in the middle of a black screen.
-def show_message(line1, line2, screen):
+# Shows 3 lines of text in the middle of a black screen.
+# The third line is shows the mouse unlock instructions by default, and can be overwritten.
+def show_message(screen, line1, line2, line3=settings.TEXT_INSTRUCTIONS):
     screen.fill(settings.SCREEN_BACKGROUND_COLOR)
-    my_font = pygame.font.Font(None, settings.TEXT_FONT_SIZE)
-    line1_message = my_font.render(line1, True, settings.TEXT_COLOUR)
-    line2_message = my_font.render(line2, True, settings.TEXT_COLOUR)
+    main_font = pygame.font.Font(None, settings.TEXT_MAIN_FONT_SIZE)
+    small_font = pygame.font.Font(None, settings.TEXT_SMALL_FONT_SIZE)
+    line1_message = main_font.render(line1, True, settings.TEXT_COLOUR)
+    line2_message = main_font.render(line2, True, settings.TEXT_COLOUR)
+    line3_message = small_font.render(line3, True, settings.TEXT_COLOUR)
     line1_text_rect = line1_message.get_rect()
     line2_text_rect = line2_message.get_rect()
+    line3_text_rect = line3_message.get_rect()
     line1_pos_x = screen.get_rect().centerx - line1_text_rect.centerx
     line1_pos_y = screen.get_rect().centery - line1_text_rect.centery
     line2_pos_x = screen.get_rect().centerx - line2_text_rect.centerx
-    screen.blit(line1_message, (line1_pos_x, line1_pos_y))
-    screen.blit(line2_message, (line2_pos_x, line1_pos_y + 50))
+    line3_pos_x = screen.get_rect().centerx - line3_text_rect.centerx
+    screen.blit(line1_message, (line1_pos_x, line1_pos_y - 50))
+    screen.blit(line2_message, (line2_pos_x, line1_pos_y))
+    screen.blit(line3_message, (line3_pos_x, line1_pos_y + 125))
     pygame.display.update()
 
     return screen
@@ -118,16 +124,13 @@ def start_client(ip, port, player_controller_id):
         #event = pygame.event.wait() # program will sleep if there are no events in the queue
         event = pygame.event.poll()
 
+        # If we did not manage to get a frame from the stream
         if (image_frame == False):
-            show_message(settings.TEXT_SERVER_DISCONNECTED, settings.TEXT_RESTART_CLIENT, screen)
+            show_message(screen, settings.TEXT_SERVER_DISCONNECTED, settings.TEXT_RESTART_CLIENT)
+            action = Action(session, pygame)
         else:
             if (event.type == KEYDOWN or event.type == KEYUP):
-                action = KeyboardButton(session, pygame)
-
-                # To toggle mouse grabbing within the window
-                if (event.type == KEYUP and event.key == K_ESCAPE):
-                    is_mouse_grabbed = toggle_mouse_grab(pygame, is_mouse_grabbed)
-                    
+                action = KeyboardButton(session, pygame)                    
             elif (event.type == pygame.MOUSEMOTION):
                 action = MouseMotion(session, pygame)
             elif (event.type == MOUSEBUTTONDOWN or event.type == MOUSEBUTTONUP):
@@ -142,9 +145,13 @@ def start_client(ip, port, player_controller_id):
                 screen.blit(image_frame, (offset, 0))
             pygame.display.flip()
             
-        if (event.type == QUIT):
+        # To toggle mouse grabbing within the window
+        if (event.type == KEYUP and event.key == K_ESCAPE):
+            is_mouse_grabbed = toggle_mouse_grab(pygame, is_mouse_grabbed)
+        elif (event.type == QUIT):
             action = QuitAction(session, pygame)
             is_running = False
+            capture_object.release()
 
         action.process(event)
 
