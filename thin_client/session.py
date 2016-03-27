@@ -32,6 +32,8 @@ class GameSession(object):
         self.player_controller_id = player_controller_id
         self.sequence = 0
 
+    # Packs the keyboard or mouse information into a UDP packet, 
+    # and sends it to the game (Remote Controller plugin)
     def pack_and_send(self, device_type, ue_key_code, 
                       ue_char_code, event_type):
         data_keyboard = (settings.VERSION, device_type, self.sequence, self.player_controller_id,
@@ -45,6 +47,7 @@ class GameSession(object):
         self.sock.sendto(message, (self.ip_address, settings.UDP_PORT))
         self.sequence += 1 
 
+    # Sends a quit command to the game (CloudyPanelPlugin)
     def send_quit_command(self):
         json_data = {
            "command" : "quit",

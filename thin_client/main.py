@@ -62,6 +62,7 @@ class QuitAction(Action):
     def process(self, event):
         self.session.send_quit_command()
 
+# Initialize pygame with the window size, mouse settings, etc.
 def initialize_pygame(fps):
     pygame.init()
     screen = pygame.display.set_mode((settings.RESO_WIDTH, settings.RESO_HEIGHT))
@@ -71,31 +72,28 @@ def initialize_pygame(fps):
     frame_interval = int((1/fps)*1000)
     pygame.key.set_repeat(frame_interval, frame_interval) # 1 input per frame
 
-    my_font = pygame.font.Font(None, settings.TEXT_FONT_SIZE)
-    label = my_font.render(settings.TEXT_LOADING, True, settings.TEXT_COLOUR)
-    mouse_label = my_font.render(settings.TEXT_INSTRUCTIONS, True, settings.TEXT_COLOUR)
-    text_rect = label.get_rect()
-    render_pos_x = screen.get_rect().centerx - text_rect.centerx
-    render_pos_y = screen.get_rect().centery - text_rect.centery
-    screen.blit(label, (render_pos_x, render_pos_y))
-    screen.blit(mouse_label, (render_pos_x - 100, render_pos_y + 50))
-    pygame.display.update()
+    show_message(settings.TEXT_LOADING, settings.TEXT_INSTRUCTIONS, screen)
 
     return screen
-    
-def show_disconnected_message(screen):
+
+# Shows 2 lines of text in the middle of a black screen.
+def show_message(line1, line2, screen):
+    screen.fill(settings.SCREEN_BACKGROUND_COLOR)
     my_font = pygame.font.Font(None, settings.TEXT_FONT_SIZE)
-    label = my_font.render("The server disconnected.", True, settings.TEXT_COLOUR)
-    mouse_label = my_font.render("Please restart the thin client.", True, settings.TEXT_COLOUR)
-    text_rect = label.get_rect()
-    render_pos_x = screen.get_rect().centerx - text_rect.centerx
-    render_pos_y = screen.get_rect().centery - text_rect.centery
-    screen.blit(label, (render_pos_x, render_pos_y))
-    screen.blit(mouse_label, (render_pos_x, render_pos_y + 50))
+    line1_message = my_font.render(line1, True, settings.TEXT_COLOUR)
+    line2_message = my_font.render(line2, True, settings.TEXT_COLOUR)
+    line1_text_rect = line1_message.get_rect()
+    line2_text_rect = line2_message.get_rect()
+    line1_pos_x = screen.get_rect().centerx - line1_text_rect.centerx
+    line1_pos_y = screen.get_rect().centery - line1_text_rect.centery
+    line2_pos_x = screen.get_rect().centerx - line2_text_rect.centerx
+    screen.blit(line1_message, (line1_pos_x, line1_pos_y))
+    screen.blit(line2_message, (line2_pos_x, line1_pos_y + 50))
     pygame.display.update()
 
     return screen
 
+# Toggles mouse grab. Mouse grab is when the mouse is locked to the interior of the window.
 def toggle_mouse_grab(pygame, is_mouse_grabbed):
     if (is_mouse_grabbed == True):
         is_mouse_grabbed = False
@@ -139,7 +137,7 @@ def start_client(ip, port, player_controller_id):
         action.process(event)
         
         if (image_frame == False):
-            show_disconnected_message(screen)
+            show_message(settings.TEXT_SERVER_DISCONNECTED, settings.TEXT_RESTART_CLIENT, screen)
         else:
             # Display the frame on the pygame window
             if (is_width_smaller):

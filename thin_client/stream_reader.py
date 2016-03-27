@@ -40,7 +40,8 @@ def get_offset(scale, is_width_smaller, frame_width, frame_height):
         offset = (settings.RESO_WIDTH - frame_width) / 2
     
     return offset
-    
+
+# Reads the http stream
 def initialize_stream(ip, port):
     address = "http://" + ip + ":" + port
     cap = cv2.VideoCapture(address)
@@ -48,7 +49,8 @@ def initialize_stream(ip, port):
     frame_height = int(cap.get(4))
     
     return (cap, frame_width, frame_height)
-    
+
+# Reads the stream, find the scale factor, and the image offset from the center of the window
 def setup_stream(ip, port):
     cap, frame_width, frame_height = initialize_stream(ip, port)
     scale, is_width_smaller = get_scale_factor(cap)
