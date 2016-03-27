@@ -56,15 +56,13 @@ javac -cp json-20151123.jar CloudyLauncher.java Game.java
 
 ### To run on the command line
 Include the json jar in the classpath:
+```bash
 Linux/Mac:
-```bash
 java -cp .:path/to/json/jar/file CloudyLauncher
-```
 Windows:
-```bash
 java -cp .;path/to/json/jar/file CloudyLauncher
 ```
-Example for Windows:
+Example usage for Windows:
 ```bash
 java -cp .;json-20151123.jar CloudyLauncher
 ```
