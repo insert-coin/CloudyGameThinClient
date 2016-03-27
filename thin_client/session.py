@@ -2,6 +2,7 @@ import os
 import struct
 import socket
 import logging
+import json
 from thin_client import settings
 
 class GameSession(object):
@@ -11,8 +12,8 @@ class GameSession(object):
     8bit Protocol Type : (Keyboard (1), Mouse (2), Gamepad, etc.)
     32bit Sequence (counter for event)
     8bit ControllerID (start from 0)
-    32bit UEKeyCode (A, B, , Z, 0, ... ,9, punctuation, etc.)
-    32bit UECharCode (F1, ..., F12, Ctrl, Alt, Numpad, etc.)
+    16bit UEKeyCode (A, B, , Z, 0, ... ,9, punctuation, etc.)
+    16bit UECharCode (F1, ..., F12, Ctrl, Alt, Numpad, etc.)
     8bit Event (Key Down (2), Key Up (3))
 
     Mouse:
@@ -20,8 +21,8 @@ class GameSession(object):
     8bit Protocol Type : (Keyboard (1), Mouse (2), Gamepad, etc.)
     32bit Sequence (counter for event)
     8bit ControllerID (start from 0)
-    32bit x-axis movement
-    32bit y-axis movement
+    16bit x-axis movement
+    16bit y-axis movement
     """
 
     def __init__(self, ip_address, player_controller_id):
@@ -45,7 +46,11 @@ class GameSession(object):
         self.sequence += 1 
 
     def send_quit_command(self):
-        quit_command = "0001000" + str(self.player_controller_id)
+        json_data = {
+           "command" : "quit",
+           "controller" : self.player_controller_id
+        }
+        quit_command = json.dumps(json_data)
         try:
             tcp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             tcp_socket.connect((self.ip_address, settings.TCP_STREAMING_PORT))
