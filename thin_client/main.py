@@ -82,6 +82,19 @@ def initialize_pygame(fps):
     pygame.display.update()
 
     return screen
+    
+def show_disconnected_message(screen):
+    my_font = pygame.font.Font(None, settings.TEXT_FONT_SIZE)
+    label = my_font.render("The server disconnected.", True, settings.TEXT_COLOUR)
+    mouse_label = my_font.render("Please restart the thin client.", True, settings.TEXT_COLOUR)
+    text_rect = label.get_rect()
+    render_pos_x = screen.get_rect().centerx - text_rect.centerx
+    render_pos_y = screen.get_rect().centery - text_rect.centery
+    screen.blit(label, (render_pos_x, render_pos_y))
+    screen.blit(mouse_label, (render_pos_x, render_pos_y + 50))
+    pygame.display.update()
+
+    return screen
 
 def toggle_mouse_grab(pygame, is_mouse_grabbed):
     if (is_mouse_grabbed == True):
@@ -125,12 +138,15 @@ def start_client(ip, port, player_controller_id):
             action = Action(session, pygame)
         action.process(event)
         
-        # Display the frame on the pygame window
-        if (is_width_smaller):
-            screen.blit(image_frame, (0, offset))
+        if (image_frame == False):
+            show_disconnected_message(screen)
         else:
-            screen.blit(image_frame, (offset, 0))
-        pygame.display.flip()
+            # Display the frame on the pygame window
+            if (is_width_smaller):
+                screen.blit(image_frame, (0, offset))
+            else:
+                screen.blit(image_frame, (offset, 0))
+            pygame.display.flip()
 
     pygame.quit()
 

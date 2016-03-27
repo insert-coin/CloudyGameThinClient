@@ -6,12 +6,14 @@ from thin_client import settings
 # Reads the capture object and transforms it into a pygame readable image
 def get_frame(capture_object, scale):
     retval, frame = capture_object.read()
-    frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-    frame = numpy.flipud(numpy.rot90(frame))
-    frame = cv2.resize(frame, (0, 0), fx = scale, fy = scale)
-    frame = pygame.surfarray.make_surface(frame)
-    
-    return frame  
+    if (retval == True):
+        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        frame = numpy.flipud(numpy.rot90(frame))
+        frame = cv2.resize(frame, (0, 0), fx = scale, fy = scale)
+        frame = pygame.surfarray.make_surface(frame)
+        return frame  
+    else:
+        return False
     
 # Scale up or down the received stream to fit the window
 def get_scale_factor(capture_object):
