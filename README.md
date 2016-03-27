@@ -2,10 +2,10 @@
 This is an application that the player uses to play the game. The player will receive an input video stream from the cloud servers, and send their keyboard and mouse inputs to the servers via this application.
 
 ## Usage
-To run the thin client itself, you will need to pass in 3 arguments: the IP from which to receive the video stream from, the port number, and the player controller ID. 
+To run the thin client itself, you will need to pass in 4 arguments: the IP from which to receive the video stream from, the port number, the player controller ID, and the game session ID.
 
 Example: 
-`python main.py 127.0.0.1 30000 0`
+`python main.py 127.0.0.1 30000 0 0`
 
 Press ESC to unlock the mouse cursor from the window.
 
@@ -13,12 +13,10 @@ Press ESC to unlock the mouse cursor from the window.
 You need:
 
 1. Python 3
-2. VLC Media Player Installed
-3. The following dependencies:
+2. The following dependencies:
     - pygame
-    - vlc
-    
-Important Note: If you use the 32-bit version of Python, then you need the 32-bit version of VLC. If you use the 64-bit version of Python, then you need the 64-bit version of VLC. 
+    - numpy
+    - OpenCV
 
 ### Windows
 
@@ -26,10 +24,13 @@ Important Note: If you use the 32-bit version of Python, then you need the 32-bi
 1. Obtain the .whl file for your Python version [here](http://www.lfd.uci.edu/~gohlke/pythonlibs/#pygame). There are 32-bit and 64-bit files, so make sure you get the correct version.
 2. Open the terminal, and navigate to where you placed your .whl file. Type `pip install filename.whl`. Replace the filename with the correct one.
 
-### VLC
-1. Install VLC: [https://www.videolan.org/vlc/index.html](https://www.videolan.org/vlc/index.html). Check whether you are using the 32-bit or 64-bit version of Python, and get the same version for VLC. 
-2. Open your terminal at the repository directory. 
-3. Type `pip install -r requirements.txt`.
+### numpy
+1. Open your terminal at the root of the repository directory. 
+2. Type `pip install -r requirements.txt`.
+
+### OpenCV
+1. Obtain the .whl file for your Python version [here](http://www.lfd.uci.edu/~gohlke/pythonlibs/#opencv). There are 32-bit and 64-bit files, so make sure you get the correct version.
+2. Open the terminal, and navigate to where you placed your .whl file. Type `pip install filename.whl`. Replace the filename with the correct one.
 
 
 # CloudyLauncher
