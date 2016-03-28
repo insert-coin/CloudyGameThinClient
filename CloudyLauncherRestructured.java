@@ -6,14 +6,24 @@ import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 public class CloudyLauncherRestructured extends Application {
+
     private CloudyLauncherServerInterface server;
+    private CloudyLauncherJsonParser parser = CloudyLauncherJsonParser.getParser();
+    private String token;
 
     @FXML private BorderPane mainContent;
+
+    @FXML private TextField email;
+    @FXML private TextField username;
+    @FXML private TextField password;
+    @FXML private Text feedback;
 
     final private String ERROR_FXML = "Error in loading %s page";
 
@@ -39,13 +49,35 @@ public class CloudyLauncherRestructured extends Application {
 
     @FXML
     private void handleLogin(ActionEvent event) {
-        System.out.println("handle login");
+        String serverFeedback = server.postAuthenticationRequest(username.getText(),
+                                                                 password.getText());
+        feedback.setText(serverFeedback);
+        String error = server.getErrorResponse();
+        String response = server.getServerResponse();
+
+        if (serverFeedback.equals(CloudyLauncherServerInterface.ERROR_CONNECTION)) {
+        } else if (!error.isEmpty()) {
+            feedback.setText(parser.parseErrorResponse(error));
+        } else {
+            token = parser.parseToken(response);
+            setGameDisplayPage();
+        }
     }
 
     @FXML
     private void handleSignup(ActionEvent event) {
-        System.out.println("handle signup");
+        String serverFeedback = server.postSignupRequest(username.getText(),
+                                                         password.getText(),
+                                                         email.getText());
 
+        feedback.setText(serverFeedback);
+        String error = server.getErrorResponse();
+
+        if (serverFeedback.equals(CloudyLauncherServerInterface.ERROR_CONNECTION)) {
+        } else if (!error.isEmpty()) {
+            feedback.setText(parser.parseErrorResponse(error));
+        } else {
+        }
     }
 
     @FXML
@@ -86,6 +118,9 @@ public class CloudyLauncherRestructured extends Application {
         } catch (IOException e) {
             System.out.println(String.format(ERROR_FXML, "login"));
         }
+    }
+
+    private void setGameDisplayPage() {
     }
 
     @Override
