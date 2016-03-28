@@ -29,7 +29,7 @@
             <Text
                 wrappingWidth="400"
                 textAlignment="right"
-                onMouseClicked="#linkToLogin"> Already have an account? Login instead!
+                onMouseClicked="#setLoginPage"> Already have an account? Login instead!
             </Text>
         </VBox>
     </HBox>
@@ -38,7 +38,8 @@
         <Button
             styleClass="main-button"
             textAlignment="right"
-            text="Sign Up" />
+            text="Sign Up"
+            onAction="#handleSignup" />
         <Region prefWidth="50" />
     </HBox>
 </VBox>

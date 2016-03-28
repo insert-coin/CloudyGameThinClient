@@ -27,7 +27,7 @@
             <Text
                 wrappingWidth="400"
                 textAlignment="right"
-                onMouseClicked="#linkToSignup"> No account? Click here to sign up!
+                onMouseClicked="#setSignupPage"> No account? Click here to sign up!
             </Text>
         </VBox>
     </HBox>
@@ -36,7 +36,8 @@
         <Button
             styleClass="main-button"
             textAlignment="right"
-            text="Log In" />
+            text="Log In"
+            onAction="#handleLogin" />
         <Region prefWidth="50" />
     </HBox>
 </VBox>

@@ -20,7 +20,7 @@
         <Scene>
             <BorderPane
                 styleClass="root"
-                fx:id="root">
+                fx:id="mainContent">
                 <top>
                     <HBox prefHeight="100">
                         <Text> logo here </Text>
