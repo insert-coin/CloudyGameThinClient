@@ -14,7 +14,7 @@ def initialize_stream(IP, port, pygame):
     logging.info("Connecting to:", movie_address)
 
     # Create instane of VLC and create reference to movieAddress.
-    vlc_instance = vlc.Instance()
+    vlc_instance = vlc.Instance("--network-caching=1000")
     media = vlc_instance.media_new(movie_address)
     media.get_mrl()
     

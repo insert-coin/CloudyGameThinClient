@@ -2,6 +2,11 @@
 This is an application that the player uses to play the game. The player will receive an input video stream from the cloud servers, and send their keyboard and mouse inputs to the servers via this application.
 
 ## Usage
+To run the thin client itself, you will need to pass in 3 arguments: the IP from which to receive the video stream from, the port number, and the player controller ID. 
+
+Example: 
+`python main.py 127.0.0.1 30000 0`
+
 Press ESC to unlock the mouse cursor from the window.
 
 ## Prerequisites for using the Python Thin Client 
@@ -44,11 +49,21 @@ Include the json jar in the classpath:
 ```bash
 javac -cp path/to/json/jar/file CloudyLauncher.java Game.java
 ```
+Example: Assuming you have placed the .jar file together with your java files, type:
+```bash
+javac -cp json-20151123.jar CloudyLauncher.java Game.java
+```
 
 ### To run on the command line
 Include the json jar in the classpath:
 ```bash
+Linux/Mac:
 java -cp .:path/to/json/jar/file CloudyLauncher
-```
 
-Note: The above is for linux, use ; instead of : for windows.
+Windows:
+java -cp .;path/to/json/jar/file CloudyLauncher
+```
+Example usage for Windows:
+```bash
+java -cp .;json-20151123.jar CloudyLauncher
+```
