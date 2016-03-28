@@ -54,6 +54,7 @@ public class CloudyLauncherServerInterface {
      * @return  feedback string indicating success or error
      */
     public String postSignupRequest(String signupUsername, String signupPassword, String signupEmail) {
+        resetResponses();
 
         try {
             URL url = new URL(baseUrl + URL_USERS);
@@ -92,6 +93,7 @@ public class CloudyLauncherServerInterface {
      * @return  feedback string indicating success or error
      */
     public String postAuthenticationRequest(String loginUsername, String loginPassword) {
+        resetResponses();
 
         try {
             URL url = new URL(baseUrl + URL_LOGIN);
@@ -131,6 +133,8 @@ public class CloudyLauncherServerInterface {
      * @return  feedback string indicating success or error
      */
     public String postCurrentGameSessionQuery(Game gameToJoin, String username, String token) {
+        resetResponses();
+
         try {
             URL url = new URL(baseUrl + String.format(URL_GAME_SESSION_CURRENT,
                                                       gameToJoin.getId(),
@@ -169,6 +173,8 @@ public class CloudyLauncherServerInterface {
      * @return  feedback string indicating success or error
      */
     public String postGameSessionRequest(Game gameToJoin, String username, String token) {
+        resetResponses();
+
         try {
             URL url = new URL(baseUrl + URL_GAME_SESSION);
             String tokenAuthorization = "Token " + token;
@@ -207,6 +213,8 @@ public class CloudyLauncherServerInterface {
      * @return  feedback string indicating success or error
      */
     public String postAllGamesQuery(String token) {
+        resetResponses();
+
         try {
             URL url = new URL(baseUrl + URL_GAMES);
             String tokenAuthorization = "Token " + token;
@@ -243,6 +251,8 @@ public class CloudyLauncherServerInterface {
      * @return  feedback string indicating success or error
      */
     public String postOwnedGamesQuery(String username, String token) {
+        resetResponses();
+
         try {
             URL url = new URL(baseUrl + String.format(URL_GAMES_OWNED, username));
             String tokenAuthorization = "Token " + token;
@@ -365,5 +375,14 @@ public class CloudyLauncherServerInterface {
      */
     public String getServerResponse() {
         return serverResponse;
+    }
+
+    /**
+     * Reset the responses before each server request to prevent outdated
+     * responses.
+     */
+    private void resetResponses() {
+        serverResponse = "";
+        errorResponse = "";
     }
 }
