@@ -129,7 +129,7 @@ public class CloudyLauncherJsonParser {
     }
 
     public Map<GameSession, String> parseGameSession(String gameSessionString) {
-        Map<GameSession, String> gameSession = new HashMap<>(5);
+        Map<GameSession, String> gameSession = new HashMap<GameSession, String>(5);
         JSONObject gameSessionObject = new JSONObject(gameSessionString);
         gameSession.put(GameSession.ID,
                         Integer.toString(gameSessionObject.getInt("id")));
