@@ -9,13 +9,14 @@ import org.json.JSONObject;
 
 public class CloudyLauncherJsonParser {
     private static CloudyLauncherJsonParser parser;
+
     final static String ERROR_PARSER_OBJECT = "PARSING OBJECT ERROR";
     final static String ERROR_PARSER_GAME = "PARSING GAME ERROR";
     final static String ERROR_PARSER_FEEDBACK = "PARSING FEEDBACK ERROR";
 
     final static String[] FIELDS_HEADER = { "username", "password", "email" };
     final static String[] FIELDS_NON_HEADER = { "non_field_errors", "detail",
-                                                "message" };
+            "message" };
 
     static enum GameInformation {
         ID, NAME, PUBLISHER, LIMIT, ADDRESS, THUMBNAIL
@@ -25,10 +26,20 @@ public class CloudyLauncherJsonParser {
         ID, USER, GAME, CONTROLLER, PORT
     }
 
+    /**
+     * Private constructor for a CloudyLauncherJsonParser object. Use the static
+     * method getParser to get the parser instance instead.
+     */
     private CloudyLauncherJsonParser() {
         parser = this;
     }
 
+    /**
+     * Retrieve the instance of the CloudyLauncherJsonParser. Create one if not
+     * existing.
+     *
+     * @return CloudyLauncherJsonParser instance
+     */
     public static CloudyLauncherJsonParser getParser() {
         if (parser == null) {
             parser = new CloudyLauncherJsonParser();
@@ -36,6 +47,14 @@ public class CloudyLauncherJsonParser {
         return parser;
     }
 
+    /**
+     * Parse json string to retrieve the token.
+     *
+     * Return error message if error encountered.
+     *
+     * @param tokenString json string containing the token
+     * @return parsed token
+     */
     public String parseToken(String tokenString) {
         try {
             JSONObject tokenObj = new JSONObject(tokenString);
@@ -47,6 +66,14 @@ public class CloudyLauncherJsonParser {
         }
     }
 
+    /**
+     * Parse json string to retrieve error string.
+     *
+     * Return error message if error encountered.
+     *
+     * @param errorString json string containing any errors
+     * @return parsed error string
+     */
     public String parseErrorResponse(String errorString) {
         String errorMessage = "";
         JSONObject errorResponse;
@@ -56,7 +83,7 @@ public class CloudyLauncherJsonParser {
                 if (errorResponse.has(header)) {
                     errorMessage = errorMessage
                                    + "\n"
-                                   + header
+                                   + header.toUpperCase()
                                    + ": "
                                    + errorResponse.getJSONArray(header)
                                                   .getString(0);
@@ -78,70 +105,116 @@ public class CloudyLauncherJsonParser {
         }
     }
 
+    /**
+     * Parse json string to retrieve a list of games. Use enum GameInformation
+     * to get individual properties of each game.
+     *
+     * Return an empty list if error encountered.
+     *
+     * @param gameListString json string containing games' information
+     * @return list of games with parsed information
+     */
     public List<Map<GameInformation, String>> parseGameList(String gameListString) {
-        JSONArray gameArray = new JSONArray(gameListString);
-        List<Map<GameInformation, String>> gameList = new ArrayList<Map<GameInformation, String>>();
-
-        for (int i = 0; i < gameArray.length(); i++) {
-            JSONObject gameObject = gameArray.getJSONObject(i);
-            gameList.add(parseGameDetailString(gameObject));
-        }
-
-        return gameList;
-    }
-
-    public Map<GameInformation, String> parseGameDetailString(JSONObject gameObj) {
-
         try {
-            Map<GameInformation, String> gameInformation = new HashMap<GameInformation, String>();
+            JSONArray gameArray = new JSONArray(gameListString);
+            List<Map<GameInformation, String>> gameList = new ArrayList<Map<GameInformation, String>>();
 
-            String gId = Integer.toString(gameObj.getInt("id"));
-            String gName = gameObj.getString("name");
-            String gPublisher = gameObj.getString("publisher");
-            String gLimit = Integer.toString(gameObj.getInt("max_limit"));
-            String gAddress = gameObj.getString("address");
-            String gThumbnail = gameObj.getString("thumbnail");
+            for (int i = 0; i < gameArray.length(); i++) {
+                JSONObject gameObject = gameArray.getJSONObject(i);
+                gameList.add(parseGameDetailString(gameObject));
+            }
 
-            gameInformation.put(GameInformation.ID, gId);
-            gameInformation.put(GameInformation.NAME, gName);
-            gameInformation.put(GameInformation.PUBLISHER, gPublisher);
-            gameInformation.put(GameInformation.LIMIT, gLimit);
-            gameInformation.put(GameInformation.ADDRESS, gAddress);
-            gameInformation.put(GameInformation.THUMBNAIL, gThumbnail);
-
-            return gameInformation;
+            return gameList;
 
         } catch (JSONException e) {
-            return null;
+            return new ArrayList<Map<GameInformation, String>>();
         }
     }
 
+    /**
+     * Parse json object to retrieve game details into Map using enum
+     * GameInformation. Used by method parseGameList; throws an exception if
+     * error encountered.
+     *
+     * @param gameObject JSONObject containing game details
+     * @return map with game key-value information
+     * @throws JSONException error parsing game detail
+     */
+    private Map<GameInformation, String> parseGameDetailString(JSONObject gameObject)
+            throws JSONException {
+        Map<GameInformation, String> gameInformation = new HashMap<GameInformation, String>(6);
+        String gId = Integer.toString(gameObject.getInt("id"));
+        String gName = gameObject.getString("name");
+        String gPublisher = gameObject.getString("publisher");
+        String gLimit = Integer.toString(gameObject.getInt("max_limit"));
+        String gAddress = gameObject.getString("address");
+        String gThumbnail = gameObject.getString("thumbnail");
+
+        gameInformation.put(GameInformation.ID, gId);
+        gameInformation.put(GameInformation.NAME, gName);
+        gameInformation.put(GameInformation.PUBLISHER, gPublisher);
+        gameInformation.put(GameInformation.LIMIT, gLimit);
+        gameInformation.put(GameInformation.ADDRESS, gAddress);
+        gameInformation.put(GameInformation.THUMBNAIL, gThumbnail);
+
+        return gameInformation;
+    }
+
+    /**
+     * Parse json string to retrieve list of game ids.
+     *
+     * Return an empty list if error encountered.
+     *
+     * @param ownedIdListString json string containing game ownership
+     *            information
+     * @return list of game ids
+     */
     public List<String> parseOwnedIdList(String ownedIdListString) {
-        JSONArray ownedIdArray = new JSONArray(ownedIdListString);
-        List<String> ownedIdList = new ArrayList<String>();
+        try {
+            JSONArray ownedIdArray = new JSONArray(ownedIdListString);
+            List<String> ownedIdList = new ArrayList<String>();
 
-        for (int i = 0; i < ownedIdArray.length(); i++) {
-            JSONObject ownedIdObject = ownedIdArray.getJSONObject(i);
-            ownedIdList.add(Integer.toString(ownedIdObject.getInt("game")));
+            for (int i = 0; i < ownedIdArray.length(); i++) {
+                JSONObject ownedIdObject = ownedIdArray.getJSONObject(i);
+                ownedIdList.add(Integer.toString(ownedIdObject.getInt("game")));
+            }
+
+            return ownedIdList;
+
+        } catch (JSONException e) {
+            return new ArrayList<String>();
         }
-
-        return ownedIdList;
     }
 
+    /**
+     * Parse json string to retrieve game session information into Map using
+     * enum GameSession. Get individual properties of game session using
+     * GameSession.
+     *
+     * Return an empty map if error encountered.
+     *
+     * @param gameSessionString json string containing game session information
+     * @return map with game session key-value information
+     */
     public Map<GameSession, String> parseGameSession(String gameSessionString) {
-        Map<GameSession, String> gameSession = new HashMap<GameSession, String>(5);
-        JSONObject gameSessionObject = new JSONObject(gameSessionString);
-        gameSession.put(GameSession.ID,
-                        Integer.toString(gameSessionObject.getInt("id")));
-        gameSession.put(GameSession.USER,
-                        gameSessionObject.getString("user"));
-        gameSession.put(GameSession.GAME,
-                        Integer.toString(gameSessionObject.getInt("game")));
-        gameSession.put(GameSession.CONTROLLER,
-                        Integer.toString(gameSessionObject.getInt("controller")));
-        gameSession.put(GameSession.PORT,
-                        Integer.toString(gameSessionObject.getInt("port")));
+        try {
+            Map<GameSession, String> gameSession = new HashMap<GameSession, String>(5);
+            JSONObject gameSessionObject = new JSONObject(gameSessionString);
+            gameSession.put(GameSession.ID,
+                            Integer.toString(gameSessionObject.getInt("id")));
+            gameSession.put(GameSession.USER,
+                            gameSessionObject.getString("user"));
+            gameSession.put(GameSession.GAME,
+                            Integer.toString(gameSessionObject.getInt("game")));
+            gameSession.put(GameSession.CONTROLLER,
+                            Integer.toString(gameSessionObject.getInt("controller")));
+            gameSession.put(GameSession.PORT,
+                            Integer.toString(gameSessionObject.getInt("port")));
 
-        return gameSession;
+            return gameSession;
+
+        } catch (JSONException e) {
+            return new HashMap<GameSession, String>();
+        }
     }
 }
