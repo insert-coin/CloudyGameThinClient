@@ -5,10 +5,12 @@ Packet formats:
 B = unsigned char (1 byte)
 I = unsigned int (4 bytes)
 i = signed int (4 bytes)
+H = unsigned short (2 bytes)
+h = signed short (2 bytes)
 """
 # Networking constants
-PACKET_FORMAT_KEY = "=BBIBIIB"
-PACKET_FORMAT_MOUSE = "=BBIBii"
+PACKET_FORMAT_KEY = "=BBIBHHB"
+PACKET_FORMAT_MOUSE = "=BBIBhh"
 UDP_PORT = 55555              # Port to RemoteController
 TCP_STREAMING_PORT = 55556    # Port to StreamingPlugin
 TCP_CLOUDYWEBAPI_PORT = 55557 # Port to CloudyWebAPI
