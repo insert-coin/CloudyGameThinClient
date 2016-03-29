@@ -6,6 +6,7 @@ import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.control.Pagination;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
@@ -19,6 +20,7 @@ public class CloudyLauncherRestructured extends Application {
     private String token;
 
     @FXML private BorderPane mainContent;
+    @FXML private Pagination pagination;
 
     @FXML private TextField email;
     @FXML private TextField username;
@@ -81,6 +83,26 @@ public class CloudyLauncherRestructured extends Application {
     }
 
     @FXML
+    private void handleLogout(ActionEvent event) {
+        System.out.println("logout");
+    }
+
+    @FXML
+    private void displayAllGames(ActionEvent event) {
+        System.out.println("display all games");
+    }
+
+    @FXML
+    private void displayMyCollection(ActionEvent event) {
+        System.out.println("display my collection");
+    }
+
+    @FXML
+    private void refreshGameList(ActionEvent event) {
+        System.out.println("refresh");
+    }
+
+    @FXML
     private void setSignupPage(MouseEvent event) throws IOException {
         try {
             FXMLLoader vloader = new FXMLLoader(getClass().getResource("design/Signup.fxml"));
@@ -104,6 +126,23 @@ public class CloudyLauncherRestructured extends Application {
         }
     }
 
+    private void setGameDisplayPage() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("design/GameDisplay.fxml"));
+            loader.setController(this);
+            mainContent.setCenter(loader.load());
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.out.println(String.format(ERROR_FXML, "game display"));
+        }
+    }
+
+    @FXML
+    private void setSettingsPage(ActionEvent event) {
+        System.out.println("settings");
+    }
+
     private void initialiseLauncher(Stage stage) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("design/CL.fxml"));
@@ -118,9 +157,6 @@ public class CloudyLauncherRestructured extends Application {
         } catch (IOException e) {
             System.out.println(String.format(ERROR_FXML, "login"));
         }
-    }
-
-    private void setGameDisplayPage() {
     }
 
     @Override

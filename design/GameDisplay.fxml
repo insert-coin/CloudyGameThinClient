@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Pagination?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Text?>
+
+<VBox
+    prefHeight="400"
+    xmlns:fx="http://javafx.com/fxml">
+    <HBox
+        prefHeight="50"
+        styleClass="button-navigation">
+        <Button
+            text="My Collection"
+            onAction="#displayMyCollection" />
+        <Button
+            text="All Games"
+            onAction="#displayAllGames" />
+        <Button
+            styleClass="refresh-button"
+            onAction="#refreshGameList" />
+        <Button
+            text="Settings"
+            onAction="#setSettingsPage" />
+        <Region HBox.hgrow="ALWAYS" />
+        <Button
+            text="Logout"
+            onAction="#handleLogout" />
+    </HBox>
+    <HBox>
+        <Pagination
+            fx:id="pagination"
+            styleClass="bullet"
+            prefWidth="450" />
+        <VBox
+            prefWidth="250"
+            styleClass="content">
+            <Text
+                styleClass="heading1"
+                wrappingWidth="200"> Game title here </Text>
+            <ScrollPane
+                prefHeight="250"
+                vbarPolicy="ALWAYS">
+                <Text
+                    wrappingWidth="200"
+                    textAlignment="JUSTIFY"> Game description here
+                </Text>
+            </ScrollPane>
+            <HBox styleClass="main-button-container">
+                <Region HBox.hgrow="ALWAYS" />
+                <Button
+                    styleClass="main-button"
+                    textAlignment="right"
+                    text="Join Game" />
+            </HBox>
+        </VBox>
+    </HBox>
+</VBox>
