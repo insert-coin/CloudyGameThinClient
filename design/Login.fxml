@@ -12,16 +12,16 @@
 <HBox
     prefHeight="400"
     xmlns:fx="http://javafx.com/fxml">
-    <VBox prefWidth="250">
+    <VBox prefWidth="300">
         <Text styleClass="heading1"> Login </Text>
         <Region prefHeight="50" />
         <Text
-            fx:id="feedback"
+            fx:id="accountsFeedback"
             styleClass="feedback"
             wrappingWidth="225"> Feedback here </Text>
     </VBox>
     <VBox
-        prefWidth="450"
+        prefWidth="500"
         styleClass="content">
         <Region prefHeight="25" />
         <Label text="Username" />
