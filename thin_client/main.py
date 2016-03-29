@@ -121,7 +121,6 @@ def start_client(ip, port, player_controller_id):
 
     while (is_running):
         image_frame = stream_reader.get_frame(capture_object, scale)
-        #event = pygame.event.wait() # program will sleep if there are no events in the queue
         event = pygame.event.poll()
 
         # If we did not manage to get a frame from the stream
