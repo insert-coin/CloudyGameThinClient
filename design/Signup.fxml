@@ -18,7 +18,7 @@
         <Text
             fx:id="accountsFeedback"
             styleClass="feedback"
-            wrappingWidth="225"> Feedback here </Text>
+            wrappingWidth="225">  </Text>
     </VBox>
     <VBox
         prefWidth="500"
@@ -45,6 +45,7 @@
         <HBox styleClass="main-button-container">
             <Button
                 styleClass="main-button"
+                fx:id="mainButton"
                 textAlignment="right"
                 text="Sign Up"
                 onAction="#handleSignup" />

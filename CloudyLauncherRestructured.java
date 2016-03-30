@@ -37,6 +37,7 @@ public class CloudyLauncherRestructured extends Application {
     @FXML private Pagination pagination;
     @FXML private VBox gameInfoPanel;
 
+    @FXML private Button mainButton;
     @FXML private TextField email;
     @FXML private TextField username;
     @FXML private TextField password;
@@ -48,7 +49,11 @@ public class CloudyLauncherRestructured extends Application {
     @FXML private Button gameButton;
     @FXML private Text gameFeedback;
 
-    final private String ERROR_FXML = "Error in loading %s page";
+    final private String ERROR_FXML_CONFIG = "ERROR: Cannot load settings/config.xml";
+    final private String ERROR_FXML_SIGNUP = "ERROR: Cannot load sign up page";
+    final private String ERROR_FXML_LOGIN = "ERROR: Cannot load login page";
+    final private String ERROR_FXML_GAME_DISPLAY = "ERROR: Cannot load game display";
+
     final private String URL_OWNED_BADGE = "images/orangeribbon.png";
     final private String GAME_INFORMATION = "%s\n%s\n%s";
 
@@ -58,9 +63,9 @@ public class CloudyLauncherRestructured extends Application {
     final private Integer PAGINATION_MY_GAMES = 3;
     final private Integer TILES_PER_PAGE = 12;
 
-    public CloudyLauncherRestructured() {
-        try {
+    public void setupConfig() {
 
+        try {
             FileInputStream configFile = new FileInputStream("settings/config.xml");
             Properties props = new Properties();
             props.loadFromXML(configFile);
@@ -74,7 +79,9 @@ public class CloudyLauncherRestructured extends Application {
                                                                      serverPort));
 
         } catch (IOException e) {
-            System.out.println(String.format(ERROR_FXML, "config"));
+
+            accountsFeedback.setText(ERROR_FXML_CONFIG);
+            mainButton.setDisable(true);
         }
     }
 
@@ -138,13 +145,15 @@ public class CloudyLauncherRestructured extends Application {
 
     @FXML
     private void setSignupPage(MouseEvent event) {
-        try {
-            FXMLLoader vloader = new FXMLLoader(getClass().getResource("design/Signup.fxml"));
-            vloader.setController(this);
-            mainContent.setCenter(vloader.load());
+        if (!mainButton.isDisabled()) {
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("design/Signup.fxml"));
+                loader.setController(this);
+                mainContent.setCenter(loader.load());
 
-        } catch (IOException e) {
-            System.out.println(String.format(ERROR_FXML, "signup"));
+            } catch (IOException e) {
+                accountsFeedback.setText(ERROR_FXML_SIGNUP);
+            }
         }
     }
 
@@ -156,7 +165,8 @@ public class CloudyLauncherRestructured extends Application {
             mainContent.setCenter(loader.load());
 
         } catch (IOException e) {
-            System.out.println(String.format(ERROR_FXML, "login"));
+            accountsFeedback.setText(ERROR_FXML_LOGIN);
+            mainButton.setDisable(true);
         }
     }
 
@@ -173,7 +183,8 @@ public class CloudyLauncherRestructured extends Application {
             displayAllGames(null);
 
         } catch (IOException e) {
-            System.out.println(String.format(ERROR_FXML, "game display"));
+            gameFeedback.setText(ERROR_FXML_GAME_DISPLAY);
+            gameButton.setDisable(true);
         }
     }
 
@@ -192,9 +203,12 @@ public class CloudyLauncherRestructured extends Application {
             loader.setController(this);
             mainContent.setCenter(loader.load());
 
+            setupConfig();
+
             stage.show();
         } catch (IOException e) {
-            System.out.println(String.format(ERROR_FXML, "login"));
+            accountsFeedback.setText(ERROR_FXML_LOGIN);
+            mainButton.setDisable(true);
         }
     }
 
@@ -270,7 +284,8 @@ public class CloudyLauncherRestructured extends Application {
             gameInfoPanel.getChildren().addAll(gamePanelContent.getChildren());
 
         } catch (IOException e) {
-            System.out.println(String.format(ERROR_FXML, "game information"));
+            gameFeedback.setText(ERROR_FXML_GAME_DISPLAY);
+            gameButton.setDisable(true);
         }
     }
 
@@ -366,4 +381,5 @@ public class CloudyLauncherRestructured extends Application {
     public static void main(String[] args) {
         launch(args);
     }
+
 }
