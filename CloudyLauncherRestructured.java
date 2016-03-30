@@ -32,6 +32,7 @@ public class CloudyLauncherRestructured extends Application {
     private String token;
     private List<Game> listOfGames = new ArrayList<Game>();
     private List<Game> listOfOwnedGames = new ArrayList<Game>();
+    private Game selectedGame;
 
     @FXML private BorderPane mainContent;
     @FXML private Pagination pagination;
@@ -60,9 +61,12 @@ public class CloudyLauncherRestructured extends Application {
     final private String ERROR_FXML_SIGNUP = "ERROR: Cannot load sign up page";
     final private String ERROR_FXML_LOGIN = "ERROR: Cannot load login page";
     final private String ERROR_FXML_GAME_DISPLAY = "ERROR: Cannot load game display";
+    final private String ERROR_GAME_JOIN = "ERROR: Cannot join game";
 
     final private String URL_OWNED_BADGE = "images/orangeribbon.png";
     final private String GAME_INFORMATION = "%s\n%s\n%s";
+
+    final private String COMMAND_RUN_THINCLIENT = "python thin_client/main.py %s %s %s %s";
 
     final private Integer GAME_DISPLAY_WELCOME = 0;
     final private Integer GAME_DISPLAY_GAME_INFO = 1;
@@ -130,6 +134,15 @@ public class CloudyLauncherRestructured extends Application {
         token = "";
         clearGamePage();
         setLoginPage(null);
+    }
+
+    @FXML
+    private void handleGame(ActionEvent event) {
+        if (listOfOwnedGames.contains(selectedGame)) {
+            joinGame(selectedGame);
+        } else {
+            gameFeedback.setText("obtain game first");
+        }
     }
 
     @FXML
@@ -301,7 +314,7 @@ public class CloudyLauncherRestructured extends Application {
         setGamePanel(GAME_DISPLAY_GAME_INFO);
 
         ImageView selectedIcon = (ImageView) event.getTarget();
-        Game selectedGame = (Game) selectedIcon.getUserData();
+        selectedGame = (Game) selectedIcon.getUserData();
 
         gameTitle.setText(selectedGame.getName());
         gameImage.setImage(selectedIcon.getImage());
@@ -376,6 +389,36 @@ public class CloudyLauncherRestructured extends Application {
     private void clearGamePage() {
         listOfGames.clear();
         listOfOwnedGames.clear();
+    }
+
+    private void joinGame(Game gameToJoin) {
+
+        String serverFeedback = server.postGameSessionRequest(gameToJoin,
+                                                              username.getText(),
+                                                              token);
+
+        gameFeedback.setText(serverFeedback);
+        String error = server.getErrorResponse();
+        String response = server.getServerResponse();
+
+        if (serverFeedback.equals(CloudyLauncherServerInterface.ERROR_CONNECTION)) {
+        } else if (!error.isEmpty()) {
+            gameFeedback.setText(parser.parseErrorResponse(error));
+        } else {
+            Map<CloudyLauncherJsonParser.GameSession, String> gameSession = parser.parseGameSession(response);
+            String controllerId = gameSession.get(CloudyLauncherJsonParser.GameSession.CONTROLLER);
+            String port = gameSession.get(CloudyLauncherJsonParser.GameSession.PORT);
+            String sessionId = gameSession.get(CloudyLauncherJsonParser.GameSession.ID);
+
+            try {
+                Runtime.getRuntime()
+                       .exec(String.format(COMMAND_RUN_THINCLIENT,
+                                           gameToJoin.getAddress(), port,
+                                           controllerId, sessionId));
+            } catch (IOException e) {
+                gameFeedback.setText(ERROR_GAME_JOIN);
+            }
+        }
     }
 
     @Override

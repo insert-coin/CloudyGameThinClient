@@ -49,7 +49,8 @@
                     disable="true"
                     styleClass="main-button"
                     textAlignment="right"
-                    text="Join Game" />
+                    text="Join Game"
+                    onAction="#handleGame" />
             </HBox>
         </VBox>
     </HBox>
