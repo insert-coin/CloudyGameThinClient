@@ -338,14 +338,14 @@ public class CloudyLauncher extends Application {
             gameList = listOfOwnedGames;
         }
 
-        TilePane gameRoot = new TilePane();
-        gameRoot.getStyleClass().add("game-root");
-
         pagination.setPageCount(numPages);
         pagination.setPageFactory(new Callback<Integer, Node>() {
 
             @Override
             public Node call(Integer pageIndex) {
+                TilePane gameRoot = new TilePane();
+                gameRoot.getStyleClass().add("game-root");
+
                 int startIndex = pageIndex * TILES_PER_PAGE;
                 for (int i = startIndex; i < startIndex + TILES_PER_PAGE; i++) {
                     if (i < gameList.size()) {
