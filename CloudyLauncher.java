@@ -1,10 +1,17 @@
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 
+import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -23,6 +30,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Callback;
+import javafx.util.Duration;
 
 public class CloudyLauncher extends Application {
 
@@ -34,6 +42,8 @@ public class CloudyLauncher extends Application {
     private List<Game> listOfOwnedGames = new ArrayList<Game>();
     private Game selectedGame;
 
+    @FXML private Text date;
+    @FXML private Text time;
     @FXML private BorderPane mainContent;
     @FXML private Pagination pagination;
     @FXML private VBox gameInfoPanel;
@@ -49,6 +59,9 @@ public class CloudyLauncher extends Application {
     @FXML private Text gameTextInformation;
     @FXML private Button gameButton;
     @FXML private Text gameFeedback;
+
+    final private String CLOCK_DATE_PATTERN = "EEEE d MMMM y";
+    final private String CLOCK_TIME_PATTERN = "kk : mm : ss";
 
     final private String PATH_LAUNCHER_BASE = "design/CL.fxml";
     final private String PATH_ACCOUNTS_LOGIN = "design/Login.fxml";
@@ -73,6 +86,27 @@ public class CloudyLauncher extends Application {
     final private Integer PAGINATION_ALL_GAMES = 2;
     final private Integer PAGINATION_MY_GAMES = 3;
     final private Integer TILES_PER_PAGE = 12;
+
+    private void setupClock() {
+        SimpleDateFormat dateFormat = new SimpleDateFormat(CLOCK_DATE_PATTERN,
+                                                           Locale.US);
+        SimpleDateFormat timeFormat = new SimpleDateFormat(CLOCK_TIME_PATTERN,
+                                                           Locale.US);
+
+        Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(1),
+                new EventHandler<ActionEvent>() {
+
+                @Override
+                public void handle(ActionEvent event) {
+                    final Calendar cal = Calendar.getInstance();
+                    date.setText(dateFormat.format(cal.getTime()));
+                    time.setText(timeFormat.format(cal.getTime()));
+                }
+        }));
+
+        timeline.setCycleCount(Animation.INDEFINITE);
+        timeline.play();
+    }
 
     public void setupConfig() {
 
@@ -224,6 +258,7 @@ public class CloudyLauncher extends Application {
             mainContent.setCenter(loader.load());
 
             setupConfig();
+            setupClock();
 
             stage.show();
         } catch (IOException e) {
