@@ -15,8 +15,8 @@ public class CloudyLauncherJsonParser {
     final static String ERROR_PARSER_FEEDBACK = "PARSING FEEDBACK ERROR";
 
     final static String[] FIELDS_HEADER = { "username", "password", "email" };
-    final static String[] FIELDS_NON_HEADER = { "non_field_errors", "detail",
-            "message" };
+    final static String[] FIELDS_NON_HEADER_JSONARRAY = { "non_field_errors" };
+    final static String[] FIELDS_NON_HEADER_JSONOBJECT = { "detail", "message" };
 
     static enum GameInformation {
         ID, NAME, PUBLISHER, LIMIT, ADDRESS, THUMBNAIL
@@ -90,7 +90,7 @@ public class CloudyLauncherJsonParser {
                 }
             }
 
-            for (String header : FIELDS_NON_HEADER) {
+            for (String header : FIELDS_NON_HEADER_JSONARRAY) {
                 if (errorResponse.has(header)) {
                     errorMessage = errorMessage
                                    + "\n"
@@ -98,7 +98,15 @@ public class CloudyLauncherJsonParser {
                                                   .getString(0);
                 }
             }
-            return errorMessage;
+
+            for (String header : FIELDS_NON_HEADER_JSONOBJECT) {
+                if (errorResponse.has(header)) {
+                    errorMessage = errorMessage + "\n"
+                                   + errorResponse.getString(header);
+                }
+            }
+
+            return errorMessage.trim();
 
         } catch (JSONException e) {
             return ERROR_PARSER_FEEDBACK;
