@@ -27,15 +27,18 @@
         <Label text="Email" />
         <TextField
             fx:id="email"
-            promptText="Enter email here" />
+            promptText="Enter email here"
+            onAction="#handleSignup" />
         <Label text="Username" />
         <TextField
             fx:id="username"
-            promptText="Enter username here" />
+            promptText="Enter username here"
+            onAction="#handleSignup" />
         <Label text="Password" />
         <PasswordField
             fx:id="password"
-            promptText="Enter password here" />
+            promptText="Enter password here"
+            onAction="#handleSignup" />
         <Text
             wrappingWidth="400"
             textAlignment="right"
