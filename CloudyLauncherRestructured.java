@@ -49,6 +49,13 @@ public class CloudyLauncherRestructured extends Application {
     @FXML private Button gameButton;
     @FXML private Text gameFeedback;
 
+    final private String PATH_LAUNCHER_BASE = "design/CL.fxml";
+    final private String PATH_ACCOUNTS_LOGIN = "design/Login.fxml";
+    final private String PATH_ACCOUNTS_SIGNUP = "design/Signup.fxml";
+    final private String PATH_GAME_DISPLAY_BASE = "design/GameDisplay.fxml";
+    final private String PATH_GAME_DISPLAY_INITIAL = "design/GameDisplay_initial.fxml";
+    final private String PATH_GAME_DISPLAY_GAME = "design/GameDisplay_game.fxml";
+
     final private String ERROR_FXML_CONFIG = "ERROR: Cannot load settings/config.xml";
     final private String ERROR_FXML_SIGNUP = "ERROR: Cannot load sign up page";
     final private String ERROR_FXML_LOGIN = "ERROR: Cannot load login page";
@@ -147,7 +154,7 @@ public class CloudyLauncherRestructured extends Application {
     private void setSignupPage(MouseEvent event) {
         if (!mainButton.isDisabled()) {
             try {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("design/Signup.fxml"));
+                FXMLLoader loader = new FXMLLoader(getClass().getResource(PATH_ACCOUNTS_SIGNUP));
                 loader.setController(this);
                 mainContent.setCenter(loader.load());
 
@@ -160,7 +167,7 @@ public class CloudyLauncherRestructured extends Application {
     @FXML
     private void setLoginPage(MouseEvent event) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("design/Login.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(PATH_ACCOUNTS_LOGIN));
             loader.setController(this);
             mainContent.setCenter(loader.load());
 
@@ -172,7 +179,7 @@ public class CloudyLauncherRestructured extends Application {
 
     private void setGameDisplayPage() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("design/GameDisplay.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(PATH_GAME_DISPLAY_BASE));
             loader.setController(this);
             mainContent.setCenter(loader.load());
 
@@ -195,11 +202,11 @@ public class CloudyLauncherRestructured extends Application {
 
     private void initialiseLauncher(Stage stage) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("design/CL.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(PATH_LAUNCHER_BASE));
             loader.setController(this);
             stage = loader.load();
 
-            loader = new FXMLLoader(getClass().getResource("design/Login.fxml"));
+            loader = new FXMLLoader(getClass().getResource(PATH_ACCOUNTS_LOGIN));
             loader.setController(this);
             mainContent.setCenter(loader.load());
 
@@ -270,10 +277,10 @@ public class CloudyLauncherRestructured extends Application {
             FXMLLoader loader;
 
             if (gameListType.equals(GAME_DISPLAY_WELCOME)) {
-                loader = new FXMLLoader(getClass().getResource("design/GameDisplay_initial.fxml"));
+                loader = new FXMLLoader(getClass().getResource(PATH_GAME_DISPLAY_INITIAL));
                 gameButton.setDisable(true);
             } else {
-                loader = new FXMLLoader(getClass().getResource("design/GameDisplay_game.fxml"));
+                loader = new FXMLLoader(getClass().getResource(PATH_GAME_DISPLAY_GAME));
                 gameButton.setDisable(false);
             }
 
