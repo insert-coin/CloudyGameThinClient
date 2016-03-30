@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/insert-coin/CloudyGameThinClient.svg?branch=master)](https://travis-ci.org/insert-coin/CloudyGameThinClient)
+
 # CloudyGameThinClient
 This is an application that the player uses to play the game. The player will receive an input video stream from the cloud servers, and send their keyboard and mouse inputs to the servers via this application.
 
