@@ -39,7 +39,7 @@ This is an application that allows users to access and manage games available to
 You need:
 
 1. JavaFX 2.0 or newer
-2. Java SE 6.0 or newer 
+2. Java SE 8.0 or newer
 3. JSON dependency
     - can be obtained from [here](http://mvnrepository.com/artifact/org.json/json)
     - version used in development: 20151123
