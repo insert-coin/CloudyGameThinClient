@@ -6,9 +6,9 @@ import logging
 import pygame
 import argparse
 from pygame.locals import *
-from thin_client import vlc_addon
 from thin_client.session import GameSession
 from thin_client import settings
+from thin_client import stream_reader
 
 
 class Action:
@@ -62,6 +62,7 @@ class QuitAction(Action):
     def process(self, event):
         self.session.send_quit_command()
 
+# Initialize pygame with the window size, mouse settings, etc.
 def initialize_pygame(fps):
     pygame.init()
     screen = pygame.display.set_mode((settings.RESO_WIDTH, settings.RESO_HEIGHT))
@@ -71,18 +72,34 @@ def initialize_pygame(fps):
     frame_interval = int((1/fps)*1000)
     pygame.key.set_repeat(frame_interval, frame_interval) # 1 input per frame
 
-    my_font = pygame.font.Font(None, settings.TEXT_FONT_SIZE)
-    label = my_font.render(settings.TEXT_LOADING, True, settings.TEXT_COLOUR)
-    mouse_label = my_font.render(settings.TEXT_INSTRUCTIONS, True, settings.TEXT_COLOUR)
-    text_rect = label.get_rect()
-    render_pos_x = screen.get_rect().centerx - text_rect.centerx
-    render_pos_y = screen.get_rect().centery - text_rect.centery
-    screen.blit(label, (render_pos_x, render_pos_y))
-    screen.blit(mouse_label, (render_pos_x - 100, render_pos_y + 50))
+    show_message(screen, settings.TEXT_LOADING, settings.TEXT_PATIENCE)
+
+    return screen
+
+# Shows 3 lines of text in the middle of a black screen.
+# The third line is shows the mouse unlock instructions by default, and can be overwritten.
+def show_message(screen, line1, line2, line3=settings.TEXT_INSTRUCTIONS):
+    screen.fill(settings.SCREEN_BACKGROUND_COLOR)
+    main_font = pygame.font.Font(None, settings.TEXT_MAIN_FONT_SIZE)
+    small_font = pygame.font.Font(None, settings.TEXT_SMALL_FONT_SIZE)
+    line1_message = main_font.render(line1, True, settings.TEXT_COLOUR)
+    line2_message = main_font.render(line2, True, settings.TEXT_COLOUR)
+    line3_message = small_font.render(line3, True, settings.TEXT_COLOUR)
+    line1_text_rect = line1_message.get_rect()
+    line2_text_rect = line2_message.get_rect()
+    line3_text_rect = line3_message.get_rect()
+    line1_pos_x = screen.get_rect().centerx - line1_text_rect.centerx
+    line1_pos_y = screen.get_rect().centery - line1_text_rect.centery
+    line2_pos_x = screen.get_rect().centerx - line2_text_rect.centerx
+    line3_pos_x = screen.get_rect().centerx - line3_text_rect.centerx
+    screen.blit(line1_message, (line1_pos_x, line1_pos_y - 50))
+    screen.blit(line2_message, (line2_pos_x, line1_pos_y))
+    screen.blit(line3_message, (line3_pos_x, line1_pos_y + 125))
     pygame.display.update()
 
-    return pygame
+    return screen
 
+# Toggles mouse grab. Mouse grab is when the mouse is locked to the interior of the window.
 def toggle_mouse_grab(pygame, is_mouse_grabbed):
     if (is_mouse_grabbed == True):
         is_mouse_grabbed = False
@@ -97,30 +114,44 @@ def toggle_mouse_grab(pygame, is_mouse_grabbed):
 
 def start_client(ip, port, player_controller_id):
     session = GameSession(ip, player_controller_id)
-    pygame = initialize_pygame(settings.FPS) #FPS
-    pygame = vlc_addon.initialize_stream(ip, port, pygame)
+    screen = initialize_pygame(settings.FPS)
+    scale, offset, is_width_smaller, capture_object = stream_reader.setup_stream(ip, port)
     is_running = True
     is_mouse_grabbed = True
 
     while (is_running):
-        event = pygame.event.wait() # program will sleep if there are no events in the queue
+        image_frame = stream_reader.get_frame(capture_object, scale)
+        event = pygame.event.poll()
 
-        if (event.type == KEYDOWN or event.type == KEYUP):
-            action = KeyboardButton(session, pygame)
+        # If we did not manage to get a frame from the stream
+        if (image_frame == False):
+            show_message(screen, settings.TEXT_SERVER_DISCONNECTED, settings.TEXT_RESTART_CLIENT)
+            action = Action(session, pygame)
+        else:
+            if (event.type == KEYDOWN or event.type == KEYUP):
+                action = KeyboardButton(session, pygame)                    
+            elif (event.type == pygame.MOUSEMOTION):
+                action = MouseMotion(session, pygame)
+            elif (event.type == MOUSEBUTTONDOWN or event.type == MOUSEBUTTONUP):
+                action = MouseButton(session, pygame)
+            else:
+                action = Action(session, pygame)
 
-            # To toggle mouse grabbing within the window
-            if (event.type == KEYUP and event.key == K_ESCAPE):
-                is_mouse_grabbed = toggle_mouse_grab(pygame, is_mouse_grabbed)
-                
-        elif (event.type == pygame.MOUSEMOTION):
-            action = MouseMotion(session, pygame)
-        elif (event.type == MOUSEBUTTONDOWN or event.type == MOUSEBUTTONUP):
-            action = MouseButton(session, pygame)
+            # Display the frame on the pygame window
+            if (is_width_smaller):
+                screen.blit(image_frame, (0, offset))
+            else:
+                screen.blit(image_frame, (offset, 0))
+            pygame.display.flip()
+            
+        # To toggle mouse grabbing within the window
+        if (event.type == KEYUP and event.key == K_ESCAPE):
+            is_mouse_grabbed = toggle_mouse_grab(pygame, is_mouse_grabbed)
         elif (event.type == QUIT):
             action = QuitAction(session, pygame)
             is_running = False
-        else:
-            action = Action(session, pygame)
+            capture_object.release()
+
         action.process(event)
 
     pygame.quit()
