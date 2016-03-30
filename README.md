@@ -47,11 +47,11 @@ You need:
 ### To compile on the command line
 Include the json jar in the classpath:
 ```bash
-javac -cp path/to/json/jar/file CloudyLauncher.java Game.java
+javac -cp path/to/json/jar/file CloudyLauncher.java Game.java CloudyLauncherJsonParser.java CloudyLauncherServerInterface.java
 ```
 Example: Assuming you have placed the .jar file together with your java files, type:
 ```bash
-javac -cp json-20151123.jar CloudyLauncher.java Game.java
+javac -cp json-20151123.jar CloudyLauncher.java Game.java CloudyLauncherJsonParser.java CloudyLauncherServerInterface.java
 ```
 
 ### To run on the command line
