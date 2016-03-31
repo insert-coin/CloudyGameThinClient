@@ -28,9 +28,14 @@ DEVICE_MOUSE = 2
 FPS = 30
 TEXT_WINDOW_TITLE = "CloudyGame Thin Client"
 TEXT_LOADING = "Loading..."
+TEXT_PATIENCE = "Please be patient."
 TEXT_INSTRUCTIONS = "Press ESC to lock/unlock mouse."
-TEXT_FONT_SIZE = 30
-TEXT_COLOUR = (255, 255, 255)
+TEXT_SERVER_DISCONNECTED = "The game server is not running."
+TEXT_RESTART_CLIENT = "Please try playing again later."
+TEXT_MAIN_FONT_SIZE = 30
+TEXT_SMALL_FONT_SIZE = 25
+TEXT_COLOUR = (255, 255, 255)           # White
+SCREEN_BACKGROUND_COLOR = (0, 0, 0)     # Black
 
 # Keyboard mappings
 ASCII_TO_UE_KEYCODE = {
@@ -57,17 +62,17 @@ for i in range(48, 58):
     ASCII_TO_UE_KEYCODE[i] = i
     
 ASCII_TO_UE_CHARCODE = {
-   8: 8, # Backspace
-   9: 9, # Tab
-   13: 13, # Enter
-   19: 19, # Pause Break
-   27: 27, # Escape
-   32: 32, # Space
-   127: 46, # Delete
-   256: 96, # NumPad 0
-   257: 97, # NumPad 1
-   258: 98, # NumPad 2
-   259: 99, # NumPad 3
+   8: 8,     # Backspace
+   9: 9,     # Tab
+   13: 13,   # Enter
+   19: 19,   # Pause Break
+   27: 27,   # Escape
+   32: 32,   # Space
+   127: 46,  # Delete
+   256: 96,  # NumPad 0
+   257: 97,  # NumPad 1
+   258: 98,  # NumPad 2
+   259: 99,  # NumPad 3
    260: 100, # NumPad 4
    261: 101, # NumPad 5 
    262: 102, # NumPad 6 
@@ -79,16 +84,16 @@ ASCII_TO_UE_CHARCODE = {
    268: 106, # NumPad Multiply
    269: 109, # NumPad Subtract
    270: 107, # NumPad Add
-   271: 13, # NumPad Enter
-   273: 38, # Arrow Up
-   274: 40, # Arrow Down
-   275: 39, # Arrow Right
-   276: 37, # Arrow Left
-   277: 45, # Insert
-   278: 35, # Home
-   279: 36, # End
-   280: 33, # Page Up
-   281: 34, # Page Down
+   271: 13,  # NumPad Enter
+   273: 38,  # Arrow Up
+   274: 40,  # Arrow Down
+   275: 39,  # Arrow Right
+   276: 37,  # Arrow Left
+   277: 45,  # Insert
+   278: 35,  # Home
+   279: 36,  # End
+   280: 33,  # Page Up
+   281: 34,  # Page Down
    282: 112, # F1
    283: 113, # F2
    284: 114, # F3
@@ -102,7 +107,7 @@ ASCII_TO_UE_CHARCODE = {
    292: 122, # F11
    293: 123, # F12
    300: 144, # Num Lock
-   301: 20, # Caps Lock
+   301: 20,  # Caps Lock
    302: 145, # Scroll Lock
    303: 161, # Right Shift
    304: 160, # Left Shift
@@ -110,5 +115,5 @@ ASCII_TO_UE_CHARCODE = {
    306: 162, # Left Ctrl
    307: 165, # Right Alt
    308: 164, # Left Alt
-   311: 91 # WinKey/Left Command
+   311: 91   # WinKey/Left Command
 }
