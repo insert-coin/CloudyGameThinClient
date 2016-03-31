@@ -26,6 +26,14 @@
                         <Text> logo here </Text>
                         <Region HBox.hgrow="ALWAYS" />
                         <VBox>
+                            <Text
+                                fx:id="date"
+                                styleClass="date-time">
+                            </Text>
+                            <Text
+                                fx:id="time"
+                                styleClass="date-time">
+                            </Text>
                             <Text> status here </Text>
                         </VBox>
                     </HBox>
