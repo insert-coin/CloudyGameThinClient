@@ -61,10 +61,10 @@ public class CloudyLauncher extends Application {
     @FXML private Button gameButton;
     @FXML private Text gameFeedback;
 
-    final private String CLOCK_DATE_PATTERN = "EEEE d MMMM y";
+    final private String CLOCK_DATE_PATTERN = "d MMMM y";
     final private String CLOCK_TIME_PATTERN = "kk : mm : ss";
-    final private String STATUS_ONLINE = "Status is currently online";
-    final private String STATUS_OFFLINE = "Status is currently offline";
+    final private String STATUS_ONLINE = "Online";
+    final private String STATUS_OFFLINE = "Offline";
 
     final private String PATH_LAUNCHER_BASE = "design/CL.fxml";
     final private String PATH_ACCOUNTS_LOGIN = "design/Login.fxml";

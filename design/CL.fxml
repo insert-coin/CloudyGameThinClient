@@ -27,6 +27,7 @@
                         <Text> logo here </Text>
                         <Region HBox.hgrow="ALWAYS" />
                         <VBox>
+                            <Label fx:id="status" />
                             <Text
                                 fx:id="date"
                                 styleClass="date-time">
@@ -35,7 +36,7 @@
                                 fx:id="time"
                                 styleClass="date-time">
                             </Text>
-                            <Label fx:id="status" />
+
                         </VBox>
                     </HBox>
                 </top>
