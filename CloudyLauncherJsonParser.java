@@ -217,7 +217,7 @@ public class CloudyLauncherJsonParser {
             gameSession.put(GameSession.CONTROLLER,
                             Integer.toString(gameSessionObject.getInt("controller")));
             gameSession.put(GameSession.PORT,
-                            Integer.toString(gameSessionObject.getInt("port")));
+                            Integer.toString(gameSessionObject.getInt("streaming_port")));
 
             return gameSession;
 
