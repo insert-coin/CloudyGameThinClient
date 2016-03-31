@@ -18,6 +18,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.Pagination;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
@@ -43,6 +44,7 @@ public class CloudyLauncher extends Application {
 
     @FXML private Text date;
     @FXML private Text time;
+    @FXML private Label status;
     @FXML private BorderPane mainContent;
     @FXML private Pagination pagination;
     @FXML private VBox gameInfoPanel;
@@ -61,6 +63,8 @@ public class CloudyLauncher extends Application {
 
     final private String CLOCK_DATE_PATTERN = "EEEE d MMMM y";
     final private String CLOCK_TIME_PATTERN = "kk : mm : ss";
+    final private String STATUS_ONLINE = "Status is currently online";
+    final private String STATUS_OFFLINE = "Status is currently offline";
 
     final private String PATH_LAUNCHER_BASE = "design/CL.fxml";
     final private String PATH_ACCOUNTS_LOGIN = "design/Login.fxml";
@@ -86,7 +90,7 @@ public class CloudyLauncher extends Application {
     final private Integer PAGINATION_MY_GAMES = 3;
     final private Integer TILES_PER_PAGE = 12;
 
-    private void setupClock() {
+    private void setupClockAndStatus() {
         SimpleDateFormat dateFormat = new SimpleDateFormat(CLOCK_DATE_PATTERN,
                                                            Locale.US);
         SimpleDateFormat timeFormat = new SimpleDateFormat(CLOCK_TIME_PATTERN,
@@ -100,6 +104,12 @@ public class CloudyLauncher extends Application {
                     final Calendar cal = Calendar.getInstance();
                     date.setText(dateFormat.format(cal.getTime()));
                     time.setText(timeFormat.format(cal.getTime()));
+
+                    if (server.isOnline()) {
+                        status.setText(STATUS_ONLINE);
+                    } else {
+                        status.setText(STATUS_OFFLINE);
+                    }
                 }
         }));
 
@@ -257,7 +267,7 @@ public class CloudyLauncher extends Application {
             mainContent.setCenter(loader.load());
 
             setupConfig();
-            setupClock();
+            setupClockAndStatus();
 
             stage.show();
         } catch (IOException e) {

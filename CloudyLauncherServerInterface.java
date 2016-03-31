@@ -42,6 +42,27 @@ public class CloudyLauncherServerInterface {
     }
 
     /**
+     * Checks if the server is currently online and reachable. Method posts a
+     * get request to check connection.
+     *
+     * @return  whether server is online
+     */
+    public boolean isOnline() {
+        try {
+            URL url = new URL(baseUrl);
+            HttpURLConnection connection = openGetConnection(url, "");
+
+            if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch (IOException e) {
+            return false;
+        }
+    }
+
+    /**
      * Post request to the Cloudyweb server to create a new user.
      *
      * Method returns a feedback string and not the server response. Use
