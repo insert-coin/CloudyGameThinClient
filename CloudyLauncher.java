@@ -90,7 +90,7 @@ public class CloudyLauncher extends Application {
     final private Integer PAGINATION_MY_GAMES = 3;
     final private Integer TILES_PER_PAGE = 12;
 
-    private void setupClockAndStatus() {
+    private void setupClock() {
         SimpleDateFormat dateFormat = new SimpleDateFormat(CLOCK_DATE_PATTERN,
                                                            Locale.US);
         SimpleDateFormat timeFormat = new SimpleDateFormat(CLOCK_TIME_PATTERN,
@@ -104,6 +104,19 @@ public class CloudyLauncher extends Application {
                     final Calendar cal = Calendar.getInstance();
                     date.setText(dateFormat.format(cal.getTime()));
                     time.setText(timeFormat.format(cal.getTime()));
+                }
+        }));
+
+        timeline.setCycleCount(Animation.INDEFINITE);
+        timeline.play();
+    }
+
+    private void setupStatus() {
+        Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(5),
+                new EventHandler<ActionEvent>() {
+
+                @Override
+                public void handle(ActionEvent event) {
 
                     if (server.isOnline()) {
                         status.setText(STATUS_ONLINE);
@@ -267,7 +280,8 @@ public class CloudyLauncher extends Application {
             mainContent.setCenter(loader.load());
 
             setupConfig();
-            setupClockAndStatus();
+            setupClock();
+            setupStatus();
 
             stage.show();
         } catch (IOException e) {
