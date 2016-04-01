@@ -112,10 +112,9 @@ def toggle_mouse_grab(pygame, is_mouse_grabbed):
 
     return is_mouse_grabbed
 
-def start_client(ip, port, player_controller_id):
+def start_client(ip, port, player_controller_id, *args, **kwargs):
     session = GameSession(ip, player_controller_id)
     screen = initialize_pygame(settings.FPS)
-    print(ip, port)
     scale, offset, is_width_smaller, capture_object = stream_reader.setup_stream(ip, port)
     is_running = True
     is_mouse_grabbed = True
@@ -157,8 +156,8 @@ def start_client(ip, port, player_controller_id):
 
     pygame.quit()
 
-def main(ip, port, player_controller_id):
-    start_client(ip, port, int(player_controller_id))
+def main(ip, port, player_controller_id, *args, **kwargs):
+    start_client(ip, port, int(player_controller_id), *args, **kwargs)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Launch the thin client.')
@@ -170,8 +169,9 @@ if __name__ == '__main__':
     parser.add_argument('player', metavar='player', type=int, default=0,
                         choices=range(0, 4),
                         help="Player controller ID of the player. Value from 0 to 3.")
-    parser.add_argument('session', metavar='session', type=int, default=0,
+    parser.add_argument('--session', metavar='session', type=int, default=1,
                         help="ID of the current game session being used.")
 
     args = parser.parse_args()
-    main(args.ip, args.port, args.player)
+    print(args)
+    main(args.ip, args.port, args.player, args.session)
