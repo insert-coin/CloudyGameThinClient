@@ -173,5 +173,4 @@ if __name__ == '__main__':
                         help="ID of the current game session being used.")
 
     args = parser.parse_args()
-    print(args)
     main(args.ip, args.port, args.player, args.session)
