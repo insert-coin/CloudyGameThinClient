@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.text.Text?>
+<?import javafx.scene.layout.Region?>
+
+<HBox
+    prefHeight="400"
+    xmlns:fx="http://javafx.com/fxml">
+    <VBox prefWidth="300">
+        <Text styleClass="heading1"> Sign Up </Text>
+        <Region prefHeight="50" />
+        <Text
+            fx:id="accountsFeedback"
+            styleClass="feedback"
+            wrappingWidth="225">  </Text>
+    </VBox>
+    <VBox
+        prefWidth="500"
+        styleClass="content">
+        <Region prefHeight="25" />
+        <Label text="Email" />
+        <TextField
+            fx:id="email"
+            promptText="Enter email here"
+            onAction="#handleSignup" />
+        <Label text="Username" />
+        <TextField
+            fx:id="username"
+            promptText="Enter username here"
+            onAction="#handleSignup" />
+        <Label text="Password" />
+        <PasswordField
+            fx:id="password"
+            promptText="Enter password here"
+            onAction="#handleSignup" />
+        <Text
+            wrappingWidth="400"
+            textAlignment="right"
+            onMouseClicked="#setLoginPage"> Already have an account? Login instead!
+        </Text>
+        <Region VBox.vgrow="ALWAYS" />
+        <HBox styleClass="main-button-container">
+            <Button
+                styleClass="main-button"
+                fx:id="mainButton"
+                textAlignment="right"
+                text="Sign Up"
+                onAction="#handleSignup" />
+        </HBox>
+    </VBox>
+</HBox>

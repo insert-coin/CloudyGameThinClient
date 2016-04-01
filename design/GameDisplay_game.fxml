@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Text?>
+
+
+<VBox xmlns:fx="http://javafx.com/fxml">
+    <Text
+        styleClass="heading1"
+        wrappingWidth="270"
+        fx:id="gameTitle"> Game title here </Text>
+    <Text
+        wrappingWidth="270"
+        fx:id="gameFeedback"
+        styleClass="feedback">
+    </Text>
+
+    <ScrollPane
+        styleClass="game-info"
+        prefHeight="250"
+        vbarPolicy="ALWAYS"
+        hbarPolicy="NEVER">
+        <VBox>
+            <ImageView fx:id="gameImage" />
+            <Text
+                wrappingWidth="270"
+                textAlignment="JUSTIFY"
+                fx:id="gameTextInformation"> Game information
+            </Text>
+        </VBox>
+    </ScrollPane>
+</VBox>

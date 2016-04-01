@@ -42,7 +42,7 @@ This is an application that allows users to access and manage games available to
 You need:
 
 1. JavaFX 2.0 or newer
-2. Java SE 6.0 or newer 
+2. Java SE 8.0 or newer
 3. JSON dependency
     - can be obtained from [here](http://mvnrepository.com/artifact/org.json/json)
     - version used in development: 20151123
@@ -50,11 +50,13 @@ You need:
 ### To compile on the command line
 Include the json jar in the classpath:
 ```bash
-javac -cp path/to/json/jar/file CloudyLauncher.java Game.java
+javac -cp path/to/json/jar/file CloudyLauncher.java Game.java CloudyLauncherJsonParser.java CloudyLauncherServerInterface.java
 ```
+or just use `javac -cp path/to/json/jar/file *.java`
+
 Example: Assuming you have placed the .jar file together with your java files, type:
 ```bash
-javac -cp json-20151123.jar CloudyLauncher.java Game.java
+javac -cp json-20151123.jar CloudyLauncher.java Game.java CloudyLauncherJsonParser.java CloudyLauncherServerInterface.java
 ```
 
 ### To run on the command line

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.net.URL?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.Scene?>
+<?import javafx.scene.text.Text?>
+<?import javafx.stage.Stage?>
+
+<Stage
+    title="CloudyLauncher"
+    xmlns:fx="http://javafx.com/fxml"
+    width="800"
+    height="600"
+    resizable="false">
+    <scene>
+        <Scene>
+            <BorderPane
+                styleClass="root"
+                fx:id="mainContent">
+                <top>
+                    <HBox prefHeight="100">
+                        <Text> logo here </Text>
+                        <Region HBox.hgrow="ALWAYS" />
+                        <VBox>
+                            <Label fx:id="status" />
+                            <Text
+                                fx:id="date"
+                                styleClass="date-time">
+                            </Text>
+                            <Text
+                                fx:id="time"
+                                styleClass="date-time">
+                            </Text>
+
+                        </VBox>
+                    </HBox>
+                </top>
+                <bottom>
+                    <Text styleClass="copyright"> Copyright (c)
+                        2015, 2016
+                        Insert Coin. All Rights Reserved.
+                    </Text>
+                </bottom>
+            </BorderPane>
+        </Scene>
+        <!-- <stylesheets> <URL value="@style.css" /> </stylesheets> -->
+    </scene>
+</Stage>

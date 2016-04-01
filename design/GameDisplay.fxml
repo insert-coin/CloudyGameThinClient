@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Pagination?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Text?>
+
+<VBox
+    prefHeight="400"
+    xmlns:fx="http://javafx.com/fxml">
+    <HBox
+        prefHeight="50"
+        styleClass="button-navigation">
+        <Button
+            text="My Collection"
+            onAction="#displayMyCollection" />
+        <Button
+            text="All Games"
+            onAction="#displayAllGames" />
+        <Button
+            styleClass="refresh-button"
+            onAction="#refreshGameList" />
+        <Button
+            text="Settings"
+            onAction="#setSettingsPage" />
+        <Region HBox.hgrow="ALWAYS" />
+        <Button
+            text="Logout"
+            onAction="#handleLogout" />
+    </HBox>
+    <HBox VBox.vgrow="ALWAYS">
+        <Pagination
+            fx:id="pagination"
+            styleClass="bullet"
+            prefWidth="500" />
+        <VBox
+            prefWidth="350"
+            styleClass="content">
+            <VBox
+                fx:id="gameInfoPanel"
+                prefHeight="250">
+            </VBox>
+            <HBox styleClass="main-button-container">
+                <Region HBox.hgrow="ALWAYS" />
+                <Button
+                    fx:id="gameButton"
+                    disable="true"
+                    styleClass="main-button"
+                    textAlignment="right"
+                    text="Join Game"
+                    onAction="#handleGame" />
+            </HBox>
+        </VBox>
+    </HBox>
+</VBox>
