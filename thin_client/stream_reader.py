@@ -46,7 +46,7 @@ def get_offset(scale, is_width_smaller, frame_width, frame_height):
 
 # Reads the http stream
 def initialize_stream(ip, port):
-    address = "http://" + ip + ":" + port
+    address = "http://{}:{}".format(ip, port)
     cap = cv2.VideoCapture(address)
     frame_width = int(cap.get(3))
     frame_height = int(cap.get(4))
