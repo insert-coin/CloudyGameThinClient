@@ -6,7 +6,7 @@
 
 <VBox xmlns:fx="http://javafx.com/fxml">
     <Text
-        styleClass="heading1"
+        styleClass="heading2"
         wrappingWidth="270"> Welcome </Text>
     <Text
         wrappingWidth="270"
@@ -15,13 +15,12 @@
     </Text>
 
     <ScrollPane
-        styleClass="game-info"
         prefHeight="250"
-        vbarPolicy="ALWAYS"
         hbarPolicy="NEVER">
-        <VBox>
+        <VBox styleClass="game-info-container">
             <Text
-                wrappingWidth="270"
+                styleClass="game-info"
+                wrappingWidth="250"
                 textAlignment="JUSTIFY"> Select a game from the list on the left
             </Text>
         </VBox>

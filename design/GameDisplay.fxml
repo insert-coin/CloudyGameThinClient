@@ -10,22 +10,25 @@
 <VBox
     prefHeight="400"
     xmlns:fx="http://javafx.com/fxml">
+    <HBox>
+        <Region HBox.hgrow="ALWAYS" />
+        <Text
+            fx:id="welcomeText"
+            styleClass="welcome-text" />
+    </HBox>
     <HBox
         prefHeight="50"
         styleClass="button-navigation">
         <Button
-            text="My Collection"
-            onAction="#displayMyCollection" />
-        <Button
             text="All Games"
             onAction="#displayAllGames" />
         <Button
-            styleClass="refresh-button"
-            onAction="#refreshGameList" />
+            text="My Collection"
+            onAction="#displayMyCollection" />
+        <Region HBox.hgrow="ALWAYS" />
         <Button
             text="Settings"
             onAction="#setSettingsPage" />
-        <Region HBox.hgrow="ALWAYS" />
         <Button
             text="Logout"
             onAction="#handleLogout" />

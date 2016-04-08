@@ -12,37 +12,61 @@
 <HBox
     prefHeight="400"
     xmlns:fx="http://javafx.com/fxml">
-    <VBox prefWidth="300">
-        <Text styleClass="heading1"> Sign Up </Text>
+    <VBox
+        prefWidth="250"
+        styleClass="left-container">
         <Region prefHeight="50" />
-        <Text
-            fx:id="accountsFeedback"
-            styleClass="feedback"
-            wrappingWidth="225">  </Text>
     </VBox>
     <VBox
-        prefWidth="500"
+        prefWidth="550"
         styleClass="content">
-        <Region prefHeight="25" />
-        <Label text="Email" />
+        <Text styleClass="heading1"> Sign Up </Text>
+        <HBox>
+            <Label text="Email" />
+            <Region minWidth="70" />
+            <Text
+                fx:id="emailFeedback"
+                styleClass="feedback">
+            </Text>
+        </HBox>
         <TextField
             fx:id="email"
             promptText="Enter email here"
             onAction="#handleSignup" />
-        <Label text="Username" />
+        <HBox>
+            <Label text="Username" />
+            <Region minWidth="40" />
+            <Text
+                fx:id="usernameFeedback"
+                styleClass="feedback">
+            </Text>
+        </HBox>
         <TextField
             fx:id="username"
             promptText="Enter username here"
             onAction="#handleSignup" />
-        <Label text="Password" />
+        <HBox>
+            <Label text="Password" />
+            <Region minWidth="40" />
+            <Text
+                fx:id="passwordFeedback"
+                styleClass="feedback">
+            </Text>
+        </HBox>
         <PasswordField
             fx:id="password"
             promptText="Enter password here"
             onAction="#handleSignup" />
         <Text
-            wrappingWidth="400"
+            wrappingWidth="500"
             textAlignment="right"
-            onMouseClicked="#setLoginPage"> Already have an account? Login instead!
+            styleClass="link-text"
+            onMouseClicked="#setLoginPage"
+            onKeyPressed="#setLoginPageKeyboard"> Already have an account? Login instead!
+        </Text>
+        <Text
+            fx:id="accountsFeedback"
+            styleClass="feedback">
         </Text>
         <Region VBox.vgrow="ALWAYS" />
         <HBox styleClass="main-button-container">

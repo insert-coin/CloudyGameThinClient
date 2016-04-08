@@ -22,6 +22,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Pagination;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.InputEvent;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
@@ -36,6 +38,7 @@ public class CloudyLauncher extends Application {
 
     private CloudyLauncherServerInterface server;
     private CloudyLauncherJsonParser parser = CloudyLauncherJsonParser.getParser();
+    private Stage currentStage;
 
     private String token;
     private List<Game> listOfGames = new ArrayList<Game>();
@@ -53,22 +56,29 @@ public class CloudyLauncher extends Application {
     @FXML private TextField email;
     @FXML private TextField username;
     @FXML private TextField password;
+    @FXML private Text usernameFeedback;
+    @FXML private Text passwordFeedback;
+    @FXML private Text emailFeedback;
     @FXML private Text accountsFeedback;
 
+    @FXML private Text welcomeText;
     @FXML private Text gameTitle;
     @FXML private ImageView gameImage;
     @FXML private Text gameTextInformation;
     @FXML private Button gameButton;
     @FXML private Text gameFeedback;
 
-    final private String CLOCK_DATE_PATTERN = "d MMMM y";
+    final private String CLOCK_DATE_PATTERN = "dd MMMM y";
     final private String CLOCK_TIME_PATTERN = "kk : mm : ss";
     final private String STATUS_ONLINE = "Online";
     final private String STATUS_OFFLINE = "Offline";
+    final private String WELCOME_TEXT = "Welcome, %s";
 
     final private String PATH_LAUNCHER_BASE = "design/CL.fxml";
-    final private String PATH_ACCOUNTS_LOGIN = "design/Login.fxml";
-    final private String PATH_ACCOUNTS_SIGNUP = "design/Signup.fxml";
+    final private String PATH_LAUNCHER_BASE_ACCOUNTS = "design/CL_accounts.fxml";
+    final private String PATH_LAUNCHER_BASE_GAME = "design/CL_game.fxml";
+    final private String PATH_ACCOUNTS_LOGIN = "design/Accounts_login.fxml";
+    final private String PATH_ACCOUNTS_SIGNUP = "design/Accounts_signup.fxml";
     final private String PATH_GAME_DISPLAY_BASE = "design/GameDisplay.fxml";
     final private String PATH_GAME_DISPLAY_INITIAL = "design/GameDisplay_initial.fxml";
     final private String PATH_GAME_DISPLAY_GAME = "design/GameDisplay_game.fxml";
@@ -120,8 +130,13 @@ public class CloudyLauncher extends Application {
 
                     if (server.isOnline()) {
                         status.setText(STATUS_ONLINE);
+                        status.getStyleClass().clear();
+                        status.getStyleClass().add("status-online");
+
                     } else {
                         status.setText(STATUS_OFFLINE);
+                        status.getStyleClass().clear();
+                        status.getStyleClass().add("status-offline");
                     }
                 }
         }));
@@ -154,6 +169,7 @@ public class CloudyLauncher extends Application {
 
     @FXML
     private void handleLogin(ActionEvent event) {
+        clearFeedback();
         String serverFeedback = server.postAuthenticationRequest(username.getText(),
                                                                  password.getText());
         accountsFeedback.setText(serverFeedback);
@@ -162,7 +178,17 @@ public class CloudyLauncher extends Application {
 
         if (serverFeedback.equals(CloudyLauncherServerInterface.ERROR_CONNECTION)) {
         } else if (!error.isEmpty()) {
-            accountsFeedback.setText(parser.parseErrorResponse(error));
+            Map<CloudyLauncherJsonParser.ErrorHeaders, String> errorStrings = parser.parseRespectiveErrors(error);
+
+            if (errorStrings.isEmpty()) {
+                accountsFeedback.setText(CloudyLauncherJsonParser.ERROR_PARSER_FEEDBACK);
+
+            } else {
+                usernameFeedback.setText(errorStrings.get(CloudyLauncherJsonParser.ErrorHeaders.USERNAME));
+                passwordFeedback.setText(errorStrings.get(CloudyLauncherJsonParser.ErrorHeaders.PASSWORD));
+                emailFeedback.setText(errorStrings.get(CloudyLauncherJsonParser.ErrorHeaders.EMAIL));
+                accountsFeedback.setText(errorStrings.get(CloudyLauncherJsonParser.ErrorHeaders.OTHERS));
+            }
         } else {
             token = parser.parseToken(response);
             setGameDisplayPage();
@@ -171,6 +197,7 @@ public class CloudyLauncher extends Application {
 
     @FXML
     private void handleSignup(ActionEvent event) {
+        clearFeedback();
         String serverFeedback = server.postSignupRequest(username.getText(),
                                                          password.getText(),
                                                          email.getText());
@@ -180,7 +207,17 @@ public class CloudyLauncher extends Application {
 
         if (serverFeedback.equals(CloudyLauncherServerInterface.ERROR_CONNECTION)) {
         } else if (!error.isEmpty()) {
-            accountsFeedback.setText(parser.parseErrorResponse(error));
+            Map<CloudyLauncherJsonParser.ErrorHeaders, String> errorStrings = parser.parseRespectiveErrors(error);
+
+            if (errorStrings.isEmpty()) {
+                accountsFeedback.setText(CloudyLauncherJsonParser.ERROR_PARSER_FEEDBACK);
+
+            } else {
+                usernameFeedback.setText(errorStrings.get(CloudyLauncherJsonParser.ErrorHeaders.USERNAME));
+                passwordFeedback.setText(errorStrings.get(CloudyLauncherJsonParser.ErrorHeaders.PASSWORD));
+                emailFeedback.setText(errorStrings.get(CloudyLauncherJsonParser.ErrorHeaders.EMAIL));
+                accountsFeedback.setText(errorStrings.get(CloudyLauncherJsonParser.ErrorHeaders.OTHERS));
+            }
         } else {
         }
     }
@@ -189,7 +226,7 @@ public class CloudyLauncher extends Application {
     private void handleLogout(ActionEvent event) {
         token = "";
         clearGamePage();
-        setLoginPage(null);
+        initialiseLauncher();
     }
 
     @FXML
@@ -214,12 +251,6 @@ public class CloudyLauncher extends Application {
     }
 
     @FXML
-    private void refreshGameList(ActionEvent event) {
-        clearGamePage();
-        setGameDisplayPage();
-    }
-
-    @FXML
     private void setSignupPage(MouseEvent event) {
         if (!mainButton.isDisabled()) {
             try {
@@ -230,6 +261,14 @@ public class CloudyLauncher extends Application {
             } catch (IOException e) {
                 accountsFeedback.setText(ERROR_FXML_SIGNUP);
             }
+        }
+    }
+
+    @FXML
+    private void setSignupPageKeyboard(KeyEvent event) {
+        String key = event.getCode().toString();
+        if ((key.equals("ENTER")) || (key.equals("SPACE"))) {
+            setSignupPage(null);
         }
     }
 
@@ -246,13 +285,26 @@ public class CloudyLauncher extends Application {
         }
     }
 
+    @FXML
+    private void setLoginPageKeyboard(KeyEvent event) {
+        String key = event.getCode().toString();
+        if ((key.equals("ENTER")) || (key.equals("SPACE"))) {
+            setLoginPage(null);
+        }
+    }
+
     private void setGameDisplayPage() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource(PATH_GAME_DISPLAY_BASE));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(PATH_LAUNCHER_BASE_GAME));
+            loader.setController(this);
+            currentStage.getScene().setRoot(loader.load());
+
+            loader = new FXMLLoader(getClass().getResource(PATH_GAME_DISPLAY_BASE));
             loader.setController(this);
             mainContent.setCenter(loader.load());
 
             setGamePanel(GAME_DISPLAY_WELCOME);
+            welcomeText.setText(String.format(WELCOME_TEXT, username.getText()));
 
             initialiseGameList();
             initialiseOwnedGameList();
@@ -269,11 +321,24 @@ public class CloudyLauncher extends Application {
         System.out.println("settings");
     }
 
-    private void initialiseLauncher(Stage stage) {
+    private void initialiseStage() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(PATH_LAUNCHER_BASE));
             loader.setController(this);
-            stage = loader.load();
+
+            currentStage = loader.load();
+            currentStage.show();
+
+        } catch (IOException e) {
+            System.out.println("ERROR_FXML_BASE_STAGE");
+        }
+    }
+
+    private void initialiseLauncher() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(PATH_LAUNCHER_BASE_ACCOUNTS));
+            loader.setController(this);
+            currentStage.getScene().setRoot(loader.load());
 
             loader = new FXMLLoader(getClass().getResource(PATH_ACCOUNTS_LOGIN));
             loader.setController(this);
@@ -283,7 +348,6 @@ public class CloudyLauncher extends Application {
             setupClock();
             setupStatus();
 
-            stage.show();
         } catch (IOException e) {
             accountsFeedback.setText(ERROR_FXML_LOGIN);
             mainButton.setDisable(true);
@@ -328,7 +392,7 @@ public class CloudyLauncher extends Application {
 
     private void initialiseGameListFromList(List<Map<CloudyLauncherJsonParser.GameInformation, String>> gameList) {
         if (gameList.isEmpty()) {
-            System.out.println("game list error");
+            gameFeedback.setText("game list error");
 
         } else {
             for (Map<CloudyLauncherJsonParser.GameInformation, String> game : gameList) {
@@ -368,11 +432,12 @@ public class CloudyLauncher extends Application {
         }
     }
 
-    private void setGameInformation(MouseEvent event) {
+    private void setGameInformation(InputEvent event) {
 
         setGamePanel(GAME_DISPLAY_GAME_INFO);
 
-        ImageView selectedIcon = (ImageView) event.getTarget();
+        StackPane selectedIconStack = (StackPane) event.getSource();
+        ImageView selectedIcon = (ImageView) selectedIconStack.getChildren().get(0);
         selectedGame = (Game) selectedIcon.getUserData();
 
         gameTitle.setText(selectedGame.getName());
@@ -424,16 +489,27 @@ public class CloudyLauncher extends Application {
         gameIcon.setFitWidth(100);
 
         gameIcon.setUserData(gameInfo);
-        gameIcon.setOnMouseClicked(new EventHandler<MouseEvent>() {
+
+        ImageView icon = new ImageView(URL_OWNED_BADGE);
+        StackPane img = new StackPane();
+        img.getStyleClass().add("game-icon");
+
+        img.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
                 setGameInformation(event);
             }
         });
 
-        ImageView icon = new ImageView(URL_OWNED_BADGE);
-        StackPane img = new StackPane();
-        img.getStyleClass().add("game-icon");
+        img.setOnKeyPressed(new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent event) {
+                String key = event.getCode().toString();
+                if ((key.equals("ENTER")) || (key.equals("SPACE"))) {
+                    setGameInformation(event);
+                }
+            }
+        });
 
         if (listOfOwnedGames.contains(gameInfo)) {
             img.getChildren().addAll(gameIcon, icon);
@@ -447,6 +523,13 @@ public class CloudyLauncher extends Application {
     private void clearGamePage() {
         listOfGames.clear();
         listOfOwnedGames.clear();
+    }
+
+    private void clearFeedback() {
+        emailFeedback.setText("");
+        usernameFeedback.setText("");
+        passwordFeedback.setText("");
+        accountsFeedback.setText("");
     }
 
     private void joinGame(Game gameToJoin) {
@@ -484,7 +567,8 @@ public class CloudyLauncher extends Application {
     public void start(Stage primaryStage) throws Exception {
 
         CloudyLauncher cl = new CloudyLauncher();
-        cl.initialiseLauncher(primaryStage);
+        cl.initialiseStage();
+        cl.initialiseLauncher();
     }
 
     public static void main(String[] args) {
