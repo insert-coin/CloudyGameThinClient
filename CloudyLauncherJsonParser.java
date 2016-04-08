@@ -19,7 +19,7 @@ public class CloudyLauncherJsonParser {
     final static String[] FIELDS_NON_HEADER_JSONOBJECT = { "detail", "message" };
 
     static enum GameInformation {
-        ID, NAME, PUBLISHER, LIMIT, ADDRESS, THUMBNAIL
+        ID, NAME, DESCRIPTION, PUBLISHER, LIMIT, ADDRESS, THUMBNAIL
     };
 
     static enum GameSession {
@@ -153,6 +153,7 @@ public class CloudyLauncherJsonParser {
         Map<GameInformation, String> gameInformation = new HashMap<GameInformation, String>(6);
         String gId = Integer.toString(gameObject.getInt("id"));
         String gName = gameObject.getString("name");
+        String gDescription = gameObject.getString("description");
         String gPublisher = gameObject.getString("publisher");
         String gLimit = Integer.toString(gameObject.getInt("max_limit"));
         String gAddress = gameObject.getString("address");
@@ -160,6 +161,7 @@ public class CloudyLauncherJsonParser {
 
         gameInformation.put(GameInformation.ID, gId);
         gameInformation.put(GameInformation.NAME, gName);
+        gameInformation.put(GameInformation.DESCRIPTION, gDescription);
         gameInformation.put(GameInformation.PUBLISHER, gPublisher);
         gameInformation.put(GameInformation.LIMIT, gLimit);
         gameInformation.put(GameInformation.ADDRESS, gAddress);

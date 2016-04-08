@@ -3,6 +3,7 @@ public class Game {
 
     private String id;
     private String name;
+    private String description;
     private String publisher;
     private Integer maxLimit;
     private String address;
@@ -11,18 +12,20 @@ public class Game {
     /** 
      * Constructor for a Game object.
      * 
-     * @param gId         the id of the game
-     * @param gName       the name of the game
-     * @param gPublisher  the publisher of the game
-     * @param gLimit      the maximum number of players
-     * @param gAddress    the address of the game
-     * @param gThumbnail  the url of the thumbnail of the game image
-     * 
+     * @param gId           the id of the game
+     * @param gName         the name of the game
+     * @param gDescription  the description of the game
+     * @param gPublisher    the publisher of the game
+     * @param gLimit        the maximum number of players
+     * @param gAddress      the address of the game
+     * @param gThumbnail    the url of the thumbnail of the game image
      */
-    public Game(String gId, String gName, String gPublisher, 
-                Integer gLimit, String gAddress, String gThumbnail) {
+    public Game(String gId, String gName, String gDescription,
+                String gPublisher, Integer gLimit, String gAddress,
+                String gThumbnail) {
         id = gId;
         name = gName;
+        description = gDescription;
         publisher = gPublisher;
         maxLimit = gLimit;
         address = gAddress;
@@ -45,6 +48,15 @@ public class Game {
      */
     public String getName() {
         return name;
+    }
+
+    /**
+     * Get method for the game description
+     *
+     * @return  the description of the game
+     */
+    public String getDescription() {
+        return description;
     }
 
     /**

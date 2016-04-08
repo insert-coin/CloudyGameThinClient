@@ -80,9 +80,9 @@ public class CloudyLauncher extends Application {
     final private String ERROR_GAME_JOIN = "ERROR: Cannot join game";
 
     final private String URL_OWNED_BADGE = "images/orangeribbon.png";
-    final private String GAME_INFORMATION = "%s\n%s\n%s";
+    final private String GAME_INFORMATION = "Publisher: %s\n\n%s";
 
-    final private String COMMAND_RUN_THINCLIENT = "python thin_client/main.py %s %s %s %s";
+    final private String COMMAND_RUN_THINCLIENT = "python thin_client/main.py --session %s %s %s %s";
 
     final private Integer GAME_DISPLAY_WELCOME = 0;
     final private Integer GAME_DISPLAY_GAME_INFO = 1;
@@ -197,7 +197,7 @@ public class CloudyLauncher extends Application {
         if (listOfOwnedGames.contains(selectedGame)) {
             joinGame(selectedGame);
         } else {
-            gameFeedback.setText("obtain game first");
+            gameFeedback.setText("Obtain game first");
         }
     }
 
@@ -334,6 +334,7 @@ public class CloudyLauncher extends Application {
             for (Map<CloudyLauncherJsonParser.GameInformation, String> game : gameList) {
                 Game newGame = new Game(game.get(CloudyLauncherJsonParser.GameInformation.ID),
                                         game.get(CloudyLauncherJsonParser.GameInformation.NAME),
+                                        game.get(CloudyLauncherJsonParser.GameInformation.DESCRIPTION),
                                         game.get(CloudyLauncherJsonParser.GameInformation.PUBLISHER),
                                         Integer.parseInt(game.get(CloudyLauncherJsonParser.GameInformation.LIMIT)),
                                         game.get(CloudyLauncherJsonParser.GameInformation.ADDRESS),
@@ -377,9 +378,8 @@ public class CloudyLauncher extends Application {
         gameTitle.setText(selectedGame.getName());
         gameImage.setImage(selectedIcon.getImage());
         gameTextInformation.setText(String.format(GAME_INFORMATION,
-                                                  selectedGame.getId(),
                                                   selectedGame.getPublisher(),
-                                                  selectedGame.getLimit()));
+                                                  selectedGame.getDescription()));
 
     }
 
@@ -471,8 +471,9 @@ public class CloudyLauncher extends Application {
             try {
                 Runtime.getRuntime()
                        .exec(String.format(COMMAND_RUN_THINCLIENT,
-                                           gameToJoin.getAddress(), port,
-                                           controllerId, sessionId));
+                                           sessionId, gameToJoin.getAddress(),
+                                           port, controllerId));
+
             } catch (IOException e) {
                 gameFeedback.setText(ERROR_GAME_JOIN);
             }

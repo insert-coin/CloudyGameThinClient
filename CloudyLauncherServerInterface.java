@@ -3,6 +3,9 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.Socket;
 import java.net.URL;
 
 public class CloudyLauncherServerInterface {
@@ -11,7 +14,8 @@ public class CloudyLauncherServerInterface {
     private String errorResponse = "";
 
     private final static String URL_USERS = "users/";
-    private final static String URL_LOGIN = "api-token-auth/";
+    private final static String URL_REGISTRATION = "api-token-auth/registrations/";
+    private final static String URL_LOGIN = "api-token-auth/tokens/";
     private final static String URL_GAMES = "games/";
     private final static String URL_GAMES_OWNED = "game-ownership/?user=%s";
     private final static String URL_GAME_SESSION = "game-session/";
@@ -42,24 +46,35 @@ public class CloudyLauncherServerInterface {
     }
 
     /**
-     * Checks if the server is currently online and reachable. Method posts a
-     * get request to check connection.
+     * Checks if the server is currently online and reachable. Method attempts
+     * to open a socket to check connection.
      *
-     * @return  whether server is online
+     * @return whether server is reachable
      */
     public boolean isOnline() {
-        try {
-            URL url = new URL(baseUrl);
-            HttpURLConnection connection = openGetConnection(url, "");
+        boolean available = false;
 
-            if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
-                return true;
-            } else {
-                return false;
-            }
-        } catch (IOException e) {
-            return false;
+        String httpStr = "http://";
+        String hostName = baseUrl.substring(httpStr.length(),
+                                            baseUrl.indexOf(":",
+                                                            httpStr.length()));
+        String port = baseUrl.substring(baseUrl.indexOf(":", httpStr.length()) + 1,
+                                        baseUrl.length() - 1);
+
+        Socket socket = new Socket();
+
+        try {
+            InetAddress inetAddress = InetAddress.getByName(hostName);
+            InetSocketAddress socketAddress = new InetSocketAddress(inetAddress,
+                                                                    Integer.parseInt(port));
+            socket.connect(socketAddress, 1000);
+            socket.close();
+            available = true;
+        } catch (Exception e) {
+            available = false;
         }
+
+        return available;
     }
 
     /**
@@ -78,7 +93,7 @@ public class CloudyLauncherServerInterface {
         resetResponses();
 
         try {
-            URL url = new URL(baseUrl + URL_USERS);
+            URL url = new URL(baseUrl + URL_REGISTRATION);
             String queryData = String.format(DATA_SIGNUP, signupUsername,
                                              signupPassword, signupEmail);
 
