@@ -6,7 +6,7 @@
 /* BorderPane: main layout root */
 .root {
     -fx-background-color: linear-gradient(to bottom, #000000 0%, #00101A 15%, #01314D 30%, #024A73 60%, #026299 100%);
-    -fx-padding: 20;
+    -fx-padding: 15;
 }
 
 .text {
@@ -99,8 +99,16 @@
 /* Text: heading on left eg login / signup header*/
 .heading1 {
     -fx-font-family: "Arial Black";
-    -fx-font-size: 40;
+    -fx-font-size: 35;
     -fx-fill: #6DA9CC;
+}
+
+.refresh-button {
+    -fx-min-width: 25;
+    -fx-background-image: url("../images/refresh.png");
+    -fx-background-position: center;
+    -fx-background-repeat: no-repeat;
+    -fx-background-color: #6DA9CC;
 }
 
 /* TilePane: container for game icons */

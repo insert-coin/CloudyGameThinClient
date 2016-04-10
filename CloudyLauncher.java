@@ -1,3 +1,4 @@
+import java.awt.Color;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -12,6 +13,7 @@ import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -21,6 +23,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Pagination;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.InputEvent;
 import javafx.scene.input.KeyEvent;
@@ -34,12 +37,17 @@ import javafx.stage.Stage;
 import javafx.util.Callback;
 import javafx.util.Duration;
 
+import nl.captcha.Captcha;
+import nl.captcha.backgrounds.FlatColorBackgroundProducer;
+
 public class CloudyLauncher extends Application {
 
     private CloudyLauncherServerInterface server;
     private CloudyLauncherJsonParser parser = CloudyLauncherJsonParser.getParser();
     private Stage currentStage;
 
+    private int captchaResult;
+    private int numOfIncorrectLogins = 0;
     private String token;
     private List<Game> listOfGames = new ArrayList<Game>();
     private List<Game> listOfOwnedGames = new ArrayList<Game>();
@@ -51,11 +59,18 @@ public class CloudyLauncher extends Application {
     @FXML private BorderPane mainContent;
     @FXML private Pagination pagination;
     @FXML private VBox gameInfoPanel;
+    @FXML private VBox captchaBox;
 
     @FXML private Button mainButton;
+    @FXML private Captcha captcha;
+    @FXML private VBox captchaLabel;
+    @FXML private ImageView captchaImage;
+    @FXML private TextField captchaInput;
     @FXML private TextField email;
     @FXML private TextField username;
     @FXML private TextField password;
+
+    @FXML private Text captchaFeedback;
     @FXML private Text usernameFeedback;
     @FXML private Text passwordFeedback;
     @FXML private Text emailFeedback;
@@ -83,6 +98,8 @@ public class CloudyLauncher extends Application {
     final private String PATH_GAME_DISPLAY_INITIAL = "design/GameDisplay_initial.fxml";
     final private String PATH_GAME_DISPLAY_GAME = "design/GameDisplay_game.fxml";
 
+    final private String ERROR_CAPTCHA_EMPTY = "Enter Captcha";
+    final private String ERROR_CAPTCHA_INCORRECT = "Unrecognised Captcha";
     final private String ERROR_FXML_CONFIG = "ERROR: Cannot load settings/config.xml";
     final private String ERROR_FXML_SIGNUP = "ERROR: Cannot load sign up page";
     final private String ERROR_FXML_LOGIN = "ERROR: Cannot load login page";
@@ -98,6 +115,9 @@ public class CloudyLauncher extends Application {
     final private Integer GAME_DISPLAY_GAME_INFO = 1;
     final private Integer PAGINATION_ALL_GAMES = 2;
     final private Integer PAGINATION_MY_GAMES = 3;
+    final private Integer CAPTCHA_CORRECT = 4;
+    final private Integer CAPTCHA_EMPTY = 5;
+    final private Integer CAPTCHA_INCORRECT = 6;
     final private Integer TILES_PER_PAGE = 12;
 
     private void setupClock() {
@@ -170,55 +190,80 @@ public class CloudyLauncher extends Application {
     @FXML
     private void handleLogin(ActionEvent event) {
         clearFeedback();
-        String serverFeedback = server.postAuthenticationRequest(username.getText(),
-                                                                 password.getText());
-        accountsFeedback.setText(serverFeedback);
-        String error = server.getErrorResponse();
-        String response = server.getServerResponse();
 
-        if (serverFeedback.equals(CloudyLauncherServerInterface.ERROR_CONNECTION)) {
-        } else if (!error.isEmpty()) {
-            Map<CloudyLauncherJsonParser.ErrorHeaders, String> errorStrings = parser.parseRespectiveErrors(error);
+        checkCaptchaResult();
+        if (captchaResult == CAPTCHA_CORRECT) {
+            String serverFeedback = server.postAuthenticationRequest(username.getText(),
+                                                                     password.getText());
+            accountsFeedback.setText(serverFeedback);
+            String error = server.getErrorResponse();
+            String response = server.getServerResponse();
 
-            if (errorStrings.isEmpty()) {
-                accountsFeedback.setText(CloudyLauncherJsonParser.ERROR_PARSER_FEEDBACK);
+            if (serverFeedback.equals(CloudyLauncherServerInterface.ERROR_CONNECTION)) {
+            } else if (!error.isEmpty()) {
+                Map<CloudyLauncherJsonParser.ErrorHeaders, String> errorStrings = parser.parseRespectiveErrors(error);
 
+                if (errorStrings.isEmpty()) {
+                    accountsFeedback.setText(CloudyLauncherJsonParser.ERROR_PARSER_FEEDBACK);
+
+                } else {
+                    usernameFeedback.setText(errorStrings.get(CloudyLauncherJsonParser.ErrorHeaders.USERNAME));
+                    passwordFeedback.setText(errorStrings.get(CloudyLauncherJsonParser.ErrorHeaders.PASSWORD));
+                    emailFeedback.setText(errorStrings.get(CloudyLauncherJsonParser.ErrorHeaders.EMAIL));
+                    accountsFeedback.setText(errorStrings.get(CloudyLauncherJsonParser.ErrorHeaders.OTHERS));
+
+                    if (!accountsFeedback.getText().isEmpty()) {
+                        numOfIncorrectLogins++;
+                        setCaptchaAsNeeded();
+                        clearInput();
+                    }
+                }
             } else {
-                usernameFeedback.setText(errorStrings.get(CloudyLauncherJsonParser.ErrorHeaders.USERNAME));
-                passwordFeedback.setText(errorStrings.get(CloudyLauncherJsonParser.ErrorHeaders.PASSWORD));
-                emailFeedback.setText(errorStrings.get(CloudyLauncherJsonParser.ErrorHeaders.EMAIL));
-                accountsFeedback.setText(errorStrings.get(CloudyLauncherJsonParser.ErrorHeaders.OTHERS));
+                token = parser.parseToken(response);
+                setGameDisplayPage();
+                numOfIncorrectLogins = 0;
             }
+        } else if (captchaResult == CAPTCHA_EMPTY) {
+            captchaFeedback.setText(ERROR_CAPTCHA_EMPTY);
         } else {
-            token = parser.parseToken(response);
-            setGameDisplayPage();
+            refreshCaptcha();
+            captchaFeedback.setText(ERROR_CAPTCHA_INCORRECT);
         }
     }
 
     @FXML
     private void handleSignup(ActionEvent event) {
         clearFeedback();
-        String serverFeedback = server.postSignupRequest(username.getText(),
-                                                         password.getText(),
-                                                         email.getText());
 
-        accountsFeedback.setText(serverFeedback);
-        String error = server.getErrorResponse();
+        checkCaptchaResult();
+        if (captchaResult == CAPTCHA_CORRECT) {
+            String serverFeedback = server.postSignupRequest(username.getText(),
+                                                             password.getText(),
+                                                             email.getText());
 
-        if (serverFeedback.equals(CloudyLauncherServerInterface.ERROR_CONNECTION)) {
-        } else if (!error.isEmpty()) {
-            Map<CloudyLauncherJsonParser.ErrorHeaders, String> errorStrings = parser.parseRespectiveErrors(error);
+            accountsFeedback.setText(serverFeedback);
+            String error = server.getErrorResponse();
 
-            if (errorStrings.isEmpty()) {
-                accountsFeedback.setText(CloudyLauncherJsonParser.ERROR_PARSER_FEEDBACK);
+            if (serverFeedback.equals(CloudyLauncherServerInterface.ERROR_CONNECTION)) {
+            } else if (!error.isEmpty()) {
+                Map<CloudyLauncherJsonParser.ErrorHeaders, String> errorStrings = parser.parseRespectiveErrors(error);
 
+                if (errorStrings.isEmpty()) {
+                    accountsFeedback.setText(CloudyLauncherJsonParser.ERROR_PARSER_FEEDBACK);
+
+                } else {
+                    usernameFeedback.setText(errorStrings.get(CloudyLauncherJsonParser.ErrorHeaders.USERNAME));
+                    passwordFeedback.setText(errorStrings.get(CloudyLauncherJsonParser.ErrorHeaders.PASSWORD));
+                    emailFeedback.setText(errorStrings.get(CloudyLauncherJsonParser.ErrorHeaders.EMAIL));
+                    accountsFeedback.setText(errorStrings.get(CloudyLauncherJsonParser.ErrorHeaders.OTHERS));
+                }
             } else {
-                usernameFeedback.setText(errorStrings.get(CloudyLauncherJsonParser.ErrorHeaders.USERNAME));
-                passwordFeedback.setText(errorStrings.get(CloudyLauncherJsonParser.ErrorHeaders.PASSWORD));
-                emailFeedback.setText(errorStrings.get(CloudyLauncherJsonParser.ErrorHeaders.EMAIL));
-                accountsFeedback.setText(errorStrings.get(CloudyLauncherJsonParser.ErrorHeaders.OTHERS));
             }
+        } else if (captchaResult == CAPTCHA_EMPTY) {
+            captchaFeedback.setText(ERROR_CAPTCHA_EMPTY);
         } else {
+            refreshCaptcha();
+            captchaFeedback.setText(ERROR_CAPTCHA_INCORRECT);
         }
     }
 
@@ -251,12 +296,41 @@ public class CloudyLauncher extends Application {
     }
 
     @FXML
+    private void setCaptchaAsNeeded() {
+        if (numOfIncorrectLogins > 2) {
+            captchaLabel.setVisible(true);
+            captchaBox.setVisible(true);
+            refreshCaptcha();
+        } else {
+            captchaLabel.setVisible(false);
+            captchaBox.setVisible(false);
+        }
+    }
+
+    @FXML
+    private void refreshCaptcha() {
+        captchaResult = CAPTCHA_EMPTY;
+        Color lightBlue = new Color(0, 105, 166);
+        captcha = new Captcha.Builder(200, 40).addText()
+                .addBackground(new FlatColorBackgroundProducer(lightBlue))
+                .addBorder()
+                .addNoise()
+                .addNoise()
+                .build();
+
+        Image javafxImage = SwingFXUtils.toFXImage(captcha.getImage(), null);
+        captchaImage.setImage(javafxImage);
+    }
+
+    @FXML
     private void setSignupPage(MouseEvent event) {
         if (!mainButton.isDisabled()) {
             try {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource(PATH_ACCOUNTS_SIGNUP));
                 loader.setController(this);
                 mainContent.setCenter(loader.load());
+
+                refreshCaptcha();
 
             } catch (IOException e) {
                 accountsFeedback.setText(ERROR_FXML_SIGNUP);
@@ -278,6 +352,8 @@ public class CloudyLauncher extends Application {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(PATH_ACCOUNTS_LOGIN));
             loader.setController(this);
             mainContent.setCenter(loader.load());
+
+            setCaptchaAsNeeded();
 
         } catch (IOException e) {
             accountsFeedback.setText(ERROR_FXML_LOGIN);
@@ -347,6 +423,7 @@ public class CloudyLauncher extends Application {
             setupConfig();
             setupClock();
             setupStatus();
+            setCaptchaAsNeeded();
 
         } catch (IOException e) {
             accountsFeedback.setText(ERROR_FXML_LOGIN);
@@ -520,9 +597,26 @@ public class CloudyLauncher extends Application {
         return img;
     }
 
+    private void checkCaptchaResult() {
+        if (!captchaBox.isVisible()) {
+            captchaResult = CAPTCHA_CORRECT;
+        } else if (captchaInput.getText().trim().isEmpty()) {
+            captchaResult = CAPTCHA_EMPTY;
+        } else if (captchaInput.getText().trim().equals(captcha.getAnswer())){
+            captchaResult = CAPTCHA_CORRECT;
+        } else {
+            captchaResult = CAPTCHA_INCORRECT;
+        }
+    }
+
     private void clearGamePage() {
         listOfGames.clear();
         listOfOwnedGames.clear();
+    }
+
+    private void clearInput() {
+        password.setText("");
+        captchaInput.setText("");
     }
 
     private void clearFeedback() {
@@ -530,6 +624,7 @@ public class CloudyLauncher extends Application {
         usernameFeedback.setText("");
         passwordFeedback.setText("");
         accountsFeedback.setText("");
+        captchaFeedback.setText("");
     }
 
     private void joinGame(Game gameToJoin) {
@@ -556,7 +651,6 @@ public class CloudyLauncher extends Application {
                        .exec(String.format(COMMAND_RUN_THINCLIENT,
                                            sessionId, gameToJoin.getAddress(),
                                            port, controllerId));
-
             } catch (IOException e) {
                 gameFeedback.setText(ERROR_GAME_JOIN);
             }
