@@ -42,6 +42,11 @@ Ensure that the above dependencies are obtained for Python 3. We use the above m
 1. Obtain the .whl file for your Python version [here](http://www.lfd.uci.edu/~gohlke/pythonlibs/#opencv). There are 32-bit and 64-bit files, so make sure you get the version that matches your installation of Python.
 2. Open the terminal, and navigate to where you placed your .whl file. Type `pip install filename.whl`, replacing the filename with the correct one.
 
+## Running tests
+To run the tests, navigate to the root folder of the repository (`..\CloudyGameThinClient\`). 
+
+Then, type the following:
+`python -m unittest discover`
 
 # CloudyLauncher
 This is an application that allows users to access and manage games available to them.
