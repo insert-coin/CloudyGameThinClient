@@ -1,38 +1,46 @@
 [![Build Status](https://travis-ci.org/insert-coin/CloudyGameThinClient.svg?branch=master)](https://travis-ci.org/insert-coin/CloudyGameThinClient)
 
 # CloudyGameThinClient
-This is an application that the player uses to play the game. The player will receive an input video stream from the cloud servers, and send their keyboard and mouse inputs to the servers via this application.
+This is an application that the player uses to play the game. The player will read a broadcasted video stream from the game engine, and send the player's keyboard and mouse inputs to the game engine via this application.
 
-## Usage
-To run the thin client itself, you will need to pass in 4 arguments: the IP from which to receive the video stream from, the port number, the player controller ID, and the game session ID.
+## Launching the client
+To run the thin client itself, you will need to pass in 3 arguments: the IP from which to receive the video stream from, the port number, and the player controller ID. The fourth argument (game session ID) is optional.
 
 Example: 
-`python main.py 127.0.0.1 30000 0 0`
+```
+Using all 4 arguments:
+python main.py 127.0.0.1 30000 0 --session 1
 
+Using only 3 arguments:
+python main.py 127.0.0.1 30000 0
+```
+
+## Usage
 Press ESC to unlock the mouse cursor from the window.
 
-## Prerequisites for using the Python Thin Client 
+## Prerequisites for using the Thin Client 
 You need:
 
-1. Python 3
-2. The following dependencies:
-    - pygame
-    - numpy
-    - OpenCV
+1. Python 3.5
+2. pygame 1.9.2
+3. numpy 1.8
+4. OpenCV 3.1.0
 
-### Windows
+Ensure that the above dependencies are obtained for Python 3. We use the above mentioned versions during development. Other versions may work, but not guaranteed.
+
+## Obtaining and installing dependencies (for Windows)
 
 ### pygame
-1. Obtain the .whl file for your Python version [here](http://www.lfd.uci.edu/~gohlke/pythonlibs/#pygame). There are 32-bit and 64-bit files, so make sure you get the correct version.
-2. Open the terminal, and navigate to where you placed your .whl file. Type `pip install filename.whl`. Replace the filename with the correct one.
+1. Obtain the .whl file for your Python version [here](http://www.lfd.uci.edu/~gohlke/pythonlibs/#pygame). There are 32-bit and 64-bit files, so make sure you get the version that matches your installation of Python.
+2. Open the terminal, and navigate to where you placed your .whl file. Type `pip install filename.whl`, replacing the filename with the correct one.
 
 ### numpy
 1. Open your terminal at the root of the repository directory. 
 2. Type `pip install -r requirements.txt`.
 
 ### OpenCV
-1. Obtain the .whl file for your Python version [here](http://www.lfd.uci.edu/~gohlke/pythonlibs/#opencv). There are 32-bit and 64-bit files, so make sure you get the correct version.
-2. Open the terminal, and navigate to where you placed your .whl file. Type `pip install filename.whl`. Replace the filename with the correct one.
+1. Obtain the .whl file for your Python version [here](http://www.lfd.uci.edu/~gohlke/pythonlibs/#opencv). There are 32-bit and 64-bit files, so make sure you get the version that matches your installation of Python.
+2. Open the terminal, and navigate to where you placed your .whl file. Type `pip install filename.whl`, replacing the filename with the correct one.
 
 
 # CloudyLauncher
@@ -50,13 +58,12 @@ You need:
 ### To compile on the command line
 Include the json jar in the classpath:
 ```bash
-javac -cp path/to/json/jar/file CloudyLauncher.java Game.java CloudyLauncherJsonParser.java CloudyLauncherServerInterface.java
+javac -cp path/to/json/jar/file *.java
 ```
-or just use `javac -cp path/to/json/jar/file *.java`
 
 Example: Assuming you have placed the .jar file together with your java files, type:
 ```bash
-javac -cp json-20151123.jar CloudyLauncher.java Game.java CloudyLauncherJsonParser.java CloudyLauncherServerInterface.java
+javac -cp json-20151123.jar *.java
 ```
 
 ### To run on the command line
@@ -71,4 +78,9 @@ java -cp .;path/to/json/jar/file CloudyLauncher
 Example usage for Windows:
 ```bash
 java -cp .;json-20151123.jar CloudyLauncher
+```
+
+Example usage for Linux/Mac:
+```bash
+java -cp .:json-20151123.jar CloudyLauncher
 ```
