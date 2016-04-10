@@ -65,7 +65,7 @@ class QuitAction(Action):
 # Initialize pygame with the window size, mouse settings, etc.
 def initialize_pygame(fps):
     pygame.init()
-    screen = pygame.display.set_mode((settings.RESO_WIDTH, settings.RESO_HEIGHT))
+    screen = pygame.display.set_mode((settings.RESO_WIDTH, settings.RESO_HEIGHT), HWSURFACE|DOUBLEBUF|RESIZABLE)
     pygame.display.set_caption(settings.TEXT_WINDOW_TITLE)
     pygame.mouse.set_visible(False) # Makes mouse invisible
     pygame.event.set_grab(True) # confines the mouse cursor to the window
@@ -129,7 +129,8 @@ def start_client(ip, port, player_controller_id, *args, **kwargs):
             action = Action(session, pygame)
         else:
             if (event.type == KEYDOWN or event.type == KEYUP):
-                action = KeyboardButton(session, pygame)                    
+                action = KeyboardButton(session, pygame)   
+                print (scale, offset, is_width_smaller)
             elif (event.type == pygame.MOUSEMOTION):
                 action = MouseMotion(session, pygame)
             elif (event.type == MOUSEBUTTONDOWN or event.type == MOUSEBUTTONUP):
@@ -147,6 +148,17 @@ def start_client(ip, port, player_controller_id, *args, **kwargs):
         # To toggle mouse grabbing within the window
         if (event.type == KEYUP and event.key == K_ESCAPE):
             is_mouse_grabbed = toggle_mouse_grab(pygame, is_mouse_grabbed)
+        elif (event.type == VIDEORESIZE):
+            
+            frame_width = int(capture_object.get(3))
+            frame_height = int(capture_object.get(4))
+            window_width = event.dict['size'][0]
+            window_height = event.dict['size'][1]
+            print (scale, offset, is_width_smaller, frame_width, frame_height, window_width, window_height)
+            scale, offset, is_width_smaller = stream_reader.resize_image(frame_width, frame_height, window_width, window_height)
+            screen=pygame.display.set_mode(event.dict['size'],HWSURFACE|DOUBLEBUF|RESIZABLE)
+            screen.blit(pygame.transform.scale(image_frame,event.dict['size']),(0,0))
+            pygame.display.flip()
         elif (event.type == QUIT):
             action = QuitAction(session, pygame)
             is_running = False
