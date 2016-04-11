@@ -22,9 +22,6 @@
                     <Image url="@../images/refresh.png" />
                 </ImageView>
             </VBox>
-            <stylesheets>
-                <URL value="@style.css" /> 
-            </stylesheets>
         </Scene>
     </scene>
 </Stage>

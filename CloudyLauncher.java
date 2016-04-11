@@ -403,6 +403,7 @@ public class CloudyLauncher extends Application {
             loader.setController(this);
 
             currentStage = loader.load();
+            currentStage.getScene().getStylesheets().add("styles/default.css");
             currentStage.show();
 
         } catch (IOException e) {

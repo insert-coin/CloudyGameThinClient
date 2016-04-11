@@ -39,8 +39,4 @@
             </VBox>
         </HBox>
     </top>
-    <stylesheets>
-        <URL value="@style.css" />
-    </stylesheets>
-
 </BorderPane>

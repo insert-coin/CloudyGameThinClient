@@ -45,7 +45,4 @@
             Insert Coin. All Rights Reserved.
         </Text>
     </bottom>
-    <stylesheets>
-        <URL value="@style.css" />
-    </stylesheets>
 </BorderPane>
