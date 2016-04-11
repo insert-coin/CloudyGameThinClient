@@ -96,7 +96,8 @@
                     <TextField
                         prefWidth="200"
                         fx:id="captchaInput"
-                        promptText="Enter what you see" />
+                        promptText="Enter what you see"
+                        onAction="#handleSignup" />
                 </HBox>
             </VBox>
             <Region HBox.hgrow="ALWAYS" />
