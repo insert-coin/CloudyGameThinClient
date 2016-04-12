@@ -6,8 +6,9 @@ from thin_client import settings
 def get_frame(capture_object, scale):
     """Reads the OpenCV video capture object, grabs a single frame, 
        and transforms it into a pygame readable image. This is done by converting
-       the image from BGR to RGB, rotating it clockwise by 90 degrees, scaling it
-       to fit the pygame window, and converting the image into a pygame surface.
+       the image from BGR to RGB, rotating it counter-clockwise by 90 degrees, then flipping
+       the image across the horizontal axis, then scaling it to fit the pygame window, 
+       and finally converting the image into a pygame surface.
     """
     retval, frame = capture_object.read()
     if (retval == True):
