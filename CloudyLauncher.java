@@ -99,7 +99,7 @@ public class CloudyLauncher extends Application {
     final private String PATH_GAME_DISPLAY_BASE = "design/GameDisplay.fxml";
     final private String PATH_GAME_DISPLAY_INITIAL = "design/GameDisplay_initial.fxml";
     final private String PATH_GAME_DISPLAY_GAME = "design/GameDisplay_game.fxml";
-    final private String PATH_SETTINGS = "design/Settings.fxml";
+    final private String PATH_SETTINGS = "design/CL_settings.fxml";
 
     final private String ERROR_CAPTCHA_EMPTY = "Enter Captcha";
     final private String ERROR_CAPTCHA_INCORRECT = "Unrecognised Captcha";
@@ -274,7 +274,6 @@ public class CloudyLauncher extends Application {
     @FXML
     private void handleLogout(ActionEvent event) {
         token = "";
-        clearGamePage();
         initialiseLauncher();
     }
 
@@ -387,6 +386,8 @@ public class CloudyLauncher extends Application {
             setGamePanel(GAME_DISPLAY_WELCOME);
             welcomeText.setText(String.format(WELCOME_TEXT, username.getText()));
 
+            clearGamePage();
+
             initialiseGameList();
             initialiseOwnedGameList();
             displayAllGames(null);
@@ -418,6 +419,8 @@ public class CloudyLauncher extends Application {
     private void changeTheme(ActionEvent event) {
         String theme = ((Button) event.getSource()).getText().toLowerCase();
         String themePath = String.format("styles/%s.css", theme);
+        currentStage.getScene().getStylesheets().clear();
+        currentStage.getScene().getStylesheets().add("styles/stylebase.css");
         currentStage.getScene().getStylesheets().add(themePath);
     }
 
@@ -427,7 +430,9 @@ public class CloudyLauncher extends Application {
             loader.setController(this);
 
             currentStage = loader.load();
+            currentStage.getScene().getStylesheets().add("styles/stylebase.css");
             currentStage.getScene().getStylesheets().add("styles/cloudy.css");
+
             currentStage.show();
 
         } catch (IOException e) {
