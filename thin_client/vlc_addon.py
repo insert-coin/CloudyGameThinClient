@@ -1,3 +1,9 @@
+"""DEPRECATED
+
+This implementation of reading a video stream is not used anymore. 
+Please use stream_reader.py
+"""
+
 import sys
 import vlc
 import logging

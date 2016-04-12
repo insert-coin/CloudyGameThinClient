@@ -22,6 +22,7 @@ class Action:
 
 class MouseButton(Action):
     def process(self, event):
+        """Processes mouse button events and sends it to the pack_and_send method"""
         left_mouse_button, middle_mouse_button, right_mouse_button = self.pygame.mouse.get_pressed()
         if (left_mouse_button == 1):
             ue_char_code = 1
@@ -43,6 +44,7 @@ class MouseButton(Action):
 
 class MouseMotion(Action):
     def process(self, event):
+        """Processes mouse motion events and sends it to the pack_and_send method"""
         x, y = self.pygame.mouse.get_rel()
         self.session.pack_and_send(settings.DEVICE_MOUSE, x, y, event.type)
         logging.info("Mouse motion: %d %d", x, y)
@@ -50,9 +52,11 @@ class MouseMotion(Action):
 
 class KeyboardButton(Action):
     def process(self, event):
+        """Processes keyboard button events and sends it to the pack_and_send method"""
         ue_key_code = settings.ASCII_TO_UE_KEYCODE.get(event.key, 0)
         ue_char_code = settings.ASCII_TO_UE_CHARCODE.get(event.key, ue_key_code)
         ue_key_code = ue_char_code or ue_key_code # This code is redundant. It changes nothing.
+        print (ue_key_code, ue_char_code)
         self.session.pack_and_send(settings.DEVICE_KEYBOARD, 
             ue_key_code, ue_char_code, event.type)
 
@@ -60,10 +64,16 @@ class KeyboardButton(Action):
 
 class QuitAction(Action):
     def process(self, event):
+        """Call the send_quit_command method when the user closes the thin client"""
         self.session.send_quit_command()
 
-# Initialize pygame with the window size, mouse settings, etc.
+
 def initialize_pygame(fps):
+    """Initialize pygame with the window size, mouse settings, etc.
+    
+    Keyword arguments:
+    fps -- the rate pygame will read key events at
+    """
     pygame.init()
     screen = pygame.display.set_mode((settings.RESO_WIDTH, settings.RESO_HEIGHT))
     pygame.display.set_caption(settings.TEXT_WINDOW_TITLE)
@@ -76,9 +86,17 @@ def initialize_pygame(fps):
 
     return screen
 
-# Shows 3 lines of text in the middle of a black screen.
-# The third line is shows the mouse unlock instructions by default, and can be overwritten.
 def show_message(screen, line1, line2, line3=settings.TEXT_INSTRUCTIONS):
+    """Shows a message consisting of 3 lines on the screen.
+    
+    Keyword arguments:
+    screen -- the pygame screen object
+    line1 -- first line of the message
+    line2 -- second line of the message
+    line3 -- third line of the message, appears significantly lower on the screen 
+             (default: shows thin client lock/unlock mouse instructions)
+    """
+    
     screen.fill(settings.SCREEN_BACKGROUND_COLOR)
     main_font = pygame.font.Font(None, settings.TEXT_MAIN_FONT_SIZE)
     small_font = pygame.font.Font(None, settings.TEXT_SMALL_FONT_SIZE)
@@ -99,8 +117,13 @@ def show_message(screen, line1, line2, line3=settings.TEXT_INSTRUCTIONS):
 
     return screen
 
-# Toggles mouse grab. Mouse grab is when the mouse is locked to the interior of the window.
 def toggle_mouse_grab(pygame, is_mouse_grabbed):
+    """Toggles mouse grab. Mouse grab is when the mouse is locked to the interior of the window.
+    
+    Keyword arguments:
+    pygame -- the pygame object
+    is_mouse_grabbed -- a boolean value 
+    """
     if (is_mouse_grabbed == True):
         is_mouse_grabbed = False
         pygame.event.set_grab(False)
@@ -113,6 +136,14 @@ def toggle_mouse_grab(pygame, is_mouse_grabbed):
     return is_mouse_grabbed
 
 def start_client(ip, port, player_controller_id, *args, **kwargs):
+    """Main event loop starts here. Calls all methods to initialze the GameSession, video streaming,
+    and pygame.
+    
+    Keyword arguments:
+    ip -- IP address to read the video broadcast from
+    port -- Port of the IP address to read the video broadcast from
+    player_controller_id -- The player controller ID of the user using this thin client
+    """
     session = GameSession(ip, player_controller_id)
     screen = initialize_pygame(settings.FPS)
     scale, offset, is_width_smaller, capture_object = stream_reader.setup_stream(ip, port)
