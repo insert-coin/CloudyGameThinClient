@@ -3,8 +3,13 @@ import numpy
 import pygame
 from thin_client import settings
 
-# Reads the capture object and transforms it into a pygame readable image
 def get_frame(capture_object, scale):
+    """Reads the OpenCV video capture object, grabs a single frame, 
+       and transforms it into a pygame readable image. This is done by converting
+       the image from BGR to RGB, rotating it counter-clockwise by 90 degrees, then flipping
+       the image across the horizontal axis, then scaling it to fit the pygame window, 
+       and finally converting the image into a pygame surface.
+    """
     retval, frame = capture_object.read()
     if (retval == True):
         frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
@@ -15,8 +20,8 @@ def get_frame(capture_object, scale):
     else:
         return False
     
-# Scale up or down the received stream to fit the window
 def get_scale_factor(capture_object):
+    """Calculate the scale factor to resize the image in the x and y direction"""
     frame_width = int(capture_object.get(3))
     frame_height = int(capture_object.get(4))
     if (frame_width == 0 or frame_height == 0):
@@ -33,8 +38,10 @@ def get_scale_factor(capture_object):
         
     return scale, is_width_smaller
 
-# Offset to center the image in the window
 def get_offset(scale, is_width_smaller, frame_width, frame_height):
+    """Calculate the x and y direction offset, so that the image can be placed in the
+       middle of the window
+    """
     if (is_width_smaller):
         frame_height = frame_height * scale
         offset = (settings.RESO_HEIGHT - frame_height) / 2
@@ -44,8 +51,8 @@ def get_offset(scale, is_width_smaller, frame_width, frame_height):
     
     return offset
 
-# Reads the http stream
 def initialize_stream(ip, port):
+    """Read the network video stream"""
     address = "http://{}:{}".format(ip, port)
     cap = cv2.VideoCapture(address)
     frame_width = int(cap.get(3))
@@ -53,8 +60,10 @@ def initialize_stream(ip, port):
 
     return (cap, frame_width, frame_height)
 
-# Reads the stream, find the scale factor, and the image offset from the center of the window
 def setup_stream(ip, port):
+    """Reads the stream, calculates the scale factor, and calculates the image offset 
+       from the center of the window
+    """
     cap, frame_width, frame_height = initialize_stream(ip, port)
     scale, is_width_smaller = get_scale_factor(cap)
     offset = get_offset(scale, is_width_smaller, frame_width, frame_height)
