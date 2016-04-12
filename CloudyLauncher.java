@@ -82,6 +82,8 @@ public class CloudyLauncher extends Application {
     @FXML private Text gameTextInformation;
     @FXML private Button gameButton;
     @FXML private Text gameFeedback;
+    @FXML private Text settingsFeedback;
+    @FXML private Button settingsButton;
 
     final private String CLOCK_DATE_PATTERN = "dd MMMM y";
     final private String CLOCK_TIME_PATTERN = "kk : mm : ss";
@@ -97,6 +99,7 @@ public class CloudyLauncher extends Application {
     final private String PATH_GAME_DISPLAY_BASE = "design/GameDisplay.fxml";
     final private String PATH_GAME_DISPLAY_INITIAL = "design/GameDisplay_initial.fxml";
     final private String PATH_GAME_DISPLAY_GAME = "design/GameDisplay_game.fxml";
+    final private String PATH_SETTINGS = "design/Settings.fxml";
 
     final private String ERROR_CAPTCHA_EMPTY = "Enter Captcha";
     final private String ERROR_CAPTCHA_INCORRECT = "Unrecognised Captcha";
@@ -104,6 +107,7 @@ public class CloudyLauncher extends Application {
     final private String ERROR_FXML_SIGNUP = "ERROR: Cannot load sign up page";
     final private String ERROR_FXML_LOGIN = "ERROR: Cannot load login page";
     final private String ERROR_FXML_GAME_DISPLAY = "ERROR: Cannot load game display";
+    final private String ERROR_FXML_SETTINGS = "ERROR: Cannot load settings";
     final private String ERROR_GAME_JOIN = "ERROR: Cannot join game";
 
     final private String URL_OWNED_BADGE = "images/orangeribbon.png";
@@ -369,6 +373,7 @@ public class CloudyLauncher extends Application {
         }
     }
 
+    @FXML
     private void setGameDisplayPage() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(PATH_LAUNCHER_BASE_GAME));
@@ -394,7 +399,26 @@ public class CloudyLauncher extends Application {
 
     @FXML
     private void setSettingsPage(ActionEvent event) {
-        System.out.println("settings");
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(PATH_SETTINGS));
+            loader.setController(this);
+            currentStage.getScene().setRoot(loader.load());
+
+            welcomeText.setText(String.format(WELCOME_TEXT, username.getText()));
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            settingsFeedback.setText(ERROR_FXML_SETTINGS);
+            settingsButton.setDisable(true);
+        }
+
+    }
+
+    @FXML
+    private void changeTheme(ActionEvent event) {
+        String theme = ((Button) event.getSource()).getText().toLowerCase();
+        String themePath = String.format("styles/%s.css", theme);
+        currentStage.getScene().getStylesheets().add(themePath);
     }
 
     private void initialiseStage() {
@@ -403,7 +427,7 @@ public class CloudyLauncher extends Application {
             loader.setController(this);
 
             currentStage = loader.load();
-            currentStage.getScene().getStylesheets().add("styles/default.css");
+            currentStage.getScene().getStylesheets().add("styles/cloudy.css");
             currentStage.show();
 
         } catch (IOException e) {

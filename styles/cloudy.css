@@ -10,6 +10,7 @@
 }
 
 .text {
+	-fx-fill: #FDCCAF; 
 }
 
 .label {
@@ -120,7 +121,7 @@
 /* StackPane: individual game icons */
 .game-icon {
     -fx-alignment: top-right;
-    -fx-border-color: transparent;
+    -fx-border-color: black;
     -fx-border-width: 3;
     -fx-focus-traversable: true;
 }
@@ -140,6 +141,13 @@
 
 .left-arrow:disabled, .right-arrow:disabled {
     -fx-background-color: #023F62;
+}
+
+/* TilePane: container for theme buttons */
+.settings-theme {
+	-fx-alignment: center-left;
+	-fx-pref-tile-width: 200;
+	-fx-vgap: 20;
 }
 
 /*******************
