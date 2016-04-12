@@ -172,7 +172,7 @@ public class CloudyLauncherJsonParser {
                                    + errorResponse.getString(header);
                 }
             }
-            errorResponses.put(ErrorHeaders.OTHERS, errorMessage);
+            errorResponses.put(ErrorHeaders.OTHERS, errorMessage.trim());
             
             return errorResponses;
 
