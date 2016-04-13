@@ -76,7 +76,8 @@ Example usage for Windows: Assuming you have placed the .jar file together with 
 ```bash
 javac -cp json-20151123.jar;simplecaptcha-1.2.1.jar *.java
 ```
-or simply type `javac -cp \* *.java` to include all jar and java files in the current folder
+For Mac/Linux, you can use the following command:
+`javac -cp \* *.java` to include all jar and java files in the current folder
 
 ### To run on the command line
 Include the json jar and the simple captcha jar in the classpath:
@@ -87,12 +88,13 @@ java -cp .:path/to/json/jar/file:path/to/captcha/jar/file CloudyLauncher
 Windows:
 java -cp .;path/to/json/jar/file;path/to/captcha/jar/file CloudyLauncher
 ```
-Example usage for Linux/Mac:
+Example usage for Mac/Linux:
 ```bash
 java -cp .:json-20151123.jar:simplecaptcha-1.2.1.jar CloudyLauncher
 ```
+or simply type `java -cp .:\* CloudyLauncher` (only for Mac/Linux)
 Example usage for Windows:
 ```bash
 java -cp .;json-20151123.jar;simplecaptcha-1.2.1.jar CloudyLauncher
 ```
-or simply type `java -cp .:\* CloudyLauncher`
+
