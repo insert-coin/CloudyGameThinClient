@@ -57,14 +57,15 @@ You need:
 1. JavaFX 2.0 or newer
 2. Java SE 8.0 or newer
 3. JSON dependency
-    - can be obtained from [here](http://mvnrepository.com/artifact/org.json/json)
-    - version used in development: 20151123
+    - Can be obtained from [here](http://mvnrepository.com/artifact/org.json/json)
+    - Version used in development: 20151123
 4. SimpleCaptcha dependency
-    - can be obtained from [here](http://simplecaptcha.sourceforge.net)
+    - Can be obtained from [here](http://simplecaptcha.sourceforge.net)
+    - Download SimpleCaptcha for Java 6
 
 ### To compile on the command line
-Include the json jar and the simple captcha jar in the classpath
-(separate the jar files using : for linux/mac and ; for windows)
+Include the JSON jar and the SimpleCaptcha jar in the classpath
+(separate the `.jar` files using `:` for Linux/Mac and `;` for Windows)
 ```bash
 Linux/Mac:
 javac -cp path/to/json/jar/file:path/to/captcha/jar/file *.java
@@ -93,8 +94,8 @@ Example usage for Mac/Linux:
 java -cp .:json-20151123.jar:simplecaptcha-1.2.1.jar CloudyLauncher
 ```
 or simply type `java -cp .:\* CloudyLauncher` (only for Mac/Linux)
+
 Example usage for Windows:
 ```bash
 java -cp .;json-20151123.jar;simplecaptcha-1.2.1.jar CloudyLauncher
 ```
-
