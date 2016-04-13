@@ -4,7 +4,7 @@
 This is an application that the player uses to play the game. The player will read a broadcasted video stream from the game engine, and send the player's keyboard and mouse inputs to the game engine via this application.
 
 ## Launching the client
-To run the thin client itself, you will need to pass in 3 arguments: the IP from which to receive the video stream from, the port number, and the player controller ID. The fourth argument (game session ID) is optional.
+To run the thin client itself, you will need to pass in 3 arguments: the IP from which to receive the video stream from, the port number, and the player controller ID. The fourth argument (game session ID) is optional, and will default to 1 if not given.
 
 Example: 
 ```
