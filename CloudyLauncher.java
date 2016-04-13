@@ -1,5 +1,4 @@
 import java.awt.Color;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -7,7 +6,6 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Properties;
 
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
@@ -169,26 +167,8 @@ public class CloudyLauncher extends Application {
         timeline.play();
     }
 
-    public void setupConfig() {
-
-        try {
-            FileInputStream configFile = new FileInputStream("settings/config.xml");
-            Properties props = new Properties();
-            props.loadFromXML(configFile);
-            configFile.close();
-
-            String url = "http://%s:%s/";
-            String serverIp = props.getProperty("serverIp");
-            String serverPort = props.getProperty("serverPort");
-            server = new CloudyLauncherServerInterface(String.format(url,
-                                                                     serverIp,
-                                                                     serverPort));
-
-        } catch (IOException e) {
-
-            accountsFeedback.setText(ERROR_FXML_CONFIG);
-            mainButton.setDisable(true);
-        }
+    public void setupServer() {
+        server = new CloudyLauncherServerInterface();
     }
 
     @FXML
@@ -450,7 +430,7 @@ public class CloudyLauncher extends Application {
             loader.setController(this);
             mainContent.setCenter(loader.load());
 
-            setupConfig();
+            setupServer();
             setupClock();
             setupStatus();
             setCaptchaAsNeeded();

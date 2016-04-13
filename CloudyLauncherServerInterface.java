@@ -35,8 +35,16 @@ public class CloudyLauncherServerInterface {
     final static String ERROR_CONNECTION = "SERVER CONNECTION ERROR";
 
     /**
+     * Constructor for a CloudyLauncherServerInterface object. Url will default
+     * to the deployed CloudyWeb if not specified.
+     */
+    public CloudyLauncherServerInterface() {
+        baseUrl = "http://cloudyweb.gixs.work/";
+    }
+
+    /**
      * Constructor for a CloudyLauncherServerInterface object. Format of the url
-     * should be given as http://ip:port/
+     * should be given as http://ip:port/ or http://ip/
      *
      * @param serverUrl the base url of the server
      *
@@ -46,39 +54,36 @@ public class CloudyLauncherServerInterface {
     }
 
     /**
-     * Checks if the server is currently online and reachable. Method attempts
-     * to open a socket to check connection.
+     * Checks if the server is currently online and reachable. Method retrieves
+     * the host name from the baseUrl and checks connection
      *
-     * @return whether server is reachable
+     * @return  whether server is reachable
      */
     public boolean isOnline() {
-        boolean available = false;
 
         String httpStr = "http://";
         String hostName = baseUrl.substring(httpStr.length(),
-                                            baseUrl.indexOf(":",
-                                                            httpStr.length()));
-        String port = baseUrl.substring(baseUrl.indexOf(":", httpStr.length()) + 1,
-                                        baseUrl.length() - 1);
+                                            baseUrl.length() - 1);
 
-        Socket socket = new Socket();
+        if (hostName.contains(":")) {
+            hostName = baseUrl.substring(httpStr.length(),
+                                         baseUrl.indexOf(":", httpStr.length()));
+
+        } else {
+            hostName = baseUrl.substring(httpStr.length(), baseUrl.length() - 1);
+        }
 
         try {
             InetAddress inetAddress = InetAddress.getByName(hostName);
-            InetSocketAddress socketAddress = new InetSocketAddress(inetAddress,
-                                                                    Integer.parseInt(port));
-            socket.connect(socketAddress, 1000);
-            socket.close();
-            available = true;
-        } catch (Exception e) {
-            available = false;
-        }
+            return inetAddress.isReachable(1000);
 
-        return available;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     /**
-     * Post request to the Cloudyweb server to create a new user.
+     * Post request to the CloudyWeb server to create a new user.
      *
      * Method returns a feedback string and not the server response. Use
      * methods getErrorResponse and getServerResponse to get the corresponding
@@ -118,7 +123,7 @@ public class CloudyLauncherServerInterface {
     }
 
     /**
-     * Post request to the Cloudyweb server to login as a registered user.
+     * Post request to the CloudyWeb server to login as a registered user.
      *
      * Method returns a feedback string and not the server response. Use
      * methods getErrorResponse and getServerResponse to get the corresponding
@@ -156,7 +161,7 @@ public class CloudyLauncherServerInterface {
     }
 
     /**
-     * Get request to the Cloudyweb server to query a current game session
+     * Get request to the CloudyWeb server to query a current game session
      * using username and game id.
      *
      * Method returns a feedback string and not the server response. Use
@@ -197,7 +202,7 @@ public class CloudyLauncherServerInterface {
     }
 
     /**
-     * Get request to the Cloudyweb server to query a current game session.
+     * Get request to the CloudyWeb server to query a current game session.
      *
      * Method returns a feedback string and not the server response. Use
      * methods getErrorResponse and getServerResponse to get the corresponding
@@ -239,7 +244,7 @@ public class CloudyLauncherServerInterface {
     }
 
     /**
-     * Get request to the Cloudyweb server to retrieve information on all games.
+     * Get request to the CloudyWeb server to retrieve information on all games.
      *
      * Method returns a feedback string and not the server response. Use
      * methods getErrorResponse and getServerResponse to get the corresponding
@@ -275,7 +280,7 @@ public class CloudyLauncherServerInterface {
     }
 
     /**
-     * Get request to the Cloudyweb server to retrieve information on user-owned
+     * Get request to the CloudyWeb server to retrieve information on user-owned
      * games.
      *
      * Method returns a feedback string and not the server response. Use
