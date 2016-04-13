@@ -179,7 +179,7 @@ public class CloudyLauncher extends Application {
 
         checkCaptchaResult();
         if (captchaResult == CAPTCHA_CORRECT) {
-            String serverFeedback = server.postAuthenticationRequest(username.getText(),
+            String serverFeedback = server.postAuthenticationRequest(username.getText().trim(),
                                                                      password.getText());
             accountsFeedback.setText(serverFeedback);
             String error = server.getErrorResponse();
@@ -223,7 +223,7 @@ public class CloudyLauncher extends Application {
 
         checkCaptchaResult();
         if (captchaResult == CAPTCHA_CORRECT) {
-            String serverFeedback = server.postSignupRequest(username.getText(),
+            String serverFeedback = server.postSignupRequest(username.getText().trim(),
                                                              password.getText(),
                                                              email.getText());
 
@@ -366,7 +366,7 @@ public class CloudyLauncher extends Application {
             mainContent.setCenter(loader.load());
 
             setGamePanel(GAME_DISPLAY_WELCOME);
-            welcomeText.setText(String.format(WELCOME_TEXT, username.getText()));
+            welcomeText.setText(String.format(WELCOME_TEXT, username.getText().trim()));
 
             resetGamePage();
 
@@ -383,7 +383,7 @@ public class CloudyLauncher extends Application {
             loader.setController(this);
             currentStage.getScene().setRoot(loader.load());
 
-            welcomeText.setText(String.format(WELCOME_TEXT, username.getText()));
+            welcomeText.setText(String.format(WELCOME_TEXT, username.getText().trim()));
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -454,7 +454,7 @@ public class CloudyLauncher extends Application {
     }
 
     private void initialiseOwnedGameList() {
-        String serverFeedback = server.postOwnedGamesQuery(username.getText(),
+        String serverFeedback = server.postOwnedGamesQuery(username.getText().trim(),
                                                            token);
         gameFeedback.setText(serverFeedback);
         String error = server.getErrorResponse();
@@ -647,7 +647,7 @@ public class CloudyLauncher extends Application {
     private void joinGame(Game gameToJoin) {
 
         String serverFeedback = server.postGameSessionRequest(gameToJoin,
-                                                              username.getText(),
+                                                              username.getText().trim(),
                                                               token);
 
         gameFeedback.setText(serverFeedback);
@@ -676,7 +676,7 @@ public class CloudyLauncher extends Application {
 
     private void addGame(Game gameToAdd) {
         String serverFeedback = server.postGameOwnershipRequest(gameToAdd,
-                                                                username.getText(),
+                                                                username.getText().trim(),
                                                                 token);
 
         String error = server.getErrorResponse();
