@@ -67,14 +67,14 @@ Include the json jar and the simple captcha jar in the classpath
 (separate the jar files using : for linux/mac and ; for windows)
 ```bash
 Linux/Mac:
-javac -cp path/to/json/jar/file:path/to/captcha/jar/file CloudyLauncher.java Game.java CloudyLauncherJsonParser.java CloudyLauncherServerInterface.java
+javac -cp path/to/json/jar/file:path/to/captcha/jar/file *.java
 
 Windows:
-javac -cp path/to/json/jar/file;path/to/captcha/jar/file CloudyLauncher.java Game.java CloudyLauncherJsonParser.java CloudyLauncherServerInterface.java
+javac -cp path/to/json/jar/file;path/to/captcha/jar/file *.java
 ```
 Example usage for Windows: Assuming you have placed the .jar file together with your java files, type:
 ```bash
-javac -cp json-20151123.jar;simplecaptcha-1.2.1.jar CloudyLauncher.java Game.java CloudyLauncherJsonParser.java CloudyLauncherServerInterface.java
+javac -cp json-20151123.jar;simplecaptcha-1.2.1.jar *.java
 ```
 or simply type `javac -cp \* *.java` to include all jar and java files in the current folder
 
@@ -90,5 +90,9 @@ java -cp .;path/to/json/jar/file;path/to/captcha/jar/file CloudyLauncher
 Example usage for Linux/Mac:
 ```bash
 java -cp .:json-20151123.jar:simplecaptcha-1.2.1.jar CloudyLauncher
+```
+Example usage for Windows:
+```bash
+java -cp .;json-20151123.jar;simplecaptcha-1.2.1.jar CloudyLauncher
 ```
 or simply type `java -cp .:\* CloudyLauncher`
