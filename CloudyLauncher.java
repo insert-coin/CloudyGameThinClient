@@ -110,6 +110,8 @@ public class CloudyLauncher extends Application {
 
     final private String URL_OWNED_BADGE = "images/orangeribbon.png";
     final private String GAME_INFORMATION = "Publisher: %s\n\n%s";
+    final private String BUTTON_GET_GAME = "Add Game";
+    final private String BUTTON_JOIN_GAME = "Join Game";
 
     final private String COMMAND_RUN_THINCLIENT = "python thin_client/main.py --session %s %s %s %s";
 
@@ -262,7 +264,7 @@ public class CloudyLauncher extends Application {
         if (listOfOwnedGames.contains(selectedGame)) {
             joinGame(selectedGame);
         } else {
-            gameFeedback.setText("Obtain game first");
+            addGame(selectedGame);
         }
     }
 
@@ -366,11 +368,7 @@ public class CloudyLauncher extends Application {
             setGamePanel(GAME_DISPLAY_WELCOME);
             welcomeText.setText(String.format(WELCOME_TEXT, username.getText()));
 
-            clearGamePage();
-
-            initialiseGameList();
-            initialiseOwnedGameList();
-            displayAllGames(null);
+            resetGamePage();
 
         } catch (IOException e) {
             gameFeedback.setText(ERROR_FXML_GAME_DISPLAY);
@@ -533,6 +531,11 @@ public class CloudyLauncher extends Application {
                                                   selectedGame.getPublisher(),
                                                   selectedGame.getDescription()));
 
+        if (!listOfOwnedGames.contains(selectedGame)) {
+            gameButton.setText(BUTTON_GET_GAME);
+        } else {
+            gameButton.setText(BUTTON_JOIN_GAME);
+        }
     }
 
     private void setPaginationSettings(Integer gameListType) {
@@ -619,9 +622,13 @@ public class CloudyLauncher extends Application {
         }
     }
 
-    private void clearGamePage() {
+    private void resetGamePage() {
         listOfGames.clear();
         listOfOwnedGames.clear();
+
+        initialiseGameList();
+        initialiseOwnedGameList();
+        displayAllGames(null);
     }
 
     private void clearInput() {
@@ -665,6 +672,22 @@ public class CloudyLauncher extends Application {
                 gameFeedback.setText(ERROR_GAME_JOIN);
             }
         }
+    }
+
+    private void addGame(Game gameToAdd) {
+        String serverFeedback = server.postGameOwnershipRequest(gameToAdd,
+                                                                username.getText(),
+                                                                token);
+
+        String error = server.getErrorResponse();
+
+        if (serverFeedback.equals(CloudyLauncherServerInterface.ERROR_CONNECTION)) {
+        } else if (!error.isEmpty()) {
+            gameFeedback.setText(parser.parseErrorResponse(error));
+        } else {
+            listOfOwnedGames.add(gameToAdd);
+        }
+        gameFeedback.setText(serverFeedback);
     }
 
     @Override

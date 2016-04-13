@@ -17,6 +17,7 @@ public class CloudyLauncherServerInterface {
     private final static String URL_REGISTRATION = "api-token-auth/registrations/";
     private final static String URL_LOGIN = "api-token-auth/tokens/";
     private final static String URL_GAMES = "games/";
+    private final static String URL_GAME_OWNERSHIP = "game-ownership/";
     private final static String URL_GAMES_OWNED = "game-ownership/?user=%s";
     private final static String URL_GAME_SESSION = "game-session/";
     private final static String URL_GAME_SESSION_CURRENT = "game-session/?game=%s&user=%s";
@@ -27,6 +28,7 @@ public class CloudyLauncherServerInterface {
 
     private final static String FEEDBACK_SUCCESS_SIGNUP = "User successfully registered";
     private final static String FEEDBACK_SUCCESS_LOGIN = "User recognised";
+    private final static String FEEDBACK_SUCCESS_ADD_GAME = "Game successfully added to list";
     private final static String FEEDBACK_SUCCESS_JOIN_GAME = "Game session successfully created";
     private final static String FEEDBACK_SUCCESS_GET_PORT = "Streaming port number retrieved";
     private final static String FEEDBACK_SUCCESS_GET_GAMES = "Games list successfully retrieved";
@@ -152,6 +154,51 @@ public class CloudyLauncherServerInterface {
                 returnMessage = ERROR_FEEDBACK;
             }
             
+            connection.disconnect();
+            return returnMessage;
+
+        } catch (IOException e) {
+            return ERROR_CONNECTION;
+        }
+    }
+
+    /**
+     * Post request to the CloudyWeb server to add an unowned game to own
+     * collection.
+     *
+     * Method returns a feedback string and not the server response. Use methods
+     * getErrorResponse and getServerResponse to get the corresponding
+     * information.
+     *
+     * @param gameToJoin  the Game object of the game to be added
+     * @param username    the username of the user
+     * @return  feedback string indicating success or error
+     */
+    public String postGameOwnershipRequest(Game gameToJoin, String username,
+                                           String token) {
+        resetResponses();
+
+        try {
+            URL url = new URL(baseUrl + URL_GAME_OWNERSHIP);
+            String tokenAuthorization = "Token " + token;
+            String queryData = String.format(DATA_GAME_ACCOUNT,
+                                             gameToJoin.getId(), username);
+
+            HttpURLConnection connection = openConnectionAndPost(url,
+                                                                 queryData,
+                                                                 tokenAuthorization);
+
+            String returnMessage;
+
+            if (connection.getResponseCode() == HttpURLConnection.HTTP_CREATED) {
+                setServerResponse(connection);
+                returnMessage = FEEDBACK_SUCCESS_ADD_GAME;
+
+            } else {
+                setErrorResponse(connection);
+                returnMessage = ERROR_FEEDBACK;
+            }
+
             connection.disconnect();
             return returnMessage;
 
