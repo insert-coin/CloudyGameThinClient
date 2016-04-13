@@ -18,8 +18,12 @@ public class CloudyLauncherJsonParser {
     final static String[] FIELDS_NON_HEADER_JSONARRAY = { "non_field_errors" };
     final static String[] FIELDS_NON_HEADER_JSONOBJECT = { "detail", "message" };
 
+    static enum ErrorHeaders {
+        USERNAME, PASSWORD, EMAIL, OTHERS
+    }
+
     static enum GameInformation {
-        ID, NAME, PUBLISHER, LIMIT, ADDRESS, THUMBNAIL
+        ID, NAME, DESCRIPTION, PUBLISHER, LIMIT, ADDRESS, THUMBNAIL
     };
 
     static enum GameSession {
@@ -114,6 +118,70 @@ public class CloudyLauncherJsonParser {
     }
 
     /**
+     * Parse json string to retrieve error strings into Map using enum
+     * ErrorHeaders. Get respective error messages using ErrorHeaders.
+     *
+     * Return an empty map if error encountered.
+     *
+     * @param gameListString json string containing games' information
+     * @return list of games with parsed information
+     */
+    public Map<ErrorHeaders, String> parseRespectiveErrors (String errorString) {
+        Map<ErrorHeaders, String> errorResponses = new HashMap<ErrorHeaders, String>();
+
+        try {
+            JSONObject errorResponse = new JSONObject(errorString);
+
+            if (errorResponse.has(FIELDS_HEADER[0])) {
+                errorResponses.put(ErrorHeaders.USERNAME,
+                                   errorResponse.getJSONArray(FIELDS_HEADER[0])
+                                                .getString(0));
+            } else {
+                errorResponses.put(ErrorHeaders.USERNAME, "");
+            }
+
+            if (errorResponse.has(FIELDS_HEADER[1])) {
+                errorResponses.put(ErrorHeaders.PASSWORD,
+                                   errorResponse.getJSONArray(FIELDS_HEADER[1])
+                                                .getString(0));
+            } else {
+                errorResponses.put(ErrorHeaders.PASSWORD, "");
+            }
+
+            if (errorResponse.has(FIELDS_HEADER[2])) {
+                errorResponses.put(ErrorHeaders.EMAIL,
+                                   errorResponse.getJSONArray(FIELDS_HEADER[2])
+                                                .getString(0));
+            } else {
+                errorResponses.put(ErrorHeaders.EMAIL, "");
+            }
+
+            String errorMessage = "";
+            for (String header : FIELDS_NON_HEADER_JSONARRAY) {
+                if (errorResponse.has(header)) {
+                    errorMessage = errorMessage
+                                   + "\n"
+                                   + errorResponse.getJSONArray(header)
+                                                  .getString(0);
+                }
+            }
+
+            for (String header : FIELDS_NON_HEADER_JSONOBJECT) {
+                if (errorResponse.has(header)) {
+                    errorMessage = errorMessage + "\n"
+                                   + errorResponse.getString(header);
+                }
+            }
+            errorResponses.put(ErrorHeaders.OTHERS, errorMessage.trim());
+            
+            return errorResponses;
+
+        } catch (JSONException e) {
+            return new HashMap<ErrorHeaders, String>();
+        }
+    }
+
+    /**
      * Parse json string to retrieve a list of games. Use enum GameInformation
      * to get individual properties of each game.
      *
@@ -153,6 +221,7 @@ public class CloudyLauncherJsonParser {
         Map<GameInformation, String> gameInformation = new HashMap<GameInformation, String>(6);
         String gId = Integer.toString(gameObject.getInt("id"));
         String gName = gameObject.getString("name");
+        String gDescription = gameObject.getString("description");
         String gPublisher = gameObject.getString("publisher");
         String gLimit = Integer.toString(gameObject.getInt("max_limit"));
         String gAddress = gameObject.getString("address");
@@ -160,6 +229,7 @@ public class CloudyLauncherJsonParser {
 
         gameInformation.put(GameInformation.ID, gId);
         gameInformation.put(GameInformation.NAME, gName);
+        gameInformation.put(GameInformation.DESCRIPTION, gDescription);
         gameInformation.put(GameInformation.PUBLISHER, gPublisher);
         gameInformation.put(GameInformation.LIMIT, gLimit);
         gameInformation.put(GameInformation.ADDRESS, gAddress);

@@ -3,6 +3,9 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.Socket;
 import java.net.URL;
 
 public class CloudyLauncherServerInterface {
@@ -11,7 +14,8 @@ public class CloudyLauncherServerInterface {
     private String errorResponse = "";
 
     private final static String URL_USERS = "users/";
-    private final static String URL_LOGIN = "api-token-auth/";
+    private final static String URL_REGISTRATION = "api-token-auth/registrations/";
+    private final static String URL_LOGIN = "api-token-auth/tokens/";
     private final static String URL_GAMES = "games/";
     private final static String URL_GAMES_OWNED = "game-ownership/?user=%s";
     private final static String URL_GAME_SESSION = "game-session/";
@@ -31,8 +35,16 @@ public class CloudyLauncherServerInterface {
     final static String ERROR_CONNECTION = "SERVER CONNECTION ERROR";
 
     /**
+     * Constructor for a CloudyLauncherServerInterface object. Url will default
+     * to the deployed CloudyWeb if not specified.
+     */
+    public CloudyLauncherServerInterface() {
+        baseUrl = "http://cloudyweb.gixs.work/";
+    }
+
+    /**
      * Constructor for a CloudyLauncherServerInterface object. Format of the url
-     * should be given as http://ip:port/
+     * should be given as http://ip:port/ or http://ip/
      *
      * @param serverUrl the base url of the server
      *
@@ -42,28 +54,36 @@ public class CloudyLauncherServerInterface {
     }
 
     /**
-     * Checks if the server is currently online and reachable. Method posts a
-     * get request to check connection.
+     * Checks if the server is currently online and reachable. Method retrieves
+     * the host name from the baseUrl and checks connection
      *
-     * @return  whether server is online
+     * @return  whether server is reachable
      */
     public boolean isOnline() {
-        try {
-            URL url = new URL(baseUrl);
-            HttpURLConnection connection = openGetConnection(url, "");
 
-            if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
-                return true;
-            } else {
-                return false;
-            }
-        } catch (IOException e) {
+        String httpStr = "http://";
+        String hostName = baseUrl.substring(httpStr.length(),
+                                            baseUrl.length() - 1);
+
+        if (hostName.contains(":")) {
+            hostName = baseUrl.substring(httpStr.length(),
+                                         baseUrl.indexOf(":", httpStr.length()));
+
+        } else {
+            hostName = baseUrl.substring(httpStr.length(), baseUrl.length() - 1);
+        }
+
+        try {
+            InetAddress inetAddress = InetAddress.getByName(hostName);
+            return inetAddress.isReachable(1000);
+
+        } catch (Exception e) {
             return false;
         }
     }
 
     /**
-     * Post request to the Cloudyweb server to create a new user.
+     * Post request to the CloudyWeb server to create a new user.
      *
      * Method returns a feedback string and not the server response. Use
      * methods getErrorResponse and getServerResponse to get the corresponding
@@ -78,7 +98,7 @@ public class CloudyLauncherServerInterface {
         resetResponses();
 
         try {
-            URL url = new URL(baseUrl + URL_USERS);
+            URL url = new URL(baseUrl + URL_REGISTRATION);
             String queryData = String.format(DATA_SIGNUP, signupUsername,
                                              signupPassword, signupEmail);
 
@@ -103,7 +123,7 @@ public class CloudyLauncherServerInterface {
     }
 
     /**
-     * Post request to the Cloudyweb server to login as a registered user.
+     * Post request to the CloudyWeb server to login as a registered user.
      *
      * Method returns a feedback string and not the server response. Use
      * methods getErrorResponse and getServerResponse to get the corresponding
@@ -141,7 +161,7 @@ public class CloudyLauncherServerInterface {
     }
 
     /**
-     * Get request to the Cloudyweb server to query a current game session
+     * Get request to the CloudyWeb server to query a current game session
      * using username and game id.
      *
      * Method returns a feedback string and not the server response. Use
@@ -182,7 +202,7 @@ public class CloudyLauncherServerInterface {
     }
 
     /**
-     * Get request to the Cloudyweb server to query a current game session.
+     * Get request to the CloudyWeb server to query a current game session.
      *
      * Method returns a feedback string and not the server response. Use
      * methods getErrorResponse and getServerResponse to get the corresponding
@@ -224,7 +244,7 @@ public class CloudyLauncherServerInterface {
     }
 
     /**
-     * Get request to the Cloudyweb server to retrieve information on all games.
+     * Get request to the CloudyWeb server to retrieve information on all games.
      *
      * Method returns a feedback string and not the server response. Use
      * methods getErrorResponse and getServerResponse to get the corresponding
@@ -260,7 +280,7 @@ public class CloudyLauncherServerInterface {
     }
 
     /**
-     * Get request to the Cloudyweb server to retrieve information on user-owned
+     * Get request to the CloudyWeb server to retrieve information on user-owned
      * games.
      *
      * Method returns a feedback string and not the server response. Use

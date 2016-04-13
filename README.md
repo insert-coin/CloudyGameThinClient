@@ -59,33 +59,36 @@ You need:
 3. JSON dependency
     - can be obtained from [here](http://mvnrepository.com/artifact/org.json/json)
     - version used in development: 20151123
+4. SimpleCaptcha dependency
+    - can be obtained from [here](http://simplecaptcha.sourceforge.net)
 
 ### To compile on the command line
-Include the json jar in the classpath:
-```bash
-javac -cp path/to/json/jar/file *.java
-```
-
-Example: Assuming you have placed the .jar file together with your java files, type:
-```bash
-javac -cp json-20151123.jar *.java
-```
-
-### To run on the command line
-Include the json jar in the classpath:
+Include the json jar and the simple captcha jar in the classpath
+(separate the jar files using : for linux/mac and ; for windows)
 ```bash
 Linux/Mac:
-java -cp .:path/to/json/jar/file CloudyLauncher
+javac -cp path/to/json/jar/file:path/to/captcha/jar/file CloudyLauncher.java Game.java CloudyLauncherJsonParser.java CloudyLauncherServerInterface.java
 
 Windows:
-java -cp .;path/to/json/jar/file CloudyLauncher
+javac -cp path/to/json/jar/file;path/to/captcha/jar/file CloudyLauncher.java Game.java CloudyLauncherJsonParser.java CloudyLauncherServerInterface.java
 ```
-Example usage for Windows:
+Example usage for Windows: Assuming you have placed the .jar file together with your java files, type:
 ```bash
-java -cp .;json-20151123.jar CloudyLauncher
+javac -cp json-20151123.jar;simplecaptcha-1.2.1.jar CloudyLauncher.java Game.java CloudyLauncherJsonParser.java CloudyLauncherServerInterface.java
 ```
+or simply type `javac -cp \* *.java` to include all jar and java files in the current folder
 
+### To run on the command line
+Include the json jar and the simple captcha jar in the classpath:
+```bash
+Linux/Mac:
+java -cp .:path/to/json/jar/file:path/to/captcha/jar/file CloudyLauncher
+
+Windows:
+java -cp .;path/to/json/jar/file;path/to/captcha/jar/file CloudyLauncher
+```
 Example usage for Linux/Mac:
 ```bash
-java -cp .:json-20151123.jar CloudyLauncher
+java -cp .:json-20151123.jar:simplecaptcha-1.2.1.jar CloudyLauncher
 ```
+or simply type `java -cp .:\* CloudyLauncher`

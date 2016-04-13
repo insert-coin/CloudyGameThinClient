@@ -1,0 +1,209 @@
+
+/*******************
+ *     general     *
+ *******************/
+
+/* BorderPane: main layout root */
+.root {
+    -fx-padding: 15;
+    -fx-background-color: linear-gradient(to bottom, #000000 10%, #FFFFFF 30%);
+}
+
+.text {
+}
+
+.label {
+    -fx-font-weight: bold;
+}
+
+.feedback {
+    -fx-font-family: "Arial Black";
+    -fx-font-weight: bold;
+}
+
+.button {
+    -fx-font-family: "Arial Black";
+}
+
+.button:hover, .button:focused {
+}
+
+.button:disabled {
+}
+
+.text-field {
+}
+
+/*******************
+ *       top       *
+ *******************/
+
+/* VBox: container for date and time display */
+.date-time-box {
+    -fx-alignment: top-right;
+}
+
+/* Text: date and time display */
+.date-time {
+}
+
+/* Label: current status */
+.status-offline {
+    -fx-text-fill: #FF4D4D;
+    -fx-graphic: url("../images/status-offline.png");
+}
+
+/* Label: current status */
+.status-online {
+    -fx-text-fill: #00cc00;
+    -fx-graphic: url("../images/status-online.png");
+}
+
+/* Text: states the user currently logged in */
+.welcome-text {
+    -fx-font-weight: bold;
+    -fx-font-size: 15;
+}
+
+/*******************
+ *     navigate    *
+ *******************/
+
+/* HBox: navigation buttons in game display */
+.button-navigation {
+    -fx-spacing: 10;
+    -fx-padding: 5 0 5 0;
+}
+
+/*******************
+ *       left      *
+ *******************/
+
+/* VBox container for heading and feedback */
+.left-container {
+    -fx-padding: 50;
+}
+
+/* Text: heading on left eg login / signup header*/
+.heading1 {
+    -fx-font-family: "Arial Black";
+    -fx-font-size: 35;
+}
+
+.refresh-button {
+    -fx-min-width: 25;
+    -fx-background-image: url("../images/refresh.png");
+    -fx-background-position: center;
+    -fx-background-repeat: no-repeat;
+}
+
+/* TilePane: container for game icons */
+.game-root {
+    -fx-hgap: 5;
+    -fx-vgap: 5;
+}
+
+/* StackPane: individual game icons */
+.game-icon {
+    -fx-alignment: top-right;
+    -fx-border-color: black;
+    -fx-border-width: 3;
+    -fx-focus-traversable: true;
+}
+
+.game-icon:hover, .game-icon:focused {
+    -fx-border-width: 2;
+}
+
+.pagination > .page {
+}
+
+.left-arrow, .right-arrow {
+}
+
+.left-arrow:disabled, .right-arrow:disabled {
+}
+
+/* TilePane: container for theme buttons */
+.settings-theme {
+    -fx-alignment: center-left;
+    -fx-pref-tile-width: 200;
+    -fx-vgap: 20;
+}
+
+/*******************
+ *      right      *
+ *******************/
+
+/* Text: heading on right e.g. game title*/
+.heading2 {
+    -fx-font-family: "Arial Black";
+    -fx-font-size: 25;
+}
+
+/* VBox: content on right */
+.content {
+    -fx-spacing: 10;
+    -fx-border-width: 0 0 0 5;
+    -fx-border-style: solid;
+    -fx-padding: 10;
+}
+
+/* Text: toggle signup/login page */
+.link-text {
+    -fx-font-weight: bold;
+    -fx-focus-traversable: true;
+}
+
+.link-text:hover, .link-text:focused {
+}
+
+/* HBox: main-button-container */
+.main-button-container {
+    -fx-padding: 0 20 0 0;
+    -fx-alignment: bottom-right;
+}
+
+/* Button: main button */
+.main-button {
+    -fx-font-size: 25;
+    -fx-padding: 10 50 10 50;
+}
+
+/* ScrollPane: container for game text area */
+.scroll-pane {
+    -fx-background-color: transparent;
+}
+
+.scroll-pane > .viewport {
+}
+
+.scroll-bar {
+    -fx-background-color: transparent;
+}
+
+.scroll-bar > .thumb {
+    -fx-background-radius: 10;
+}
+
+.scroll-bar > .thumb:hover, .scroll-bar > .thumb:selected {
+}
+
+.decrement-button:hover, .increment-button:hover {
+}
+
+/* VBox */
+.game-info-container {
+    -fx-alignment: center;
+    -fx-padding: 5;
+}
+
+.game-info {
+}
+
+/*******************
+ *      bottom     *
+ *******************/
+
+.copyright {
+}

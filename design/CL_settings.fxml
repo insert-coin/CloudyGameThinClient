@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Pagination?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.TilePane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Text?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.Scene?>
+<?import javafx.scene.text.Text?>
+
+<BorderPane
+    styleClass="root"
+    xmlns:fx="http://javafx.com/fxml"
+    fx:id="mainContent">
+    <top>
+        <HBox>
+            <ImageView
+                fitWidth="208"
+                fitHeight="60">
+                <image>
+                    <Image url="@../images/logo-high-res.png" />
+                </image>
+            </ImageView>
+            <Region HBox.hgrow="ALWAYS" />
+            <VBox styleClass="date-time-box">
+                <Label fx:id="status" />
+                <Text
+                    fx:id="date"
+                    styleClass="date-time">
+                </Text>
+                <Text
+                    fx:id="time"
+                    styleClass="date-time">
+                </Text>
+            </VBox>
+        </HBox>
+    </top>
+
+<center>
+<VBox
+    prefHeight="400" >
+    <HBox>
+        <Region HBox.hgrow="ALWAYS" />
+        <Text
+            fx:id="welcomeText"
+            styleClass="welcome-text" />
+    </HBox>
+    <HBox
+        prefHeight="50"
+        styleClass="button-navigation">
+        <Button
+            text="Return to Games Display"
+            onAction="#setGameDisplayPage" />
+        <Region HBox.hgrow="ALWAYS" />
+        <Button
+            text="Logout"
+            onAction="#handleLogout" />
+    </HBox>
+    <HBox VBox.vgrow="ALWAYS">
+        <VBox
+            prefWidth="250"
+            styleClass="left-container">
+            <Region prefHeight="50" />
+        </VBox>
+        <VBox
+            prefWidth="550"
+            styleClass="content">
+            <Text styleClass="heading1"> Settings </Text>
+            <Text
+                styleClass="heading2, sub-settings"> Themes </Text>
+            <TilePane styleClass="settings-theme">
+                <Button text="Cloudy" onAction="#changeTheme" />
+                <Button text="Monochrome" onAction="#changeTheme" />
+                <Button text="Dark" onAction="#changeTheme" />
+                <Button text="Light" onAction="#changeTheme" />
+                <Button text="Forest" onAction="#changeTheme" />
+                <Button text="Sunset" onAction="#changeTheme" />
+            </TilePane>
+            <Text
+                styleClass="heading2, sub-settings"> Update Particulars </Text>
+            <Text styleClass="text"> To be added.. </Text>
+            <HBox>
+            <Region prefWidth="150" />
+            <Button
+                fx:id="settingsButton"
+                text="Update" />
+            <Text
+                fx:id="settingsFeedback"
+                styleClass="feedback">
+            </Text>
+</HBox>
+        </VBox>
+    </HBox>
+</VBox>
+</center>
+</BorderPane>

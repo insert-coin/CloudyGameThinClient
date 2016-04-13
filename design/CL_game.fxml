@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.net.URL?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.Scene?>
+<?import javafx.scene.text.Text?>
+
+<BorderPane
+    styleClass="root"
+    xmlns:fx="http://javafx.com/fxml"
+    fx:id="mainContent">
+    <top>
+        <HBox>
+            <ImageView
+                fitWidth="208"
+                fitHeight="60">
+                <image>
+                    <Image url="@../images/logo-high-res.png" />
+                </image>
+            </ImageView>
+            <Region HBox.hgrow="ALWAYS" />
+            <VBox styleClass="date-time-box">
+                <Label fx:id="status" />
+                <Text
+                    fx:id="date"
+                    styleClass="date-time">
+                </Text>
+                <Text
+                    fx:id="time"
+                    styleClass="date-time">
+                </Text>
+            </VBox>
+        </HBox>
+    </top>
+</BorderPane>

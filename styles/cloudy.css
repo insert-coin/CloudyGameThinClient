@@ -1,0 +1,241 @@
+
+/*******************
+ *     general     *
+ *******************/
+
+/* BorderPane: main layout root */
+.root {
+    -fx-background-color: linear-gradient(to bottom, #000000 0%, #00101A 15%, #01314D 30%, #024A73 60%, #026299 100%);
+    -fx-padding: 15;
+}
+
+.text {
+	-fx-fill: #FDCCAF; 
+}
+
+.label {
+    -fx-text-fill: #FDCCAF;
+    -fx-font-weight: bold;
+}
+
+.feedback {
+    -fx-font-family: "Arial Black";
+    -fx-fill: #F28A8A;
+    -fx-font-weight: bold;
+}
+
+.button {
+    -fx-font-family: "Arial Black";
+    -fx-background-color: linear-gradient(to bottom, #0D4E75 30%, #023350 100%);
+    -fx-text-fill: #FDCCAF;
+}
+
+.button:hover, .button:focused {
+    -fx-background-color: linear-gradient(to bottom, #6DA9CC 30%, #26709C 100%);
+    -fx-text-fill: #925633;
+}
+
+.button:disabled {
+    -fx-background-color: #26709C;
+}
+
+.text-field {
+    -fx-background-color: #6DA9CC;
+    -fx-highlight-text-fill: #F2B18A;
+    -fx-prompt-text-fill: #925633;
+}
+
+/*******************
+ *       top       *
+ *******************/
+
+/* VBox: container for date and time display */
+.date-time-box {
+    -fx-alignment: top-right;
+}
+
+/* Text: date and time display */
+.date-time {
+    -fx-fill: #F2B18A;
+}
+
+/* Label: current status */
+.status-offline {
+    -fx-text-fill: #FF4D4D;
+    -fx-graphic: url("../images/status-offline.png");
+}
+
+/* Label: current status */
+.status-online {
+    -fx-text-fill: #00cc00;
+    -fx-graphic: url("../images/status-online.png");
+}
+
+/* Text: states the user currently logged in */
+.welcome-text {
+    -fx-fill: #F2B18A;
+    -fx-font-weight: bold;
+    -fx-font-size: 15;
+}
+
+/*******************
+ *     navigate    *
+ *******************/
+
+/* HBox: navigation buttons in game display */
+.button-navigation {
+    -fx-spacing: 10;
+    -fx-padding: 5 0 5 0;
+}
+
+/*******************
+ *       left      *
+ *******************/
+
+/* VBox container for heading and feedback */
+.left-container {
+    -fx-padding: 50;
+}
+
+/* Text: heading on left eg login / signup header*/
+.heading1 {
+    -fx-font-family: "Arial Black";
+    -fx-font-size: 35;
+    -fx-fill: #6DA9CC;
+}
+
+.refresh-button {
+    -fx-min-width: 25;
+    -fx-background-image: url("../images/refresh.png");
+    -fx-background-position: center;
+    -fx-background-repeat: no-repeat;
+    -fx-background-color: #6DA9CC;
+}
+
+/* TilePane: container for game icons */
+.game-root {
+    -fx-hgap: 5;
+    -fx-vgap: 5;
+}
+
+/* StackPane: individual game icons */
+.game-icon {
+    -fx-alignment: top-right;
+    -fx-border-color: black;
+    -fx-border-width: 3;
+    -fx-focus-traversable: true;
+}
+
+.game-icon:hover, .game-icon:focused {
+    -fx-border-color: #6DA9CC;
+    -fx-border-width: 2;
+}
+
+.pagination > .page {
+    -fx-background-color: linear-gradient(to bottom, #01273E 0%, #025280 50%, #025C8F 100%);
+}
+
+.left-arrow, .right-arrow {
+    -fx-background-color: #106595;
+}
+
+.left-arrow:disabled, .right-arrow:disabled {
+    -fx-background-color: #023F62;
+}
+
+/* TilePane: container for theme buttons */
+.settings-theme {
+	-fx-alignment: center-left;
+	-fx-pref-tile-width: 200;
+	-fx-vgap: 20;
+}
+
+/*******************
+ *      right      *
+ *******************/
+
+/* Text: heading on right e.g. game title*/
+.heading2 {
+    -fx-font-family: "Arial Black";
+    -fx-font-size: 25;
+    -fx-fill: #6DA9CC;
+}
+
+/* VBox: content on right */
+.content {
+    -fx-spacing: 10;
+    -fx-border-width: 0 0 0 5;
+    -fx-border-color: radial-gradient(center 50% 50%, radius 50%, #023350, #925633, #023350);
+    -fx-border-style: solid;
+    -fx-padding: 10;
+}
+
+/* Text: toggle signup/login page */
+.link-text {
+    -fx-fill: #FDCCAF;
+    -fx-font-weight: bold;
+    -fx-focus-traversable: true;
+}
+
+.link-text:hover, .link-text:focused {
+    -fx-fill: #925633;
+}
+
+/* HBox: main-button-container */
+.main-button-container {
+    -fx-padding: 0 20 0 0;
+    -fx-alignment: bottom-right;
+}
+
+/* Button: main button */
+.main-button {
+    -fx-font-size: 25;
+    -fx-padding: 10 50 10 50;
+}
+
+/* ScrollPane: container for game text area */
+.scroll-pane {
+    -fx-background-color: transparent;
+}
+
+.scroll-pane > .viewport {
+    -fx-background-color: #023350;
+    -fx-background-color: linear-gradient(to bottom, #013B5C 0%, #025A8C 50%, #025787 100%);
+    -fx-text-fill: #FDCCAF;
+}
+
+.scroll-bar {
+    -fx-background-color: transparent;
+}
+
+.scroll-bar > .thumb {
+    -fx-background-color: #6DA9CC;
+    -fx-background-color: linear-gradient(to right, #6DA9CC 30%, #26709C 100%);
+    -fx-background-radius: 10;
+}
+
+.scroll-bar > .thumb:hover, .scroll-bar > .thumb:selected {
+    -fx-background-color: linear-gradient(to right, #74B4D9 30%, #2877A6 100%);
+}
+
+.decrement-button:hover, .increment-button:hover {
+    -fx-background-color: #6DA9CC;
+}
+
+/* VBox */
+.game-info-container {
+    -fx-alignment: center;
+    -fx-padding: 5;
+}
+
+.game-info {
+    -fx-fill: #FDCCAF;
+}
+
+/*******************
+ *      bottom     *
+ *******************/
+
+.copyright {
+    -fx-fill: #F2B18A;
+}
