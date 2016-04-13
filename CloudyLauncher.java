@@ -110,6 +110,8 @@ public class CloudyLauncher extends Application {
 
     final private String URL_OWNED_BADGE = "images/orangeribbon.png";
     final private String GAME_INFORMATION = "Publisher: %s\n\n%s";
+    final private String BUTTON_GET_GAME = "Add Game";
+    final private String BUTTON_JOIN_GAME = "Join Game";
 
     final private String COMMAND_RUN_THINCLIENT = "python thin_client/main.py --session %s %s %s %s";
 
@@ -177,7 +179,7 @@ public class CloudyLauncher extends Application {
 
         checkCaptchaResult();
         if (captchaResult == CAPTCHA_CORRECT) {
-            String serverFeedback = server.postAuthenticationRequest(username.getText(),
+            String serverFeedback = server.postAuthenticationRequest(username.getText().trim(),
                                                                      password.getText());
             accountsFeedback.setText(serverFeedback);
             String error = server.getErrorResponse();
@@ -221,7 +223,7 @@ public class CloudyLauncher extends Application {
 
         checkCaptchaResult();
         if (captchaResult == CAPTCHA_CORRECT) {
-            String serverFeedback = server.postSignupRequest(username.getText(),
+            String serverFeedback = server.postSignupRequest(username.getText().trim(),
                                                              password.getText(),
                                                              email.getText());
 
@@ -262,7 +264,7 @@ public class CloudyLauncher extends Application {
         if (listOfOwnedGames.contains(selectedGame)) {
             joinGame(selectedGame);
         } else {
-            gameFeedback.setText("Obtain game first");
+            addGame(selectedGame);
         }
     }
 
@@ -364,13 +366,9 @@ public class CloudyLauncher extends Application {
             mainContent.setCenter(loader.load());
 
             setGamePanel(GAME_DISPLAY_WELCOME);
-            welcomeText.setText(String.format(WELCOME_TEXT, username.getText()));
+            welcomeText.setText(String.format(WELCOME_TEXT, username.getText().trim()));
 
-            clearGamePage();
-
-            initialiseGameList();
-            initialiseOwnedGameList();
-            displayAllGames(null);
+            resetGamePage();
 
         } catch (IOException e) {
             gameFeedback.setText(ERROR_FXML_GAME_DISPLAY);
@@ -385,7 +383,7 @@ public class CloudyLauncher extends Application {
             loader.setController(this);
             currentStage.getScene().setRoot(loader.load());
 
-            welcomeText.setText(String.format(WELCOME_TEXT, username.getText()));
+            welcomeText.setText(String.format(WELCOME_TEXT, username.getText().trim()));
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -456,7 +454,7 @@ public class CloudyLauncher extends Application {
     }
 
     private void initialiseOwnedGameList() {
-        String serverFeedback = server.postOwnedGamesQuery(username.getText(),
+        String serverFeedback = server.postOwnedGamesQuery(username.getText().trim(),
                                                            token);
         gameFeedback.setText(serverFeedback);
         String error = server.getErrorResponse();
@@ -533,6 +531,11 @@ public class CloudyLauncher extends Application {
                                                   selectedGame.getPublisher(),
                                                   selectedGame.getDescription()));
 
+        if (!listOfOwnedGames.contains(selectedGame)) {
+            gameButton.setText(BUTTON_GET_GAME);
+        } else {
+            gameButton.setText(BUTTON_JOIN_GAME);
+        }
     }
 
     private void setPaginationSettings(Integer gameListType) {
@@ -619,9 +622,13 @@ public class CloudyLauncher extends Application {
         }
     }
 
-    private void clearGamePage() {
+    private void resetGamePage() {
         listOfGames.clear();
         listOfOwnedGames.clear();
+
+        initialiseGameList();
+        initialiseOwnedGameList();
+        displayAllGames(null);
     }
 
     private void clearInput() {
@@ -640,7 +647,7 @@ public class CloudyLauncher extends Application {
     private void joinGame(Game gameToJoin) {
 
         String serverFeedback = server.postGameSessionRequest(gameToJoin,
-                                                              username.getText(),
+                                                              username.getText().trim(),
                                                               token);
 
         gameFeedback.setText(serverFeedback);
@@ -665,6 +672,22 @@ public class CloudyLauncher extends Application {
                 gameFeedback.setText(ERROR_GAME_JOIN);
             }
         }
+    }
+
+    private void addGame(Game gameToAdd) {
+        String serverFeedback = server.postGameOwnershipRequest(gameToAdd,
+                                                                username.getText().trim(),
+                                                                token);
+
+        String error = server.getErrorResponse();
+
+        if (serverFeedback.equals(CloudyLauncherServerInterface.ERROR_CONNECTION)) {
+        } else if (!error.isEmpty()) {
+            gameFeedback.setText(parser.parseErrorResponse(error));
+        } else {
+            listOfOwnedGames.add(gameToAdd);
+        }
+        gameFeedback.setText(serverFeedback);
     }
 
     @Override

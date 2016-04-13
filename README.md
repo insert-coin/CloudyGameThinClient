@@ -73,7 +73,9 @@ javac -cp path/to/json/jar/file:path/to/captcha/jar/file *.java
 Windows:
 javac -cp path/to/json/jar/file;path/to/captcha/jar/file *.java
 ```
-Example usage for Windows: Assuming you have placed the .jar file together with your java files, type:
+Example command for Windows: 
+
+Assuming you have placed the .jar file together with your java files, type:
 ```bash
 javac -cp json-20151123.jar;simplecaptcha-1.2.1.jar *.java
 ```
@@ -89,13 +91,13 @@ java -cp .:path/to/json/jar/file:path/to/captcha/jar/file CloudyLauncher
 Windows:
 java -cp .;path/to/json/jar/file;path/to/captcha/jar/file CloudyLauncher
 ```
-Example usage for Mac/Linux:
+Example command for Mac/Linux:
 ```bash
 java -cp .:json-20151123.jar:simplecaptcha-1.2.1.jar CloudyLauncher
 ```
 or simply type `java -cp .:\* CloudyLauncher` (only for Mac/Linux)
 
-Example usage for Windows:
+Example command for Windows:
 ```bash
 java -cp .;json-20151123.jar;simplecaptcha-1.2.1.jar CloudyLauncher
 ```
