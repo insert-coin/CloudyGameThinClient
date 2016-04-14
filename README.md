@@ -42,6 +42,7 @@ python main.py 127.0.0.1 30000 0 --session 1
 Using only 3 arguments:
 python main.py 127.0.0.1 30000 0
 ```
+However, if you are an end user, you do not need to launch the thin client manually on your own. The thin client should be launched automatically by Cloudy Launcher when you want to play a game.
 
 ## Using The Thin Client
 Press ESC to unlock the mouse cursor from the window.
@@ -77,8 +78,8 @@ You need:
     - We recommend that you place it in the same directory as the `.java` files
 
 ### To compile on the command line
-Include the JSON jar and the SimpleCaptcha jar in the classpath
-(separate the `.jar` files using `:` for Linux/Mac and `;` for Windows)
+Include the JSON `.jar` file and the SimpleCaptcha `.jar` file in the classpath
+(separate the `.jar` files using `:` for Linux/Mac and `;` for Windows):
 ```bash
 Linux/Mac:
 javac -cp path/to/json/jar/file:path/to/captcha/jar/file *.java
@@ -88,15 +89,15 @@ javac -cp path/to/json/jar/file;path/to/captcha/jar/file *.java
 ```
 Example command for Windows: 
 
-Assuming you have placed the .jar file together with your java files, type:
+Assuming that you have placed the `.jar` files together with your `.java` files, type:
 ```bash
 javac -cp json-20151123.jar;simplecaptcha-1.2.1.jar *.java
 ```
 For Mac/Linux, you can use the following command:
-`javac -cp \* *.java` to include all jar and java files in the current folder
+`javac -cp \* *.java` to include all `.jar` and `.java` files in the current folder
 
 ### To run on the command line
-Include the json jar and the simple captcha jar in the classpath:
+Include the JSON `.jar` and the SimpleCaptcha `.jar` in the classpath:
 ```bash
 Linux/Mac:
 java -cp .:path/to/json/jar/file:path/to/captcha/jar/file CloudyLauncher
