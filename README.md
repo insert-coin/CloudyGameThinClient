@@ -71,11 +71,11 @@ You need:
 3. JSON dependency
     - Can be obtained from [here](http://mvnrepository.com/artifact/org.json/json)
     - Version used in development: 20151123
-    - We recommend that you place it in the same directory as the `.java` files
+    - Place it in the same directory as the `.java` files
 4. SimpleCaptcha dependency
     - Can be obtained from [here](http://simplecaptcha.sourceforge.net)
     - Download SimpleCaptcha for Java 6
-    - We recommend that you place it in the same directory as the `.java` files
+    - Place it in the same directory as the `.java` files
 
 ### To compile on the command line
 Include the JSON `.jar` file and the SimpleCaptcha `.jar` file in the classpath
@@ -87,14 +87,17 @@ javac -cp path/to/json/jar/file:path/to/captcha/jar/file *.java
 Windows:
 javac -cp path/to/json/jar/file;path/to/captcha/jar/file *.java
 ```
-Example command for Windows: 
+- Example command for Windows: 
 
-Assuming that you have placed the `.jar` files together with your `.java` files, type:
-```bash
-javac -cp json-20151123.jar;simplecaptcha-1.2.1.jar *.java
-```
-For Mac/Linux, you can use the following command:
-`javac -cp \* *.java` to include all `.jar` and `.java` files in the current folder
+    Assuming that you have placed the `.jar` files together with your `.java` files, type:
+    ```bash
+    javac -cp json-20151123.jar;simplecaptcha-1.2.1.jar *.java
+    ```
+- Example command for Mac/Linux:
+    
+    ```
+    javac -cp \* *.java
+    ```
 
 ### To run on the command line
 Include the JSON `.jar` and the SimpleCaptcha `.jar` in the classpath:
@@ -105,13 +108,13 @@ java -cp .:path/to/json/jar/file:path/to/captcha/jar/file CloudyLauncher
 Windows:
 java -cp .;path/to/json/jar/file;path/to/captcha/jar/file CloudyLauncher
 ```
-Example command for Mac/Linux:
-```bash
-java -cp .:json-20151123.jar:simplecaptcha-1.2.1.jar CloudyLauncher
-```
-or simply type `java -cp .:\* CloudyLauncher` (only for Mac/Linux)
+- Example command for Mac/Linux:
+    ```bash
+    java -cp .:json-20151123.jar:simplecaptcha-1.2.1.jar CloudyLauncher
+    ```
+    or simply type `java -cp .:\* CloudyLauncher` (only for Mac/Linux)
 
-Example command for Windows:
-```bash
-java -cp .;json-20151123.jar;simplecaptcha-1.2.1.jar CloudyLauncher
-```
+- Example command for Windows:
+    ```bash
+    java -cp .;json-20151123.jar;simplecaptcha-1.2.1.jar CloudyLauncher
+    ```
