@@ -118,3 +118,18 @@ java -cp .;path/to/json/jar/file;path/to/captcha/jar/file CloudyLauncher
     ```bash
     java -cp .;json-20151123.jar;simplecaptcha-1.2.1.jar CloudyLauncher
     ```
+    
+### Notes About Running The Launcher
+Cloudy Launcher communicates with [CloudyWeb](https://github.com/insert-coin/cloudyweb) to obtain its user and game information. As such, Cloudy Launcher has to be configured properly with the URL of the CloudyWeb server. 
+
+To do this, open `CloudyLauncherServerInterface.java`. The URL can be found on line 44:
+```java
+39    /**
+40     * Constructor for a CloudyLauncherServerInterface object. Url will default
+41     * to the deployed CloudyWeb if not specified.
+42     */
+43    public CloudyLauncherServerInterface() {
+44        baseUrl = "http://127.0.0.1:8000/";
+45    }
+```
+If CloudyWeb is deployed locally (i.e. you would like to run the entire CloudyGame project on a single computer), you can set the `baseUrl` to `http://127.0.0.1:8000/`.
