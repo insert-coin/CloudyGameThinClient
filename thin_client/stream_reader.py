@@ -53,7 +53,7 @@ def get_offset(scale, is_width_smaller, frame_width, frame_height):
 
 def initialize_stream(ip, port):
     """Read the network video stream"""
-    address = "http://{}:{}".format(ip, port)
+    address = "{}:{}".format(ip, port)
     cap = cv2.VideoCapture(address)
     frame_width = int(cap.get(3))
     frame_height = int(cap.get(4))
