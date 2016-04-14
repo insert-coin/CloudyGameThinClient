@@ -28,7 +28,7 @@ class GameSession(object):
     def __init__(self, ip_address, player_controller_id):
         self.sock = socket.socket(socket.AF_INET, # Internet
                          socket.SOCK_DGRAM) # UDP
-        self.ip_address = ip_address[7:] # Remove http://
+        self.ip_address = ip_address
         self.player_controller_id = player_controller_id
         self.sequence = 0
 
