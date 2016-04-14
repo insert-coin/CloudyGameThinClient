@@ -188,7 +188,7 @@ def start_client(ip, port, player_controller_id, *args, **kwargs):
     pygame.quit()
 
 def main(ip, port, player_controller_id, *args, **kwargs):
-    start_client(ip, port, int(player_controller_id), *args, **kwargs)
+    start_client(ip[7:], port, int(player_controller_id), *args, **kwargs)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Launch the thin client.')
