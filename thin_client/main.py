@@ -56,7 +56,6 @@ class KeyboardButton(Action):
         ue_key_code = settings.ASCII_TO_UE_KEYCODE.get(event.key, 0)
         ue_char_code = settings.ASCII_TO_UE_CHARCODE.get(event.key, ue_key_code)
         ue_key_code = ue_char_code or ue_key_code # This code is redundant. It changes nothing.
-        print (ue_key_code, ue_char_code)
         self.session.pack_and_send(settings.DEVICE_KEYBOARD, 
             ue_key_code, ue_char_code, event.type)
 
