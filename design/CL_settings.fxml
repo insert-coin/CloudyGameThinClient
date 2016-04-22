@@ -82,13 +82,12 @@
                 <Button text="Cloudy" onAction="#changeTheme" />
                 <Button text="Monochrome" onAction="#changeTheme" />
                 <Button text="Dark" onAction="#changeTheme" />
-                <Button text="Light" onAction="#changeTheme" />
                 <Button text="Forest" onAction="#changeTheme" />
                 <Button text="Sunset" onAction="#changeTheme" />
             </TilePane>
             <Text
                 styleClass="heading2, sub-settings"> Update Particulars </Text>
-            <Text styleClass="text"> To be added.. </Text>
+            <Text styleClass="update-text"> To be added.. </Text>
             <HBox>
             <Region prefWidth="150" />
             <Button

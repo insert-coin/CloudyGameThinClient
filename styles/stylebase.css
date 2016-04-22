@@ -144,9 +144,9 @@
 /* VBox: content on right */
 .content {
     -fx-spacing: 10;
-    -fx-border-width: 0 0 0 5;
+    -fx-border-width: 0 0 0 3;
     -fx-border-style: solid;
-    -fx-padding: 10;
+    -fx-padding: 10 10 10 25;
 }
 
 /* Text: toggle signup/login page */
