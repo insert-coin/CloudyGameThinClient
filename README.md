@@ -77,6 +77,13 @@ You need:
     - Download SimpleCaptcha for Java 6
     - Place it in the same directory as the `.java` files
 
+### To compile and run automatically
+Ensure that the required dependencies are in the same directory as the java files. 
+For Windows, simply run the file "make.bat".
+For Mac/Linux, simply run the file "make.command".
+
+Otherwise, see the following sections on how to compile and run it manually.
+
 ### To compile on the command line
 Include the JSON `.jar` file and the SimpleCaptcha `.jar` file in the classpath
 (separate the `.jar` files using `:` for Linux/Mac and `;` for Windows):
