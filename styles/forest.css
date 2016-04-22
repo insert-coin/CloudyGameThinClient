@@ -1,0 +1,149 @@
+
+/*******************
+ *     general     *
+ *******************/
+
+/* BorderPane: main layout root */
+.root {
+    -fx-background-image: url("../images/bamboo.jpg");
+}
+
+.update-text {
+    -fx-fill: #C3A5F2; 
+}
+
+.label {
+    -fx-text-fill: #D7C5F3;
+}
+
+.feedback {
+    -fx-fill: #E84242;
+}
+
+.button {
+    -fx-background-color: linear-gradient(to bottom, #750D75 30%, #4D084D 100%);
+    -fx-text-fill: #C3A5F2;
+}
+
+.button:hover, .button:focused {
+    -fx-background-color: linear-gradient(to bottom, #B314B3 30%, #7C2A8C 100%);
+    -fx-text-fill: #F7DBF7;
+}
+
+.button:disabled {
+    -fx-background-color: #26709C;
+}
+
+.text-field {
+    -fx-background-color: #D7C5F3;
+    -fx-highlight-text-fill: #B892F3;
+    -fx-highlight-fill: #750D75;
+    -fx-prompt-text-fill: #750D75;
+}
+
+/*******************
+ *       top       *
+ *******************/
+
+/* Text: date and time display */
+.date-time {
+    -fx-fill: #B892F3;
+}
+
+/* Text: states the user currently logged in */
+.welcome-text {
+    -fx-fill: #B892F3;
+}
+
+/*******************
+ *       left      *
+ *******************/
+
+/* Text: heading on left eg login / signup header*/
+.heading1 {
+    -fx-fill: #D7C5F3;
+}
+
+.refresh-button {
+    -fx-background-color: #D7C5F3;
+}
+
+.game-icon {
+    -fx-border-color: #000000;
+}
+
+.game-icon:hover, .game-icon:focused {
+    -fx-border-color: #D7C5F3;
+}
+
+.pagination > .page {
+    -fx-background-color: linear-gradient(to bottom, rgba(65, 95, 25, 0.2) 0%, 
+                                                     rgba(70, 102, 14, 0.8) 40%, 
+                                                     rgba(65, 95, 25, 0.2) 100%);
+}
+
+.left-arrow, .right-arrow {
+    -fx-background-color: #BA45BA;
+}
+
+.left-arrow:disabled, .right-arrow:disabled {
+    -fx-background-color: #023F62;
+}
+
+/*******************
+ *      right      *
+ *******************/
+
+/* Text: heading on right e.g. game title*/
+.heading2 {
+    -fx-fill: #D7C5F3;
+}
+
+/* VBox: content on right */
+.content {
+    -fx-border-color: radial-gradient(center 50% 50%, radius 50%, #025020, #F7DBF7, #025020);
+}
+
+/* Text: toggle signup/login page */
+.link-text {
+    -fx-fill: #B892F3;
+    
+}
+
+.link-text:hover, .link-text:focused {
+
+    -fx-fill: #F7DBF7;
+}
+
+.scroll-pane > .viewport {
+    -fx-background-color: linear-gradient(to bottom, #013B5C 0%, #025A8C 50%, #025787 100%);
+    -fx-text-fill: #C3A5F2;
+    -fx-background-color: linear-gradient(to bottom, rgba(40, 95, 25, 0.4) 0%, 
+                                                     rgba(37, 102, 14, 0.8) 60%, 
+                                                     rgba(40, 95, 25, 0.6) 100%);
+
+}
+
+.scroll-bar > .thumb {
+    -fx-background-color: linear-gradient(to right, #D7C5F3 30%, #B994F2 100%);
+}
+
+.scroll-bar > .thumb:hover, .scroll-bar > .thumb:selected {
+    -fx-background-color: linear-gradient(to right, #C3A5F2 30%, #9F6CF0 100%);
+}
+
+.decrement-button:hover, .increment-button:hover {
+    -fx-background-color: #D7C5F3;
+}
+
+.game-info {
+    -fx-fill: #C3A5F2;
+}
+
+/*******************
+ *      bottom     *
+ *******************/
+
+.copyright {
+    -fx-fill: #B892F3;
+}

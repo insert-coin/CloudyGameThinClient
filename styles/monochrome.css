@@ -1,0 +1,144 @@
+
+/*******************
+ *     general     *
+ *******************/
+
+/* BorderPane: main layout root */
+.root {
+    -fx-background-color: linear-gradient(to bottom, #000000 10%, #FFFFFF 30%);
+}
+
+.text { 
+}
+
+.label {
+    -fx-text-fill: #000000;
+}
+
+.feedback {
+    -fx-fill: #000000;
+}
+
+.button {
+    -fx-text-fill: #000000;
+}
+
+.button:hover, .button:focused {
+}
+
+.button:disabled {
+    -fx-background-color: #969696;
+}
+
+.text-field {
+    -fx-highlight-fill: #000000; 
+    -fx-highlight-text-fill: #FFFFFF;
+    -fx-prompt-text-fill: #000000;
+}
+
+/*******************
+ *       top       *
+ *******************/
+
+/* Text: date and time display */
+.date-time {
+    -fx-fill: #FFFFFF;
+}
+
+/* Label: current status */
+.status-offline {
+    -fx-text-fill: #FF4D4D;
+    -fx-graphic: url("../images/status-offline.png");
+}
+
+/* Label: current status */
+.status-online {
+    -fx-text-fill: #00cc00;
+    -fx-graphic: url("../images/status-online.png");
+}
+
+/* Text: states the user currently logged in */
+.welcome-text {
+    -fx-fill: #FFFFFF;
+}
+
+/*******************
+ *       left      *
+ *******************/
+
+/* Text: heading on left eg login / signup header*/
+.heading1 {
+    -fx-fill: #000000;
+}
+
+.refresh-button {
+    -fx-background-color: #FFFFFF;
+}
+
+.game-icon {
+    -fx-border-color: #000000;
+}
+
+.game-icon:hover, .game-icon:focused {
+    -fx-border-color: #969696;
+}
+
+.pagination > .page {
+}
+
+.left-arrow, .right-arrow {
+    -fx-background-color: #000000;
+}
+
+.left-arrow:disabled, .right-arrow:disabled {
+    -fx-background-color: #FFFFFF;
+}
+
+/*******************
+ *      right      *
+ *******************/
+
+/* Text: heading on right e.g. game title*/
+.heading2 {
+    -fx-fill: #000000;
+}
+
+/* VBox: content on right */
+.content {
+    -fx-border-color: radial-gradient(center 50% 50%, radius 50%, #FFFFFF, #000000);
+}
+
+/* Text: toggle signup/login page */
+.link-text {
+    -fx-fill: #000000;
+}
+
+.link-text:hover, .link-text:focused {
+    -fx-fill: #969696;
+}
+
+.scroll-pane > .viewport {
+    -fx-text-fill: #000000;
+}
+
+.scroll-bar > .thumb {
+}
+
+.scroll-bar > .thumb:hover, .scroll-bar > .thumb:selected {
+}
+
+.decrement-button:hover, .increment-button:hover {
+    -fx-background-color: #969696;
+}
+
+.game-info {
+    -fx-fill: #000000;
+}
+
+/*******************
+ *      bottom     *
+ *******************/
+
+.copyright {
+    -fx-fill: #000000;
+}
